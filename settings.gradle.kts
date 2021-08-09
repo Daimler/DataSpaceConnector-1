@@ -16,6 +16,7 @@ include(":core:policy:policy-model")
 include(":core:protocol:web")
 include(":core:schema")
 include(":core:transfer")
+include(":core:contract")
 
 // modules that provide implementations for data ingress/egress
 include(":data-protocols:ids:ids-api-catalog")
