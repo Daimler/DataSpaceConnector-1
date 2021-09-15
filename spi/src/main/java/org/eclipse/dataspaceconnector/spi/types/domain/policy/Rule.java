@@ -9,6 +9,9 @@ import java.util.Optional;
  * set of {@link Constraint}s.
  */
 public class Rule {
+    /**
+     * Allowed or prohibited actions on the data.
+     */
     private Action action;
     private List<Constraint> constraints;
 

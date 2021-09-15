@@ -42,7 +42,7 @@ public class DemoAssetIndex implements AssetIndex {
     }
 
     private Predicate<Asset> buildPredicate(final AssetSelectorExpression assetSelectorExpression) {
-        return buildPredicate(assetSelectorExpression.getLabels());
+        return buildPredicate(assetSelectorExpression.getFilterLabels());
     }
 
     private Predicate<Asset> buildPredicate(final Map<String, String> labels) {

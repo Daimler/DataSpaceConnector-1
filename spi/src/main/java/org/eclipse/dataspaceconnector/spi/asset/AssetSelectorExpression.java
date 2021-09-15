@@ -24,14 +24,14 @@ import java.util.Optional;
  * of labels is empty all available assets are eligible for selection.
  */
 public final class AssetSelectorExpression {
-    private final Map<String, String> labels = new HashMap<>();
+    private final Map<String, String> filterLabels = new HashMap<>();
 
-    private AssetSelectorExpression(final Map<String, String> labels) {
-        Optional.ofNullable(labels).ifPresent(this.labels::putAll);
+    private AssetSelectorExpression(final Map<String, String> filterLabels) {
+        Optional.ofNullable(filterLabels).ifPresent(this.filterLabels::putAll);
     }
 
-    public Map<String, String> getLabels() {
-        return Collections.unmodifiableMap(labels);
+    public Map<String, String> getFilterLabels() {
+        return Collections.unmodifiableMap(filterLabels);
     }
 
     public static Builder builder() {
@@ -44,7 +44,7 @@ public final class AssetSelectorExpression {
         private Builder() {
         }
 
-        public Builder label(final String key, final String value) {
+        public Builder filterByLabel(final String key, final String value) {
             this.labels.put(key, value);
             return this;
         }
