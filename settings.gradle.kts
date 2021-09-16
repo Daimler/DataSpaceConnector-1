@@ -74,7 +74,8 @@ include(":samples:public-rest-api")
 include(":samples:run-from-junit")
 include(":samples:streaming")
 include(":samples:demo-asset-index")
-include("samples:demo-contract-framework")
+include(":samples:demo-contract-framework")
+include(":samples:demo-contract-offer-approval")
 
 // extension points for a connector
 include(":spi")

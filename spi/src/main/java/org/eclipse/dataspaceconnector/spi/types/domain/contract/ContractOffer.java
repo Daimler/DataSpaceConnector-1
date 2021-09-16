@@ -17,12 +17,20 @@ package org.eclipse.dataspaceconnector.spi.types.domain.contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
+import java.io.ByteArrayOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.net.URI;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 public class ContractOffer {
+    private URI id;
 
     private List<OfferedAsset> assets;
 
@@ -37,6 +45,10 @@ public class ContractOffer {
     private URI consumer;
 
     private ContractOffer() {
+    }
+
+    public URI getId() {
+        return id;
     }
 
     @Nullable
@@ -62,10 +74,16 @@ public class ContractOffer {
 
     public static final class Builder {
         private List<OfferedAsset> offeredAsset;
+        private URI id;
         private URI provider;
         private URI consumer;
 
         private Builder() {
+        }
+
+        public Builder id(URI id) {
+            this.id = id;
+            return this;
         }
 
         public Builder provider(final URI provider) {

@@ -14,19 +14,25 @@
 
 package org.eclipse.dataspaceconnector.contract;
 
-import org.eclipse.dataspaceconnector.spi.asset.AssetIndex;
-import org.eclipse.dataspaceconnector.spi.contract.ContractOfferFramework;
+import org.eclipse.dataspaceconnector.contract.approval.ContractOfferApprovalServiceFactory;
+import org.eclipse.dataspaceconnector.contract.negotiation.ContractOfferNegotiationServiceFactory;
 import org.eclipse.dataspaceconnector.spi.contract.ContractOfferService;
+import org.eclipse.dataspaceconnector.spi.contract.approval.*;
+import org.eclipse.dataspaceconnector.spi.contract.negotiation.ContractOfferNegotiationService;
 import org.eclipse.dataspaceconnector.spi.monitor.Monitor;
 import org.eclipse.dataspaceconnector.spi.system.ServiceExtension;
 import org.eclipse.dataspaceconnector.spi.system.ServiceExtensionContext;
 
+import java.util.Optional;
 import java.util.Set;
 
 public class ContractServiceExtension implements ServiceExtension {
     private static final String NAME = "Core Contract Service Extension";
+
     private static final String[] PROVIDES = {
-        ContractOfferService.class.getName()
+            ContractOfferService.class.getName(),
+            ContractOfferNegotiationService.class.getName(),
+            ContractOfferApprovalService.class.getName()
     };
 
     private Monitor monitor;
@@ -56,40 +62,67 @@ public class ContractServiceExtension implements ServiceExtension {
     }
 
     private void registerServices(final ServiceExtensionContext serviceExtensionContext) {
-        /*
-         * Construct an AssetIndexLocator for finding several AssetIndexes provided via extensions
-         */
-        final AssetIndexLocator assetIndexLocator = new AssetIndexLocator(serviceExtensionContext);
-        /*
-         * Add the default asset index delegating calls to extensions
-         */
-        final AssetIndex assetIndex = new CompositeAssetIndex(
-                assetIndexLocator,
-                serviceExtensionContext.getMonitor());
-        /*
-         * Construct a ContractOfferFrameworkLocator for finding several ContractOfferFrameworks provided via extensions
-         */
-        final ContractOfferFrameworkLocator compositeContractOfferFramework = new ContractOfferFrameworkLocator(
-                serviceExtensionContext
-        );
-        /*
-         * There is always one default contract offer framework instance
-         * delegating calls to those provided by custom extensions.
-         */
-        final ContractOfferFramework contractOfferFramework = new CompositeContractOfferFramework(
-                compositeContractOfferFramework,
-                serviceExtensionContext.getMonitor());
-        /*
-         * Contract offer service calculates contract offers using a variety of contract offer frameworks
-         * ad the given asset index.
-         */
-        final ContractOfferService contractOfferService = new ContractOfferServiceImpl(
-                contractOfferFramework,
-                assetIndex
-        );
-        /*
-         * Register the just created contract offer service to the service extension context.
-         */
+        // Register contract offer service to the service extension context.
+        final ContractOfferService contractOfferService = createContractOfferService(serviceExtensionContext);
         serviceExtensionContext.registerService(ContractOfferService.class, contractOfferService);
+
+        // Register contract approval service to the service extension context.
+        final ContractOfferApprovalService contractOfferApprovalService = createContractApprovalService(serviceExtensionContext);
+        serviceExtensionContext.registerService(ContractOfferApprovalService.class, contractOfferApprovalService);
+
+        // Register contract negotiation service to the service extension context.
+        final ContractOfferNegotiationService contractOfferNegotiationService = createContractNegotiationService(
+                serviceExtensionContext, contractOfferApprovalService);
+        serviceExtensionContext.registerService(ContractOfferNegotiationService.class, contractOfferNegotiationService);
+
+        // Apply a contract offer approval strategy
+        final ContractOfferApprovalStrategyContext contractOfferApprovalStrategyContext = ContractOfferApprovalStrategyContext.Builder.newInstance()
+                .contractOfferApprovalService(contractOfferApprovalService)
+                .contractOfferNegotiationService(contractOfferNegotiationService)
+                .build();
+        final ContractOfferApprovalStrategy contractOfferApprovalStrategy = createContractOfferApprovalStrategy(serviceExtensionContext);
+        contractOfferApprovalStrategy.apply(contractOfferApprovalStrategyContext);
+    }
+
+    private ContractOfferApprovalStrategy createContractOfferApprovalStrategy(
+            final ServiceExtensionContext serviceExtensionContext
+    ) {
+        return Optional
+                .ofNullable(serviceExtensionContext.getService(ContractOfferApprovalStrategy.class, true))
+                .orElse(DefaultContractOfferApprovalStrategy.INSTANCE);
+    }
+
+    private ContractOfferApprovalService createContractApprovalService(final ServiceExtensionContext serviceExtensionContext) {
+        return ContractOfferApprovalServiceFactory.createContractOfferApprovalService(serviceExtensionContext);
+    }
+
+    private ContractOfferNegotiationService createContractNegotiationService(
+            final ServiceExtensionContext serviceExtensionContext,
+            final ContractOfferApprovalService contractOfferApprovalService) {
+        return ContractOfferNegotiationServiceFactory.createContractOfferNegotiationService(
+                serviceExtensionContext, contractOfferApprovalService);
+    }
+
+    private ContractOfferService createContractOfferService(final ServiceExtensionContext serviceExtensionContext) {
+        return ContractOfferServiceFactory.createContractOfferService(serviceExtensionContext);
+    }
+
+    /*
+     * The default implementation automatically rejects just created contract offer negotiations
+     */
+    enum DefaultContractOfferApprovalStrategy implements ContractOfferApprovalStrategy {
+        INSTANCE;
+
+        @Override
+        public void apply(final ContractOfferApprovalStrategyContext contractOfferApprovalStrategyContext) {
+            final ContractOfferApprovalService contractOfferApprovalService = contractOfferApprovalStrategyContext.getContractOfferApprovalService();
+
+            contractOfferApprovalService.registerListener(new ContractOfferApprovalListener() {
+                @Override
+                public void pending(final ContractOfferApproval contractOfferApproval) {
+                    contractOfferApprovalService.reject(contractOfferApproval.getContractOffer());
+                }
+            });
+        }
     }
 }
