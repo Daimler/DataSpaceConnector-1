@@ -10,10 +10,6 @@ public class OfferedAsset {
     private UsagePolicy usagePolicy;
     private Asset asset;
 
-    public static Builder builder() {
-        return new Builder();
-    }
-
     @NotNull
     public UsagePolicy getUsagePolicy() {
         return usagePolicy;
@@ -29,6 +25,10 @@ public class OfferedAsset {
         private Asset asset;
 
         private Builder() {
+        }
+
+        public static Builder newInstance() {
+            return new Builder();
         }
 
         public Builder usagePolicy(final UsagePolicy usagePolicy) {

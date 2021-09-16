@@ -16,14 +16,14 @@ public class UsagePolicy {
                 .orElseGet(Collections::emptyList);
     }
 
-    public static Builder builder() {
-        return new Builder();
-    }
-
     public static final class Builder {
         private List<Rule> rules;
 
         private Builder() {
+        }
+
+        public static Builder newInstance() {
+            return new Builder();
         }
 
         public Builder rules(final List<Rule> rules) {

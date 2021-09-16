@@ -56,16 +56,16 @@ public class ContractOffer {
                 .orElseGet(Collections::emptyList);
     }
 
-    public static Builder builder() {
-        return new Builder();
-    }
-
     public static final class Builder {
         private List<OfferedAsset> offeredAsset;
         private URI provider;
         private URI consumer;
 
         private Builder() {
+        }
+
+        public static Builder newInstance() {
+            return new Builder();
         }
 
         public Builder provider(final URI provider) {

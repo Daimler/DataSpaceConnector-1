@@ -25,15 +25,15 @@ public class Rule {
                 .orElseGet(Collections::emptyList);
     }
 
-    public static Builder builder() {
-        return new Builder();
-    }
-
     public static final class Builder {
         private Action action;
         private List<Constraint> constraints;
 
         private Builder() {
+        }
+
+        public static Builder newInstance() {
+            return new Builder();
         }
 
         public Builder action(final Action action) {

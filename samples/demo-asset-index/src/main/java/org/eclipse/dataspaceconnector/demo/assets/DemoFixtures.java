@@ -244,7 +244,7 @@ final class DemoFixtures {
 
     static final class AssetFactory {
         public static Asset create(final DemoFixtures.Fixture fixture) {
-            final Asset.Builder builder = Asset.builder();
+            final Asset.Builder builder = Asset.Builder.newInstance();
 
             Optional.ofNullable(fixture.getId())
                     .ifPresent(builder::id);

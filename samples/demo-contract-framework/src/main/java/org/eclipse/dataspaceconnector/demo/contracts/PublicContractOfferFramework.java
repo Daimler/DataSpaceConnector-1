@@ -54,20 +54,20 @@ public class PublicContractOfferFramework implements ContractOfferFramework {
         }
 
         private ContractOffer createContractOffer(final Asset asset) {
-            final ContractOffer.Builder builder = ContractOffer.builder();
+            final ContractOffer.Builder builder = ContractOffer.Builder.newInstance();
 
-            final Rule rule = Rule.builder()
+            final Rule rule = Rule.Builder.newInstance()
                     .action(Action.ALL)
                     .constraints(Collections.emptyList())
                     .build();
 
             final List<Rule> rules = Collections.singletonList(rule);
 
-            final UsagePolicy usagePolicy = UsagePolicy.builder()
+            final UsagePolicy usagePolicy = UsagePolicy.Builder.newInstance()
                     .rules(rules)
                     .build();
 
-            final OfferedAsset offeredAsset = OfferedAsset.builder()
+            final OfferedAsset offeredAsset = OfferedAsset.Builder.newInstance()
                     .asset(asset)
                     .usagePolicy(usagePolicy)
                     .build();

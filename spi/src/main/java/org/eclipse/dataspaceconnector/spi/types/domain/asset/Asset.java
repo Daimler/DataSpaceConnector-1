@@ -61,10 +61,6 @@ public class Asset {
         return labels;
     }
 
-    public static Builder builder() {
-        return new Builder();
-    }
-
     public static final class Builder {
         private String id;
         private String title;
@@ -76,6 +72,10 @@ public class Asset {
         private Map<String, String> labels;
 
         private Builder() {
+        }
+
+        public static Builder newInstance() {
+            return new Builder();
         }
 
         public Builder id(final String id) {
