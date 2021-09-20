@@ -14,6 +14,9 @@
 
 package org.eclipse.dataspaceconnector.demo.contracts;
 
+import org.eclipse.dataspaceconnector.policy.model.Action;
+import org.eclipse.dataspaceconnector.policy.model.Permission;
+import org.eclipse.dataspaceconnector.policy.model.Rule;
 import org.eclipse.dataspaceconnector.spi.asset.AssetSelectorExpression;
 import org.eclipse.dataspaceconnector.spi.contract.ContractOfferFramework;
 import org.eclipse.dataspaceconnector.spi.contract.ContractOfferFrameworkQuery;
@@ -21,8 +24,7 @@ import org.eclipse.dataspaceconnector.spi.contract.ContractOfferTemplate;
 import org.eclipse.dataspaceconnector.spi.types.domain.asset.Asset;
 import org.eclipse.dataspaceconnector.spi.types.domain.contract.ContractOffer;
 import org.eclipse.dataspaceconnector.spi.types.domain.contract.OfferedAsset;
-import org.eclipse.dataspaceconnector.spi.types.domain.policy.Action;
-import org.eclipse.dataspaceconnector.spi.types.domain.policy.Rule;
+import org.eclipse.dataspaceconnector.spi.types.domain.policy.CommonAction;
 import org.eclipse.dataspaceconnector.spi.types.domain.policy.UsagePolicy;
 
 import java.util.Collections;
@@ -56,8 +58,12 @@ public class PublicContractOfferFramework implements ContractOfferFramework {
         private ContractOffer createContractOffer(final Asset asset) {
             final ContractOffer.Builder builder = ContractOffer.Builder.newInstance();
 
-            final Rule rule = Rule.Builder.newInstance()
-                    .action(Action.ALL)
+            final Action action = Action.Builder.newInstance()
+                    .type(CommonAction.ALL.getType())
+                    .build();
+
+            final Rule rule = Permission.Builder.newInstance()
+                    .action(action)
                     .constraints(Collections.emptyList())
                     .build();
 

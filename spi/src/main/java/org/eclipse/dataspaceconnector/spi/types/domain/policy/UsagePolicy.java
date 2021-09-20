@@ -1,5 +1,6 @@
 package org.eclipse.dataspaceconnector.spi.types.domain.policy;
 
+import org.eclipse.dataspaceconnector.policy.model.Rule;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
