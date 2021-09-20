@@ -1,18 +1,18 @@
 package org.eclipse.dataspaceconnector.spi.types.domain.contract;
 
+import org.eclipse.dataspaceconnector.policy.model.Policy;
 import org.eclipse.dataspaceconnector.spi.types.domain.asset.Asset;
-import org.eclipse.dataspaceconnector.spi.types.domain.policy.UsagePolicy;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
 public class OfferedAsset {
-    private UsagePolicy usagePolicy;
+    private Policy policy;
     private Asset asset;
 
     @NotNull
-    public UsagePolicy getUsagePolicy() {
-        return usagePolicy;
+    public Policy getPolicy() {
+        return policy;
     }
 
     @NotNull
@@ -21,7 +21,7 @@ public class OfferedAsset {
     }
 
     public static final class Builder {
-        private UsagePolicy usagePolicy;
+        private Policy policy;
         private Asset asset;
 
         private Builder() {
@@ -31,8 +31,8 @@ public class OfferedAsset {
             return new Builder();
         }
 
-        public Builder usagePolicy(final UsagePolicy usagePolicy) {
-            this.usagePolicy = usagePolicy;
+        public Builder policy(final Policy policy) {
+            this.policy = policy;
             return this;
         }
 
@@ -44,7 +44,7 @@ public class OfferedAsset {
         public OfferedAsset build() {
             final OfferedAsset offeredAsset = new OfferedAsset();
             offeredAsset.asset = Objects.requireNonNull(this.asset);
-            offeredAsset.usagePolicy = Objects.requireNonNull(this.usagePolicy);
+            offeredAsset.policy = Objects.requireNonNull(this.policy);
             return offeredAsset;
         }
     }

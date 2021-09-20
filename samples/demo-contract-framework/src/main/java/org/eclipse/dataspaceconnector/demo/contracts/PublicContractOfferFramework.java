@@ -16,7 +16,8 @@ package org.eclipse.dataspaceconnector.demo.contracts;
 
 import org.eclipse.dataspaceconnector.policy.model.Action;
 import org.eclipse.dataspaceconnector.policy.model.Permission;
-import org.eclipse.dataspaceconnector.policy.model.Rule;
+import org.eclipse.dataspaceconnector.policy.model.Policy;
+import org.eclipse.dataspaceconnector.policy.model.PolicyType;
 import org.eclipse.dataspaceconnector.spi.asset.AssetSelectorExpression;
 import org.eclipse.dataspaceconnector.spi.contract.ContractOfferFramework;
 import org.eclipse.dataspaceconnector.spi.contract.ContractOfferFrameworkQuery;
@@ -25,10 +26,8 @@ import org.eclipse.dataspaceconnector.spi.types.domain.asset.Asset;
 import org.eclipse.dataspaceconnector.spi.types.domain.contract.ContractOffer;
 import org.eclipse.dataspaceconnector.spi.types.domain.contract.OfferedAsset;
 import org.eclipse.dataspaceconnector.spi.types.domain.policy.CommonAction;
-import org.eclipse.dataspaceconnector.spi.types.domain.policy.UsagePolicy;
 
 import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -62,20 +61,19 @@ public class PublicContractOfferFramework implements ContractOfferFramework {
                     .type(CommonAction.ALL.getType())
                     .build();
 
-            final Rule rule = Permission.Builder.newInstance()
+            final Policy.Builder policyBuilder = Policy.Builder.newInstance()
+                    .type(PolicyType.CONTRACT);
+
+            final Permission rule = Permission.Builder.newInstance()
                     .action(action)
                     .constraints(Collections.emptyList())
                     .build();
+            policyBuilder.permissions(Collections.singletonList(rule));
 
-            final List<Rule> rules = Collections.singletonList(rule);
-
-            final UsagePolicy usagePolicy = UsagePolicy.Builder.newInstance()
-                    .rules(rules)
-                    .build();
-
+            final Policy policy = policyBuilder.build();
             final OfferedAsset offeredAsset = OfferedAsset.Builder.newInstance()
                     .asset(asset)
-                    .usagePolicy(usagePolicy)
+                    .policy(policy)
                     .build();
 
             builder.assets(Collections.singletonList(offeredAsset));
