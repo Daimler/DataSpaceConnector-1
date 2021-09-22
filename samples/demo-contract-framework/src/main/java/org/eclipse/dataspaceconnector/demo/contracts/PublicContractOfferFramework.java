@@ -25,7 +25,7 @@ import org.eclipse.dataspaceconnector.spi.contract.ContractOfferTemplate;
 import org.eclipse.dataspaceconnector.spi.types.domain.asset.Asset;
 import org.eclipse.dataspaceconnector.spi.types.domain.contract.ContractOffer;
 import org.eclipse.dataspaceconnector.spi.types.domain.contract.OfferedAsset;
-import org.eclipse.dataspaceconnector.spi.types.domain.policy.CommonAction;
+import org.eclipse.dataspaceconnector.spi.types.domain.policy.CommonActionTypes;
 
 import java.util.Collections;
 import java.util.Optional;
@@ -58,7 +58,7 @@ public class PublicContractOfferFramework implements ContractOfferFramework {
             final ContractOffer.Builder builder = ContractOffer.Builder.newInstance();
 
             final Action action = Action.Builder.newInstance()
-                    .type(CommonAction.ALL.getType())
+                    .type(CommonActionTypes.ALL)
                     .build();
 
             final Policy.Builder policyBuilder = Policy.Builder.newInstance()
