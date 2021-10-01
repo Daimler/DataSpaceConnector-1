@@ -30,8 +30,6 @@ dependencies {
     implementation(project(":extensions:aws:s3:provision"))
 
     implementation(project(":data-protocols:ids"))
-    implementation(project(":data-protocols:ids:ids-policy-mock"))
-
 
     implementation(project(":extensions:iam:distributed-identity:identity-did-service"))
     implementation(project(":extensions:iam:distributed-identity:identity-did-spi"))

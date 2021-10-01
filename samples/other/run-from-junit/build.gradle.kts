@@ -22,6 +22,7 @@ val jupiterVersion: String by project
 dependencies {
     api(project(":core:bootstrap"))
     api(project(":core:transfer"))
+    api(project(":common:util"))
     api(project(":extensions:in-memory:transfer-store-memory"))
 
     api(project(":extensions:aws:s3:provision"))

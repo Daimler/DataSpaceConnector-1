@@ -76,9 +76,9 @@ public class PublicContractOfferFramework implements ContractOfferFramework {
                     .policy(policy)
                     .build();
 
-            builder.assets(Collections.singletonList(offeredAsset));
-
-            return builder.build();
+            return builder
+                    .assets(Collections.singletonList(offeredAsset))
+                    .build();
         }
     }
 }

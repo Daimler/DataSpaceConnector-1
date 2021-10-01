@@ -37,7 +37,6 @@ dependencies {
     implementation(project(":extensions:aws:s3:provision"))
     
     implementation(project(":data-protocols:ids"))
-    implementation(project(":data-protocols:ids:ids-policy-mock"))
 
     implementation(project(":samples:05-file-transfer-cloud:api"))
 

@@ -24,28 +24,14 @@ import java.util.Map;
  */
 public class Asset {
     private String id;
-    private String title;
-    private String description;
-    private String version;
     private String fileName;
     private Integer byteSize;
     private String fileExtension;
     private Map<String, String> labels;
 
+    // TODO find a way to ensure Asset IDs are unique in IDS
     public String getId() {
         return id;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public String getVersion() {
-        return version;
     }
 
     public String getFileName() {
@@ -67,9 +53,6 @@ public class Asset {
 
     public static final class Builder {
         private String id;
-        private String title;
-        private String description;
-        private String version;
         private String fileName;
         private Integer byteSize;
         private String fileExtension;
@@ -84,22 +67,6 @@ public class Asset {
 
         public Builder id(final String id) {
             this.id = id;
-            return this;
-        }
-
-
-        public Builder title(final String title) {
-            this.title = title;
-            return this;
-        }
-
-        public Builder description(final String description) {
-            this.description = description;
-            return this;
-        }
-
-        public Builder version(final String version) {
-            this.version = version;
             return this;
         }
 
@@ -126,9 +93,6 @@ public class Asset {
         public Asset build() {
             Asset asset = new Asset();
             asset.id = this.id;
-            asset.title = this.title;
-            asset.description = this.description;
-            asset.version = this.version;
             asset.fileName = this.fileName;
             asset.byteSize = this.byteSize;
             asset.fileExtension = this.fileExtension;

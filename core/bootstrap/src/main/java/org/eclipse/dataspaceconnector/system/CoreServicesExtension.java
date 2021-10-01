@@ -57,7 +57,6 @@ public class CoreServicesExtension implements ServiceExtension {
         monitor.info("Initialized Core Services extension.");
     }
 
-
     private void addRetryPolicy(ServiceExtensionContext context) {
 
         var maxRetries = Integer.parseInt(context.getSetting(MAX_RETRIES, String.valueOf(5)));

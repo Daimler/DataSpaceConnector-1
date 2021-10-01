@@ -249,15 +249,6 @@ final class DemoFixtures {
             Optional.ofNullable(fixture.getId())
                     .ifPresent(builder::id);
 
-            Optional.ofNullable(fixture.getTitle())
-                    .ifPresent(builder::title);
-
-            Optional.ofNullable(fixture.getVersion())
-                    .ifPresent(builder::version);
-
-            Optional.ofNullable(fixture.getCategory())
-                    .ifPresent(builder::description);
-
             Optional.ofNullable(fixture.getType())
                     .ifPresent(builder::fileExtension);
 

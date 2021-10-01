@@ -1,39 +1,27 @@
 **Please note**
+
 ### Work in progress
+
 All content reflects the current state of discussion, not final decisions.
 
 ---
 
 # Architecture
 
-## Contract Design
+## Configuration
 
-### Contract Offer Creation
+Each EDC extension may have its own configuration settings. Depending on the used Configuration Extension the setting of
+these keys may vary.
 
-The EDC connector is able to provide contract offers using the following extensions:
-- [Core Contract Extension](../../core/contract/README.md)
-- Extension that implements the **Asset Index**
-    - e.g. [Demo Asset Index](../../samples/demo-asset-index/README.md)
-- Extension that implements the **Contract Offer Framework**
-    - e.g. [Demo Contract Framework](../../samples/demo-contract-framework/README.md)
-- Extension that implements an API to access the offers
-    - e.g. IDS extension
+For information about the different EDC extensions please have a look at their corresponding README.md files.
 
-#### Most important classes and interfaces
+For a more detailed explanation of the configuration itself please see [configuration.md](configuration.md).
 
-- **Contract Offer Service**
-    - may be used to query offers
-    - core implementation
-- **Contract Offer Framework**
-    - provide offers to the **Contract Offer Service**
-    - create non-persistent **Contract Offers Templates** for a specific consumer
-    - **Contract Offer Templates** target a range of **Assets**
-    - implemented by extensions
-- **Asset Index**
-    - provides **Assets**
-    - implemented by extensions
+## Data Transfer
 
-#### Prototypic Sequence for Contract Offer Creation
+### Contract
 
-![Offer Quers](diagrams/offer-query.png)
-*The consumer connector requests a description, that contains the contract offers, from the provider.*
+Before each data transfer a contract must be offered from the provider. A consumer must negotiate an offer successfully,
+before its able to request data.
+
+These two processes (offering & negotation) are documented in the [contracts.md](contracts.md)

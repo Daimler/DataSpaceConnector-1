@@ -40,7 +40,8 @@ dependencies {
     implementation(project(":extensions:azure:vault"))
     implementation(project(":extensions:in-memory:policy-registry-memory"))
     implementation(project(":extensions:iam:iam-mock"))
-    implementation(project(":data-protocols:ids:ids-policy-mock"))
+    // TODO this example won't work without ids demo
+    //implementation(project(":data-protocols:ids:ids-policy-mock"))
     implementation(project(":extensions:filesystem:configuration-fs"))
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:${jupiterVersion}")

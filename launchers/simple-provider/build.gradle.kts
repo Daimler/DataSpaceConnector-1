@@ -30,7 +30,6 @@ dependencies {
     implementation(project(":extensions:filesystem:configuration-fs"))
 
     implementation(project(":data-protocols:ids"))
-    implementation(project(":data-protocols:ids:ids-policy-mock"))
 
     implementation(project(":samples:other:copy-between-azure-and-s3"))
 

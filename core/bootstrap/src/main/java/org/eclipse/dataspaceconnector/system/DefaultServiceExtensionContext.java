@@ -87,6 +87,7 @@ public class DefaultServiceExtensionContext implements ServiceExtensionContext {
      * Attempts to resolve the setting by delegating to configuration extensions, VM properties, and then env variables, in that order; otherwise
      * the default value is returned.
      */
+    // TODO move configuration out of service extension context
     @Override
     public String getSetting(String key, String defaultValue) {
         String value;

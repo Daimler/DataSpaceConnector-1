@@ -29,10 +29,8 @@ include(":core:transfer")
 include(":core:contract")
 
 // modules that provide implementations for data ingress/egress
-include(":data-protocols:ids:ids-api-catalog")
-include(":data-protocols:ids:ids-api-transfer")
+include(":data-protocols:ids:ids-api-multipart")
 include(":data-protocols:ids:ids-core")
-include(":data-protocols:ids:ids-policy-mock")
 include(":data-protocols:ids:ids-spi")
 include(":data-protocols:ion:ion-core")
 
@@ -70,6 +68,7 @@ include(":extensions:catalog:catalog-service")
 include(":launchers:basic")
 include(":launchers:demo-e2e")
 include(":launchers:junit")
+include(":launchers:ids-connector")
 include(":services:registration-service-app")
 include(":launchers:simple-provider")
 include(":launchers:simple-consumer")
@@ -94,7 +93,6 @@ include(":samples:other:identity-gaiax-verifier")
 include(":samples:other:file-transfer-s3-to-s3")
 
 // all implementations during/regarding the GaiaX Hackathon should go here:
-
 
 // extension points for a connector
 include(":spi")

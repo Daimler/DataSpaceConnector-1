@@ -26,6 +26,7 @@ import java.util.Collection;
  *
  */
 @Deprecated
+// TODO delete MetadataStore and adjust or delete all the extensions, where its used
 // TODO MetadataStore is replaced by AssetIndex
 public interface MetadataStore {
 

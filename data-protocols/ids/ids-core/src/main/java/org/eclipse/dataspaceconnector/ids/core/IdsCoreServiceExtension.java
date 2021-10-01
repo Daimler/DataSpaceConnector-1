@@ -14,58 +14,45 @@
 
 package org.eclipse.dataspaceconnector.ids.core;
 
-import okhttp3.OkHttpClient;
-import org.eclipse.dataspaceconnector.ids.core.daps.DapsServiceImpl;
-import org.eclipse.dataspaceconnector.ids.core.descriptor.IdsDescriptorServiceImpl;
-import org.eclipse.dataspaceconnector.ids.core.message.DataRequestMessageSender;
-import org.eclipse.dataspaceconnector.ids.core.message.IdsRemoteMessageDispatcher;
-import org.eclipse.dataspaceconnector.ids.core.message.QueryMessageSender;
-import org.eclipse.dataspaceconnector.ids.core.policy.IdsPolicyServiceImpl;
-import org.eclipse.dataspaceconnector.ids.spi.daps.DapsService;
-import org.eclipse.dataspaceconnector.ids.spi.descriptor.IdsDescriptorService;
-import org.eclipse.dataspaceconnector.ids.spi.policy.IdsPolicyService;
-import org.eclipse.dataspaceconnector.spi.iam.IdentityService;
-import org.eclipse.dataspaceconnector.spi.message.RemoteMessageDispatcherRegistry;
+import org.eclipse.dataspaceconnector.ids.core.configuration.ConfigurationProviderImpl;
+import org.eclipse.dataspaceconnector.ids.core.version.ConnectorVersionProviderImpl;
+import org.eclipse.dataspaceconnector.ids.core.version.InboundProtocolVersionManagerImpl;
+import org.eclipse.dataspaceconnector.ids.spi.configuration.ConfigurationProvider;
+import org.eclipse.dataspaceconnector.ids.spi.version.ConnectorVersionProvider;
+import org.eclipse.dataspaceconnector.ids.spi.version.InboundProtocolVersionManager;
 import org.eclipse.dataspaceconnector.spi.monitor.Monitor;
-import org.eclipse.dataspaceconnector.spi.security.Vault;
 import org.eclipse.dataspaceconnector.spi.system.ServiceExtension;
 import org.eclipse.dataspaceconnector.spi.system.ServiceExtensionContext;
-import org.eclipse.dataspaceconnector.spi.transfer.store.TransferProcessStore;
 
 import java.util.Set;
 
-/**
- * Implements the IDS Controller REST API.
- */
 public class IdsCoreServiceExtension implements ServiceExtension {
+    private static final String[] REQUIRES = {
+    };
+    private static final String[] PROVIDES = {
+            ConfigurationProvider.class.getName(),
+            InboundProtocolVersionManager.class.getName(),
+            ConnectorVersionProvider.class.getName()
+    };
     private Monitor monitor;
 
     @Override
-    public Set<String> provides() {
-        return Set.of("ids.core");
+    public final Set<String> provides() {
+        return Set.of(PROVIDES);
     }
 
     @Override
-    public Set<String> requires() {
-        return Set.of("iam", "dataspaceconnector:http-client", "dataspaceconnector:transferprocessstore");
+    public final Set<String> requires() {
+        return Set.of(REQUIRES);
     }
 
     @Override
-    public void initialize(ServiceExtensionContext context) {
-        monitor = context.getMonitor();
+    public void initialize(final ServiceExtensionContext serviceExtensionContext) {
+        monitor = serviceExtensionContext.getMonitor();
 
-        var descriptorService = new IdsDescriptorServiceImpl();
-        context.registerService(IdsDescriptorService.class, descriptorService);
-
-        var identityService = context.getService(IdentityService.class);
-        var connectorId = context.getConnectorId();
-        var dapsService = new DapsServiceImpl(connectorId, identityService);
-        context.registerService(DapsService.class, dapsService);
-
-        var policyService = new IdsPolicyServiceImpl();
-        context.registerService(IdsPolicyService.class, policyService);
-
-        assembleIdsDispatcher(connectorId, context, identityService);
+        registerConfigurationProvider(serviceExtensionContext);
+        registerProtocolVersionManager(serviceExtensionContext);
+        registerConnectorVersionProvider(serviceExtensionContext);
 
         monitor.info("Initialized IDS Core extension");
     }
@@ -80,25 +67,18 @@ public class IdsCoreServiceExtension implements ServiceExtension {
         monitor.info("Shutdown IDS Core extension");
     }
 
-    /**
-     * Assembles the IDS remote message dispatcher and its senders.
-     */
-    private void assembleIdsDispatcher(String connectorId, ServiceExtensionContext context, IdentityService identityService) {
-        var processStore = context.getService(TransferProcessStore.class);
-        var vault = context.getService(Vault.class);
-        var httpClient = context.getService(OkHttpClient.class);
-
-        var mapper = context.getTypeManager().getMapper();
-
-        var monitor = context.getMonitor();
-
-        var dispatcher = new IdsRemoteMessageDispatcher();
-
-        dispatcher.register(new QueryMessageSender(connectorId, identityService, httpClient, mapper, monitor));
-        dispatcher.register(new DataRequestMessageSender(connectorId, identityService, processStore, vault, httpClient, mapper, monitor));
-
-        var registry = context.getService(RemoteMessageDispatcherRegistry.class);
-        registry.register(dispatcher);
+    private void registerConfigurationProvider(final ServiceExtensionContext serviceExtensionContext) {
+        final ConfigurationProvider configurationProvider = new ConfigurationProviderImpl(serviceExtensionContext);
+        serviceExtensionContext.registerService(ConfigurationProvider.class, configurationProvider);
     }
 
+    private void registerProtocolVersionManager(final ServiceExtensionContext serviceExtensionContext) {
+        final InboundProtocolVersionManager inboundProtocolVersionManager = new InboundProtocolVersionManagerImpl();
+        serviceExtensionContext.registerService(InboundProtocolVersionManager.class, inboundProtocolVersionManager);
+    }
+
+    private void registerConnectorVersionProvider(final ServiceExtensionContext serviceExtensionContext) {
+        final ConnectorVersionProvider connectorVersionProvider = new ConnectorVersionProviderImpl();
+        serviceExtensionContext.registerService(ConnectorVersionProvider.class, connectorVersionProvider);
+    }
 }
