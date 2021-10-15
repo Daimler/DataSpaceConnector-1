@@ -18,20 +18,18 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 
+import java.util.HashMap;
 import java.util.Map;
-
-// TODO maybe create simple class hierarchy for the asset types (file, api, etc.)
-// Alternatively use composition over inheritance?
 
 /**
  * The {@link Asset} contains the metadata and describes the data itself or a collection of data.
  */
 @JsonDeserialize(builder = Asset.Builder.class)
 public class Asset {
-    private String id;
-    private String name;
-    private String version;
-    private Map<String, String> properties;
+    protected String id;
+    protected String name;
+    protected String version;
+    protected Map<String, Object> properties;
 
     public String getId() {
         return id;
@@ -45,19 +43,18 @@ public class Asset {
         return version;
     }
 
-
-    public Map<String, String> getProperties() {
+    public Map<String, Object> getProperties() {
         return properties;
     }
 
     @JsonPOJOBuilder(withPrefix = "")
-    public static final class Builder {
-        private String id;
-        private String title;
-        private String version;
-        private Map<String, String> labels;
+    public static class Builder {
+        protected String id;
+        protected String title;
+        protected String version;
+        protected Map<String, Object> properties = new HashMap<>();
 
-        private Builder() {
+        protected Builder() {
         }
 
         @JsonCreator
@@ -70,7 +67,6 @@ public class Asset {
             return this;
         }
 
-
         public Builder name(String title) {
             this.title = title;
             return this;
@@ -81,24 +77,22 @@ public class Asset {
             return this;
         }
 
-
-        public Builder properties(Map<String, String> properties) {
-            this.labels = properties;
+        public Builder properties(Map<String, Object> properties) {
+            this.properties = properties;
             return this;
         }
 
-        public Builder property(String key, String value) {
-            this.labels.put(key, value);
+        public Builder property(String key, Object value) {
+            this.properties.put(key, value);
             return this;
         }
-
 
         public Asset build() {
             Asset asset = new Asset();
             asset.id = id;
             asset.name = title;
             asset.version = version;
-            asset.properties = labels;
+            asset.properties = properties;
             return asset;
         }
     }
