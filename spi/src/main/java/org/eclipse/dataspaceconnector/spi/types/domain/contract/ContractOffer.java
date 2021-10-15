@@ -14,10 +14,14 @@
 
 package org.eclipse.dataspaceconnector.spi.types.domain.contract;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.net.URI;
+import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -26,6 +30,7 @@ import java.util.Optional;
  * A contract offer is exchanged between a providing and a consuming connector. It describes
  * the which assets the consumer may use, and the rules and policies that apply to each asset.
  */
+@JsonDeserialize(builder = ContractOffer.Builder.class)
 public class ContractOffer {
 
     private List<OfferedAsset> assets;
@@ -40,6 +45,24 @@ public class ContractOffer {
      */
     private URI consumer;
 
+    /**
+     * Timestamp defining the start time when the offer becomes effective
+     */
+    private ZonedDateTime offerStart;
+    /**
+     * Timestamp defining the end date when the offer becomes ineffective
+     */
+    private ZonedDateTime offerEnd;
+
+    /**
+     * Timestamp defining the start date when the contract becomes effective
+     */
+    private ZonedDateTime contractStart;
+    /**
+     * Timestamp defining the end date when the contract becomes terminated
+     */
+    private ZonedDateTime contractEnd;
+
     private ContractOffer() {
     }
 
@@ -53,6 +76,26 @@ public class ContractOffer {
         return consumer;
     }
 
+    @Nullable
+    public ZonedDateTime getOfferStart() {
+        return offerStart;
+    }
+
+    @Nullable
+    public ZonedDateTime getOfferEnd() {
+        return offerEnd;
+    }
+
+    @Nullable
+    public ZonedDateTime getContractStart() {
+        return contractStart;
+    }
+
+    @Nullable
+    public ZonedDateTime getContractEnd() {
+        return contractEnd;
+    }
+
     @NotNull
     public List<OfferedAsset> getAssets() {
         return Optional.ofNullable(assets)
@@ -60,14 +103,20 @@ public class ContractOffer {
                 .orElseGet(Collections::emptyList);
     }
 
+    @JsonPOJOBuilder(withPrefix = "")
     public static final class Builder {
         private List<OfferedAsset> offeredAsset;
         private URI provider;
         private URI consumer;
+        private ZonedDateTime offerStart;
+        private ZonedDateTime offerEnd;
+        private ZonedDateTime contractStart;
+        private ZonedDateTime contractEnd;
 
         private Builder() {
         }
 
+        @JsonCreator
         public static Builder newInstance() {
             return new Builder();
         }
@@ -87,11 +136,35 @@ public class ContractOffer {
             return this;
         }
 
+        public Builder offerStart(final ZonedDateTime date) {
+            this.offerStart = date;
+            return this;
+        }
+
+        public Builder offerEnd(final ZonedDateTime date) {
+            this.offerEnd = date;
+            return this;
+        }
+
+        public Builder contractStart(final ZonedDateTime date) {
+            this.contractStart = date;
+            return this;
+        }
+
+        public Builder contractEnd(final ZonedDateTime date) {
+            this.contractEnd = date;
+            return this;
+        }
+
         public ContractOffer build() {
             final ContractOffer offer = new ContractOffer();
             offer.assets = this.offeredAsset;
             offer.provider = this.provider;
             offer.consumer = this.consumer;
+            offer.offerStart = this.offerStart;
+            offer.offerEnd = this.offerEnd;
+            offer.contractStart = this.contractStart;
+            offer.contractEnd = this.contractEnd;
             return offer;
         }
     }
