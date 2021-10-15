@@ -21,6 +21,7 @@ import org.eclipse.dataspaceconnector.spi.monitor.Monitor;
 import org.eclipse.dataspaceconnector.spi.system.ServiceExtension;
 import org.eclipse.dataspaceconnector.spi.system.ServiceExtensionContext;
 
+import java.util.Optional;
 import java.util.Set;
 
 public class ContractServiceExtension implements ServiceExtension {
@@ -56,29 +57,13 @@ public class ContractServiceExtension implements ServiceExtension {
     }
 
     private void registerServices(final ServiceExtensionContext serviceExtensionContext) {
-        /*
-         * Construct an AssetIndexLocator for finding several AssetIndexes provided via extensions
-         */
-        final AssetIndexLocator assetIndexLocator = new AssetIndexLocator(serviceExtensionContext);
-        /*
-         * Add the default asset index delegating calls to extensions
-         */
-        final AssetIndex assetIndex = new CompositeAssetIndex(
-                assetIndexLocator,
-                serviceExtensionContext.getMonitor());
-        /*
-         * Construct a ContractOfferFrameworkLocator for finding several ContractOfferFrameworks provided via extensions
-         */
-        final ContractOfferFrameworkLocator compositeContractOfferFramework = new ContractOfferFrameworkLocator(
-                serviceExtensionContext
-        );
-        /*
-         * There is always one default contract offer framework instance
-         * delegating calls to those provided by custom extensions.
-         */
-        final ContractOfferFramework contractOfferFramework = new CompositeContractOfferFramework(
-                compositeContractOfferFramework,
-                serviceExtensionContext.getMonitor());
+
+        final AssetIndex assetIndex = Optional.ofNullable(serviceExtensionContext.getService(AssetIndex.class, true))
+                .orElseGet(NullAssetIndex::new);
+
+        final ContractOfferFramework contractOfferFramework = Optional.ofNullable(serviceExtensionContext.getService(ContractOfferFramework.class, true))
+                .orElseGet(NullContractOfferFramework::new);
+
         /*
          * Contract offer service calculates contract offers using a variety of contract offer frameworks
          * ad the given asset index.
@@ -87,6 +72,7 @@ public class ContractServiceExtension implements ServiceExtension {
                 contractOfferFramework,
                 assetIndex
         );
+
         /*
          * Register the just created contract offer service to the service extension context.
          */
