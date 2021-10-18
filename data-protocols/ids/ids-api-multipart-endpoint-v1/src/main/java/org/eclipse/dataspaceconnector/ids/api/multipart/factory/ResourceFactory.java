@@ -35,10 +35,7 @@ import java.util.Collections;
 
 public class ResourceFactory {
 
-    private final ContractOfferFactory contractOfferFactory;
-
-    public ResourceFactory(ContractOfferFactory contractOfferFactory) {
-        this.contractOfferFactory = contractOfferFactory;
+    public ResourceFactory() {
     }
 
     /**
@@ -51,7 +48,7 @@ public class ResourceFactory {
      * @param contractOffer from the EDC model
      * @return IDS resource
      */
-    public Resource createResource(ContractOffer contractOffer) {
+    public Resource createResource(ContractOffer contractOffer, ContractOfferFactory contractOfferFactory) {
 
         // first validate whether the offer details are map-able to IDS at all
         de.fraunhofer.iais.eis.ContractOffer idsOffer = contractOfferFactory.createContractOffer(contractOffer);
@@ -62,35 +59,7 @@ public class ResourceFactory {
         ArrayList<Representation> representations = new ArrayList<>();
         for (OfferedAsset offeredAsset : contractOffer.getAssets()) {
             Asset asset = offeredAsset.getAsset();
-            IdsAsset idsAsset = IdsAsset.Builder.newInstance(asset).build();
-
-            // artifact
-            // the artifact URI must be the similar as the one, the ContractOfferFramework generates for targets
-            ArtifactBuilder artifactBuilder = new ArtifactBuilder(IdsId.artifact(asset.getId()).toUri());
-
-            String fileName = idsAsset.getFileName();
-            if (fileName != null) {
-                artifactBuilder._fileName_(fileName);
-            }
-
-            Integer byteSize = idsAsset.getByteSize();
-            if (byteSize != null) {
-                artifactBuilder._byteSize_(BigInteger.valueOf(byteSize));
-            }
-
-            Artifact artifact = artifactBuilder.build();
-
-            // representation
-            RepresentationBuilder representationBuilder = new RepresentationBuilder(IdsId.representation(asset.getId()).toUri());
-
-            String fileExtension = idsAsset.getFileExtension();
-            if (fileExtension != null) {
-                representationBuilder._mediaType_(createMediaType(fileExtension));
-            }
-
-            representationBuilder._instance_(new ArrayList<>(Collections.singletonList(artifact)));
-            Representation representation = representationBuilder.build();
-
+            Representation representation = getRepresentation(asset);
             representations.add(representation);
         }
 
@@ -100,6 +69,48 @@ public class ResourceFactory {
         resourceBuilder._contractOffer_(new ArrayList<>(Collections.singletonList(idsOffer)));
 
         return resourceBuilder.build();
+    }
+
+    public Resource createResource(final Asset asset) {
+        Representation representation = getRepresentation(asset);
+        final ResourceBuilder resourceBuilder = new ResourceBuilder();
+        resourceBuilder._representation_(new ArrayList<>(Collections.singletonList(representation)));
+        return resourceBuilder.build();
+    }
+
+    public Representation getRepresentation(Asset asset) {
+        Artifact artifact = getArtifact(asset);
+
+        // representation
+        RepresentationBuilder representationBuilder = new RepresentationBuilder(IdsId.representation(asset.getId()).toUri());
+
+        IdsAsset idsAsset = IdsAsset.Builder.newInstance(asset).build();
+        String fileExtension = idsAsset.getFileExtension();
+        if (fileExtension != null) {
+            representationBuilder._mediaType_(createMediaType(fileExtension));
+        }
+
+        representationBuilder._instance_(new ArrayList<>(Collections.singletonList(artifact)));
+        return representationBuilder.build();
+    }
+
+    public Artifact getArtifact(Asset asset) {
+        IdsAsset idsAsset = IdsAsset.Builder.newInstance(asset).build();
+        // artifact
+        // the artifact URI must be the similar as the one, the ContractOfferFramework generates for targets
+        ArtifactBuilder artifactBuilder = new ArtifactBuilder(IdsId.artifact(idsAsset.getId()).toUri());
+
+        String fileName = idsAsset.getFileName();
+        if (fileName != null) {
+            artifactBuilder._fileName_(fileName);
+        }
+
+        Integer byteSize = idsAsset.getByteSize();
+        if (byteSize != null) {
+            artifactBuilder._byteSize_(BigInteger.valueOf(byteSize));
+        }
+
+        return artifactBuilder.build();
     }
 
     private static MediaType createMediaType(@NotNull String fileExtension) {

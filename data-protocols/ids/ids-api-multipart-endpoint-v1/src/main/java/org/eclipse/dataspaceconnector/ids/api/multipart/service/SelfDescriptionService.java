@@ -68,7 +68,7 @@ public class SelfDescriptionService {
         // factories
         BaseConnectorFactory baseConnectorBuilderFactory = new BaseConnectorFactory(configurationProvider, inboundProtocolVersionManager, connectorVersionProvider);
         ContractOfferFactory contractOfferFactory = new ContractOfferFactory(monitor);
-        ResourceFactory resourceFactory = new ResourceFactory(contractOfferFactory);
+        ResourceFactory resourceFactory = new ResourceFactory();
         ResourceCatalogFactory resourceCatalogFactory = new ResourceCatalogFactory();
 
         // resources
@@ -77,7 +77,7 @@ public class SelfDescriptionService {
         Stream<ContractOffer> contractOffers = contractOfferQueryResponse.getContractOfferStream();
 
         List<Resource> resources = contractOffers
-                .map(resourceFactory::createResource)
+                .map((item) -> resourceFactory.createResource(item, contractOfferFactory))
                 .filter(Objects::nonNull)
                 .collect(Collectors.toUnmodifiableList());
 

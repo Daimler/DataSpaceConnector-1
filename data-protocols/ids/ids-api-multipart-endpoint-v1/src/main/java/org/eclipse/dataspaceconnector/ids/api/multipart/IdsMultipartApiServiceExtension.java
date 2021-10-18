@@ -18,10 +18,8 @@ import org.eclipse.dataspaceconnector.ids.api.multipart.controller.MultipartCont
 import org.eclipse.dataspaceconnector.ids.api.multipart.factory.MessageFactory;
 import org.eclipse.dataspaceconnector.ids.api.multipart.request.MultipartRequestHandlerResolver;
 import org.eclipse.dataspaceconnector.ids.api.multipart.request.handler.RejectionMultipartRequestHandler;
-import org.eclipse.dataspaceconnector.ids.api.multipart.request.handler.description.ConnectorDescriptionRequestHandler;
-import org.eclipse.dataspaceconnector.ids.api.multipart.request.handler.description.DescriptionRequestHandler;
-import org.eclipse.dataspaceconnector.ids.api.multipart.request.handler.description.DescriptionRequestMessageHandlerRegistry;
-import org.eclipse.dataspaceconnector.ids.api.multipart.service.SelfDescriptionService;
+import org.eclipse.dataspaceconnector.ids.api.multipart.request.handler.description.*;
+import org.eclipse.dataspaceconnector.ids.api.multipart.service.*;
 import org.eclipse.dataspaceconnector.ids.api.multipart.version.ProtocolVersionProviderImpl;
 import org.eclipse.dataspaceconnector.ids.spi.IdsId;
 import org.eclipse.dataspaceconnector.ids.spi.configuration.ConfigurationProvider;
@@ -29,6 +27,7 @@ import org.eclipse.dataspaceconnector.ids.spi.version.ConnectorVersionProvider;
 import org.eclipse.dataspaceconnector.ids.spi.version.IdsOutboundProtocolVersionProvider;
 import org.eclipse.dataspaceconnector.ids.spi.version.InboundProtocolVersionManager;
 import org.eclipse.dataspaceconnector.ids.spi.version.ProtocolVersionProvider;
+import org.eclipse.dataspaceconnector.spi.asset.AssetIndex;
 import org.eclipse.dataspaceconnector.spi.contract.ContractOfferService;
 import org.eclipse.dataspaceconnector.spi.monitor.Monitor;
 import org.eclipse.dataspaceconnector.spi.protocol.web.WebService;
@@ -101,8 +100,28 @@ public final class IdsMultipartApiServiceExtension implements ServiceExtension {
                 monitor, contractOfferService, configurationProvider, inboundProtocolVersionManager, connectorVersionProvider
         );
         MessageFactory messageFactory = new MessageFactory(configurationProvider, outboundProtocolVersionProvider);
+        AssetIndex assetIndex = serviceExtensionContext.getService(AssetIndex.class);
+
         DescriptionRequestMessageHandlerRegistry descriptionRequestMessageHandlerRegistry = new DescriptionRequestMessageHandlerRegistry();
-        descriptionRequestMessageHandlerRegistry.add(IdsId.Type.CONNECTOR, new ConnectorDescriptionRequestHandler(messageFactory, selfDescriptionService, configurationProvider));
+        ConnectorDescriptionRequestHandler connectorDescriptionRequestMessageHandler = new ConnectorDescriptionRequestHandler(messageFactory, selfDescriptionService, configurationProvider);
+        descriptionRequestMessageHandlerRegistry.add(IdsId.Type.CONNECTOR, connectorDescriptionRequestMessageHandler);
+
+        DataCatalogService dataCatalogService = new DataCatalogService(monitor, assetIndex);
+        DataCatalogDescriptionRequestHandler dataCatalogDescriptionRequestHandler = new DataCatalogDescriptionRequestHandler(messageFactory, dataCatalogService);
+        descriptionRequestMessageHandlerRegistry.add(IdsId.Type.CATALOG, dataCatalogDescriptionRequestHandler);
+
+        ArtifactService artifactService = new ArtifactService(monitor, assetIndex);
+        ArtifactDescriptionRequestHandler artifactDescriptionRequestHandler = new ArtifactDescriptionRequestHandler(messageFactory, artifactService);
+        descriptionRequestMessageHandlerRegistry.add(IdsId.Type.ARTIFACT, artifactDescriptionRequestHandler);
+
+        RepresentationService representationService = new RepresentationService(monitor, assetIndex);
+        RepresentationDescriptionRequestHandler representationDescriptionRequestHandler = new RepresentationDescriptionRequestHandler(messageFactory, representationService);
+        descriptionRequestMessageHandlerRegistry.add(IdsId.Type.REPRESENTATION, representationDescriptionRequestHandler);
+
+        ResourceService resourceService = new ResourceService(monitor, assetIndex);
+        ResourceDescriptionRequestHandler resourceDescriptionRequestHandler = new ResourceDescriptionRequestHandler(messageFactory, resourceService);
+        descriptionRequestMessageHandlerRegistry.add(IdsId.Type.RESOURCE, resourceDescriptionRequestHandler);
+
         RejectionMultipartRequestHandler rejectionMultipartRequestHandler = new RejectionMultipartRequestHandler(messageFactory);
         DescriptionRequestHandler descriptionRequestHandler = new DescriptionRequestHandler(descriptionRequestMessageHandlerRegistry, rejectionMultipartRequestHandler);
         MultipartRequestHandlerResolver multipartRequestHandlerResolver = new MultipartRequestHandlerResolver(
