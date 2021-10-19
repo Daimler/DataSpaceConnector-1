@@ -22,8 +22,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
 
 public class MultipartRequestHandlerResolver {
     private final List<MultipartRequestHandler> multipartRequestHandlers = new LinkedList<>();
@@ -34,17 +32,22 @@ public class MultipartRequestHandlerResolver {
 
     public MultipartRequestHandlerResolver(
             List<MultipartRequestHandler> multipartRequestHandlers) {
-        Optional.ofNullable(multipartRequestHandlers).orElseGet(Collections::emptyList)
-                .stream()
-                .filter(Objects::nonNull)
-                .forEach(this.multipartRequestHandlers::add);
+        multipartRequestHandlers = multipartRequestHandlers != null ? multipartRequestHandlers : Collections.emptyList();
+        for (MultipartRequestHandler multipartRequestHandler : multipartRequestHandlers) {
+            if (multipartRequestHandler != null) {
+                this.multipartRequestHandlers.add(multipartRequestHandler);
+            }
+        }
     }
 
     @NotNull
-    public Optional<MultipartRequestHandler> resolveHandler(MultipartRequest multipartRequest) {
-        return multipartRequestHandlers
-                .stream()
-                .filter(s -> s.canHandle(multipartRequest))
-                .findFirst();
+    public MultipartRequestHandler resolveHandler(MultipartRequest multipartRequest) {
+        for (MultipartRequestHandler multipartRequestHandler : multipartRequestHandlers) {
+            if (multipartRequestHandler.canHandle(multipartRequest)) {
+                return multipartRequestHandler;
+            }
+        }
+
+        return null;
     }
 }

@@ -14,6 +14,7 @@
 
 package org.eclipse.dataspaceconnector.ids.api.multipart.controller;
 
+import de.fraunhofer.iais.eis.Message;
 import de.fraunhofer.iais.eis.RequestMessage;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.POST;
@@ -29,8 +30,6 @@ import org.eclipse.dataspaceconnector.ids.api.multipart.request.handler.Rejectio
 import org.glassfish.jersey.media.multipart.FormDataBodyPart;
 import org.glassfish.jersey.media.multipart.FormDataMultiPart;
 import org.glassfish.jersey.media.multipart.FormDataParam;
-
-import java.util.Optional;
 
 @Consumes({ MediaType.MULTIPART_FORM_DATA })
 @Produces({ MediaType.MULTIPART_FORM_DATA })
@@ -65,17 +64,24 @@ public class MultipartController {
                 .payload(payload)
                 .build();
 
-        MultipartRequestHandler multipartRequestHandler = multipartRequestHandlerResolver
-                .resolveHandler(multipartRequest)
-                .orElse(rejectionMultipartRequestHandler);
+        MultipartRequestHandler multipartRequestHandler = multipartRequestHandlerResolver.resolveHandler(multipartRequest);
+        if (multipartRequestHandler == null) {
+            multipartRequestHandler = rejectionMultipartRequestHandler;
+        }
 
         MultipartResponse multipartResponse = multipartRequestHandler.handleRequest(multipartRequest);
 
         FormDataMultiPart multiPart = new FormDataMultiPart();
-        Optional.ofNullable(multipartResponse.getHeader())
-                .ifPresent(entity -> multiPart.bodyPart(new FormDataBodyPart(HEADER, entity, MediaType.APPLICATION_JSON_TYPE)));
-        Optional.ofNullable(multipartResponse.getPayload())
-                .ifPresent(entity -> multiPart.bodyPart(new FormDataBodyPart(PAYLOAD, entity, MediaType.APPLICATION_JSON_TYPE)));
+
+        Message responseHeader = multipartResponse.getHeader();
+        if (responseHeader != null) {
+            multiPart.bodyPart(new FormDataBodyPart(HEADER, responseHeader, MediaType.APPLICATION_JSON_TYPE));
+        }
+
+        Object responsePayload = multipartResponse.getPayload();
+        if (responsePayload != null) {
+            multiPart.bodyPart(new FormDataBodyPart(PAYLOAD, responsePayload, MediaType.APPLICATION_JSON_TYPE));
+        }
 
         return Response.ok(multiPart).build();
     }

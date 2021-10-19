@@ -23,7 +23,9 @@ import org.eclipse.dataspaceconnector.ids.core.util.CalendarUtil;
 import org.eclipse.dataspaceconnector.ids.spi.IdsId;
 import org.eclipse.dataspaceconnector.ids.spi.configuration.ConfigurationProvider;
 import org.eclipse.dataspaceconnector.ids.spi.version.IdsOutboundProtocolVersionProvider;
+import org.eclipse.dataspaceconnector.ids.spi.version.IdsProtocolVersion;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Optional;
@@ -50,23 +52,35 @@ public class MessageFactory {
 
         DescriptionResponseMessageBuilder builder = new DescriptionResponseMessageBuilder(messageId.toUri());
 
-        builder._contentVersion_(outboundProtocolVersionProvider.getIdsProtocolVersion().getValue());
-        builder._modelVersion_(outboundProtocolVersionProvider.getIdsProtocolVersion().getValue());
+        IdsProtocolVersion outboundProtocolVersion = outboundProtocolVersionProvider.getIdsProtocolVersion();
+        String outboundProtocolVersionValue;
+        if (outboundProtocolVersion != null && (outboundProtocolVersionValue = outboundProtocolVersion.getValue()) != null) {
+            builder._contentVersion_(outboundProtocolVersionValue);
+            builder._modelVersion_(outboundProtocolVersionValue);
+        }
 
-        configurationProvider.resolveId().map(builder::_issuerConnector_);
-        configurationProvider.resolveId().map(builder::_senderAgent_);
+        URI connectorId = configurationProvider.resolveId();
+        if (connectorId != null) {
+            builder._issuerConnector_(connectorId);
+            builder._senderAgent_(connectorId);
+        }
+
         builder._issued_(CalendarUtil.gregorianNow());
 
-        Optional.ofNullable(correlationMessage.getId())
-                .map(builder::_correlationMessage_);
-        Optional.ofNullable(correlationMessage.getSenderAgent())
-                .map(Collections::singletonList)
-                .map(ArrayList::new)
-                .map(builder::_recipientAgent_);
-        Optional.ofNullable(correlationMessage.getIssuerConnector())
-                .map(Collections::singletonList)
-                .map(ArrayList::new)
-                .map(builder::_recipientConnector_);
+        URI id = correlationMessage.getId();
+        if (id != null) {
+            builder._correlationMessage_(id);
+        }
+
+        URI senderAgent = correlationMessage.getSenderAgent();
+        if (senderAgent != null) {
+            builder._recipientAgent_(new ArrayList<>(Collections.singletonList(senderAgent)));
+        }
+
+        URI issuerConnector = correlationMessage.getIssuerConnector();
+        if (issuerConnector != null) {
+            builder._recipientConnector_(new ArrayList<>(Collections.singletonList(issuerConnector)));
+        }
 
         return builder.build();
     }
@@ -79,8 +93,12 @@ public class MessageFactory {
         builder._contentVersion_(outboundProtocolVersionProvider.getIdsProtocolVersion().getValue());
         builder._modelVersion_(outboundProtocolVersionProvider.getIdsProtocolVersion().getValue());
 
-        configurationProvider.resolveId().map(builder::_issuerConnector_);
-        configurationProvider.resolveId().map(builder::_senderAgent_);
+        URI connectorId = configurationProvider.resolveId();
+        if (connectorId != null) {
+            builder._issuerConnector_(connectorId);
+            builder._senderAgent_(connectorId);
+        }
+
         builder._issued_(CalendarUtil.gregorianNow());
 
         Optional.ofNullable(correlationMessage.getId())

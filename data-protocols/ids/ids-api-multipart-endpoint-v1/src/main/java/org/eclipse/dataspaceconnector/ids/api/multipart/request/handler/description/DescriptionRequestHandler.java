@@ -23,7 +23,6 @@ import org.eclipse.dataspaceconnector.ids.spi.IdsId;
 import org.jetbrains.annotations.NotNull;
 
 import java.net.URI;
-import java.util.Optional;
 
 
 public class DescriptionRequestHandler implements MultipartRequestHandler {
@@ -51,9 +50,12 @@ public class DescriptionRequestHandler implements MultipartRequestHandler {
         IdsId idsId = IdsId.fromUri(requestedElement);
 
         // TODO fix problem when a non EDC compliant connector ID is configured
-        return Optional.ofNullable(descriptionRequestMessageHandlerRegistry.get(idsId.getType()))
-                .map(h -> h.handle(descriptionRequestMessage, multipartRequest.getPayload()))
-                .orElseGet(() -> reject(multipartRequest));
+        DescriptionRequestMessageHandler descriptionRequestMessageHandler = descriptionRequestMessageHandlerRegistry.get(idsId.getType());
+        if (descriptionRequestMessageHandler != null) {
+            return descriptionRequestMessageHandler.handle(descriptionRequestMessage, multipartRequest.getPayload());
+        }
+
+        return reject(multipartRequest);
     }
 
     private MultipartResponse reject(MultipartRequest multipartRequest) {

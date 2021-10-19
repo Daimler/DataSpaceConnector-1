@@ -29,7 +29,6 @@ import org.junit.jupiter.api.Test;
 import java.net.URI;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 class BaseConnectorFactoryTest {
@@ -74,17 +73,17 @@ class BaseConnectorFactoryTest {
                 connectorVersionProvider
         );
 
-        EasyMock.expect(configurationProvider.resolveId()).andReturn(Optional.of(Fixtures.ID)).times(1);
-        EasyMock.expect(configurationProvider.resolveTitle()).andReturn(Optional.of(Fixtures.TITLE)).times(1);
-        EasyMock.expect(configurationProvider.resolveDescription()).andReturn(Optional.of(Fixtures.DESCRIPTION)).times(1);
-        EasyMock.expect(configurationProvider.resolveMaintainer()).andReturn(Optional.of(Fixtures.MAINTAINER)).times(1);
-        EasyMock.expect(configurationProvider.resolveCurator()).andReturn(Optional.of(Fixtures.CURATOR)).times(1);
-        EasyMock.expect(configurationProvider.resolveConnectorEndpoint()).andReturn(Optional.of(Fixtures.CONNECTOR_ENDPOINT)).times(1);
-        EasyMock.expect(configurationProvider.resolveSecurityProfile()).andReturn(Optional.of(Fixtures.SECURITY_PROFILE)).times(1);
+        EasyMock.expect(configurationProvider.resolveId()).andReturn(Fixtures.ID).times(1);
+        EasyMock.expect(configurationProvider.resolveTitle()).andReturn(Fixtures.TITLE).times(1);
+        EasyMock.expect(configurationProvider.resolveDescription()).andReturn(Fixtures.DESCRIPTION).times(1);
+        EasyMock.expect(configurationProvider.resolveMaintainer()).andReturn(Fixtures.MAINTAINER).times(1);
+        EasyMock.expect(configurationProvider.resolveCurator()).andReturn(Fixtures.CURATOR).times(1);
+        EasyMock.expect(configurationProvider.resolveConnectorEndpoint()).andReturn(Fixtures.CONNECTOR_ENDPOINT).times(1);
+        EasyMock.expect(configurationProvider.resolveSecurityProfile()).andReturn(Fixtures.SECURITY_PROFILE).times(1);
 
         EasyMock.expect(inboundProtocolVersionManager.getInboundProtocolVersions()).andReturn(Fixtures.INBOUND_PROTOCOL_VERSIONS).times(1);
 
-        EasyMock.expect(connectorVersionProvider.getVersion()).andReturn(Optional.of(Fixtures.CONNECTOR_VERSION)).times(1);
+        EasyMock.expect(connectorVersionProvider.getVersion()).andReturn(Fixtures.CONNECTOR_VERSION).times(1);
 
         EasyMock.replay(configurationProvider, inboundProtocolVersionManager, connectorVersionProvider);
 

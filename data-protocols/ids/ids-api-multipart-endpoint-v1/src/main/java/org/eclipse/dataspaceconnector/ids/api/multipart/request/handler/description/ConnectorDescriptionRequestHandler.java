@@ -23,7 +23,6 @@ import org.eclipse.dataspaceconnector.ids.api.multipart.service.SelfDescriptionS
 import org.eclipse.dataspaceconnector.ids.spi.configuration.ConfigurationProvider;
 
 import java.net.URI;
-import java.util.Optional;
 
 public class ConnectorDescriptionRequestHandler implements DescriptionRequestMessageHandler {
     private final MessageFactory messageFactory;
@@ -61,8 +60,12 @@ public class ConnectorDescriptionRequestHandler implements DescriptionRequestMes
     }
 
     private boolean isAskingForSelfDescription(DescriptionRequestMessage descriptionRequestMessage) {
-        Optional<URI> connectorId = configurationProvider.resolveId();
-        return connectorId.isPresent() &&
-                connectorId.get() == descriptionRequestMessage.getRequestedElement();
+        URI connectorId = configurationProvider.resolveId();
+        URI requestedConnectorId = descriptionRequestMessage.getRequestedElement();
+        if (connectorId == null || requestedConnectorId == null) {
+            return false;
+        }
+
+        return connectorId.equals(requestedConnectorId);
     }
 }

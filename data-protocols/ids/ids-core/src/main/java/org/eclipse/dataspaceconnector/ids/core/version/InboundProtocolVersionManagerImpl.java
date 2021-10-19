@@ -22,7 +22,6 @@ import org.jetbrains.annotations.NotNull;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class InboundProtocolVersionManagerImpl implements InboundProtocolVersionManager {
@@ -30,8 +29,9 @@ public class InboundProtocolVersionManagerImpl implements InboundProtocolVersion
 
     @Override
     public void addInboundProtocolVersionProvider(final ProtocolVersionProvider protocolVersionProvider) {
-        Optional.ofNullable(protocolVersionProvider)
-                .ifPresent(inboundProviders::add);
+        if (protocolVersionProvider != null) {
+            inboundProviders.add(protocolVersionProvider);
+        }
     }
 
     @NotNull

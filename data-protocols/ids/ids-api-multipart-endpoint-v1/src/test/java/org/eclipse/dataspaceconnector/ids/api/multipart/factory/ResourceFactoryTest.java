@@ -27,7 +27,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
-import java.util.Optional;
 
 public class ResourceFactoryTest {
 
@@ -51,7 +50,7 @@ public class ResourceFactoryTest {
         EasyMock.expect(contractOffer.getAssets()).andReturn(Collections.singletonList(offeredAsset)).anyTimes();
 
         EasyMock.expect(contractOfferFactory.createContractOffer(contractOffer))
-                .andReturn(Optional.of(idsContractOffer));
+                .andReturn(idsContractOffer);
 
         EasyMock.replay(offeredAsset, idsContractOffer, contractOffer, contractOfferFactory);
     }
@@ -68,7 +67,7 @@ public class ResourceFactoryTest {
         ResourceFactory resourceFactory = new ResourceFactory(contractOfferFactory);
 
         // invoke
-        de.fraunhofer.iais.eis.Resource resource = resourceFactory.createResource(contractOffer).get();
+        de.fraunhofer.iais.eis.Resource resource = resourceFactory.createResource(contractOffer);
 
         // verify offers
         Assertions.assertEquals(1, resource.getContractOffer().size());

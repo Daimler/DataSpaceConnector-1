@@ -31,7 +31,7 @@ import org.eclipse.dataspaceconnector.spi.monitor.Monitor;
 import org.eclipse.dataspaceconnector.spi.types.domain.contract.ContractOffer;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -78,8 +78,7 @@ public class SelfDescriptionService {
 
         List<Resource> resources = contractOffers
                 .map(resourceFactory::createResource)
-                .filter(Optional::isPresent)
-                .map(Optional::get)
+                .filter(Objects::nonNull)
                 .collect(Collectors.toUnmodifiableList());
 
         // connector description
