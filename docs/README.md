@@ -30,7 +30,7 @@ TBD
 TBD
 
 [Architecture](architecture/README.md)
+[Extension Loading](architecture/extensions.md)
 
 ## Terminology
-
-TBD
+[Terminology](Terminology.md)
