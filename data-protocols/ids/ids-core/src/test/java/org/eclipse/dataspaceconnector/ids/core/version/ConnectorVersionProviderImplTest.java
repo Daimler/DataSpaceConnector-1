@@ -5,8 +5,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.Optional;
-
 class ConnectorVersionProviderImplTest {
 
     private ConnectorVersionProvider connectorVersionProvider;
@@ -17,10 +15,9 @@ class ConnectorVersionProviderImplTest {
     }
 
     @Test
-    void testNotNull() {
-        final Optional<String> versionOptional = connectorVersionProvider.getVersion();
-
-        Assertions.assertNotNull(versionOptional);
+    void testDoesNotThrow() {
+        Assertions.assertDoesNotThrow(() -> {
+            connectorVersionProvider.getVersion();
+        });
     }
-
 }

@@ -21,8 +21,6 @@ import org.eclipse.dataspaceconnector.spi.system.ServiceExtensionContext;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Arrays;
-import java.util.Optional;
 
 // TODO Add warnings for missing (but required) and invalid configuration
 
@@ -45,53 +43,64 @@ public final class ConfigurationProviderImpl implements ConfigurationProvider {
     }
 
     @Override
-    public Optional<URI> resolveId() {
+    public URI resolveId() {
         return resolveUri(context.getSetting(IdsSettings.EDC_IDS_ID, Defaults.ID));
     }
 
     @Override
-    public Optional<String> resolveTitle() {
-        return Optional.of(context.getSetting(IdsSettings.EDC_IDS_TITLE, Defaults.TITLE));
+    public String resolveTitle() {
+        return context.getSetting(IdsSettings.EDC_IDS_TITLE, Defaults.TITLE);
     }
 
     @Override
-    public Optional<String> resolveDescription() {
-        return Optional.of(context.getSetting(IdsSettings.EDC_IDS_DESCRIPTION, Defaults.DESCRIPTION));
+    public String resolveDescription() {
+        return context.getSetting(IdsSettings.EDC_IDS_DESCRIPTION, Defaults.DESCRIPTION);
     }
 
     @Override
-    public Optional<URI> resolveMaintainer() {
+    public URI resolveMaintainer() {
         return resolveUri(context.getSetting(IdsSettings.EDC_IDS_MAINTAINER, Defaults.MAINTAINER));
     }
 
     @Override
-    public Optional<URI> resolveCurator() {
+    public URI resolveCurator() {
         return resolveUri(context.getSetting(IdsSettings.EDC_IDS_CURATOR, Defaults.CURATOR));
     }
 
     @Override
-    public Optional<URI> resolveConnectorEndpoint() {
+    public URI resolveConnectorEndpoint() {
         return resolveUri(context.getSetting(IdsSettings.EDC_IDS_ENDPOINT, Defaults.ENDPOINT));
     }
 
     @Override
-    public Optional<SecurityProfile> resolveSecurityProfile() {
-        return Optional.ofNullable(context.getSetting(IdsSettings.EDC_IDS_SECURITY_PROFILE, null))
-                .map(this::mapToSecurityProfile);
+    public SecurityProfile resolveSecurityProfile() {
+        String securityProfileValue = context.getSetting(IdsSettings.EDC_IDS_SECURITY_PROFILE, null);
+        SecurityProfile securityProfile = null;
+        if (securityProfileValue != null) {
+            securityProfile = mapToSecurityProfile(securityProfileValue);
+        }
+        return securityProfile;
     }
 
     private SecurityProfile mapToSecurityProfile(final String securityProfile) {
-        return Arrays.stream(SecurityProfile.values())
-                .filter(f -> securityProfile.equalsIgnoreCase(f.name()))
-                .findFirst()
-                .orElse(null);
+        if (securityProfile == null) {
+            return null;
+        }
+
+        for (SecurityProfile profile : SecurityProfile.values()) {
+            if (profile.name().equalsIgnoreCase(securityProfile)) {
+                return profile;
+            }
+        }
+
+        return null;
     }
 
-    private Optional<URI> resolveUri(final String uri) {
+    private URI resolveUri(final String uri) {
         try {
-            return Optional.of(new URI(uri));
-        } catch (URISyntaxException e) {
-            return Optional.empty();
+            return new URI(uri);
+        } catch (URISyntaxException ignored) {
+            return null;
         }
     }
 }

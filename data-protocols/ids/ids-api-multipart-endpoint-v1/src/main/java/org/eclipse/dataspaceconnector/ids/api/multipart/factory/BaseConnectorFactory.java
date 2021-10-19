@@ -32,7 +32,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class BaseConnectorFactory {
@@ -57,40 +56,83 @@ public class BaseConnectorFactory {
     public BaseConnector createBaseConnector(
             ResourceCatalog... resourceCatalog) {
 
-        BaseConnectorBuilder builder = configurationProvider.resolveId()
-                .map(BaseConnectorBuilder::new)
-                .orElseGet(BaseConnectorBuilder::new);
+        URI connectorId = configurationProvider.resolveId();
+        BaseConnectorBuilder builder;
+        if (connectorId != null) {
+            builder = new BaseConnectorBuilder(connectorId);
+        } else {
+            builder = new BaseConnectorBuilder();
+        }
 
         builder._resourceCatalog_(new ArrayList<>(Arrays.asList(resourceCatalog)));
         builder._inboundModelVersion_(new ArrayList<>(resolveInboundModelVersion()));
         // TODO There should be a process how the security profile is defined/found
 
-        resolveSecurityProfile().ifPresent(builder::_securityProfile_);
-        resolveConnectorEndpoint().ifPresent(builder::_hasDefaultEndpoint_);
-        resolveDataSpaceConnectorVersion().ifPresent(builder::_version_);
-        resolveMaintainer().ifPresent(builder::_maintainer_);
-        resolveCurator().ifPresent(builder::_curator_);
-        resolveTitle().map(TypedLiteral::new).map(Util::asList).ifPresent(builder::_title_);
-        resolveDescription().map(TypedLiteral::new).map(Util::asList).ifPresent(builder::_description_);
+        SecurityProfile securityProfile = resolveSecurityProfile();
+        if (securityProfile != null) {
+            builder._securityProfile_(securityProfile);
+        }
+
+        ConnectorEndpoint connectorEndpoint = resolveConnectorEndpoint();
+        if (connectorEndpoint != null) {
+            builder._hasDefaultEndpoint_(connectorEndpoint);
+        }
+
+        String dataSpaceConnectorVersion = resolveDataSpaceConnectorVersion();
+        if (dataSpaceConnectorVersion != null) {
+            builder._version_(dataSpaceConnectorVersion);
+        }
+
+        URI maintainer = resolveMaintainer();
+        if (maintainer != null) {
+            builder._maintainer_(maintainer);
+        }
+
+        URI curator = resolveCurator();
+        if (curator != null) {
+            builder._curator_(curator);
+        }
+
+        String title = resolveTitle();
+        if (title != null) {
+            builder._title_(Util.asList(new TypedLiteral(title)));
+        }
+
+        String description = resolveDescription();
+        if (description != null) {
+            builder._description_(Util.asList(new TypedLiteral(description)));
+        }
 
         return builder.build();
     }
 
-    private Optional<SecurityProfile> resolveSecurityProfile() {
-        return configurationProvider.resolveSecurityProfile()
-                .map(Enum::name)
-                .flatMap(name -> Arrays.stream(SecurityProfile.values())
-                        .filter(e -> e.name().equalsIgnoreCase(name))
-                        .findFirst());
+    private SecurityProfile resolveSecurityProfile() {
+        org.eclipse.dataspaceconnector.ids.spi.types.SecurityProfile configuredProfile = configurationProvider.resolveSecurityProfile();
+
+        if (configuredProfile == null) {
+            return null;
+        }
+
+        for (SecurityProfile securityProfile : SecurityProfile.values()) {
+            if (securityProfile.name().equalsIgnoreCase(configuredProfile.name())) {
+                return securityProfile;
+            }
+        }
+
+        return null;
     }
 
-    private Optional<URI> resolveCurator() {
+    private URI resolveCurator() {
         return configurationProvider.resolveCurator();
     }
 
-    private Optional<ConnectorEndpoint> resolveConnectorEndpoint() {
-        return configurationProvider.resolveConnectorEndpoint()
-                .map(this::createConnectorEndpoint);
+    private ConnectorEndpoint resolveConnectorEndpoint() {
+        URI endpointUri = configurationProvider.resolveConnectorEndpoint();
+        ConnectorEndpoint connectorEndpoint = null;
+        if (endpointUri != null) {
+            connectorEndpoint = createConnectorEndpoint(endpointUri);
+        }
+        return connectorEndpoint;
     }
 
     private ConnectorEndpoint createConnectorEndpoint(URI uri) {
@@ -99,15 +141,15 @@ public class BaseConnectorFactory {
         return endpoint.build();
     }
 
-    private Optional<URI> resolveMaintainer() {
+    private URI resolveMaintainer() {
         return configurationProvider.resolveMaintainer();
     }
 
-    private Optional<String> resolveDescription() {
+    private String resolveDescription() {
         return configurationProvider.resolveDescription();
     }
 
-    private Optional<String> resolveTitle() {
+    private String resolveTitle() {
         return configurationProvider.resolveTitle();
     }
 
@@ -119,7 +161,7 @@ public class BaseConnectorFactory {
                 .collect(Collectors.toList());
     }
 
-    private Optional<String> resolveDataSpaceConnectorVersion() {
+    private String resolveDataSpaceConnectorVersion() {
         return connectorVersionProvider.getVersion();
     }
 }

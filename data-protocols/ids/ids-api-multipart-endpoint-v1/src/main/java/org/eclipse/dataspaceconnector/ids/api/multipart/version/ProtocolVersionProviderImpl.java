@@ -18,8 +18,6 @@ import de.fraunhofer.iais.eis.Connector;
 import org.eclipse.dataspaceconnector.ids.spi.version.IdsProtocolVersion;
 import org.eclipse.dataspaceconnector.ids.spi.version.ProtocolVersionProvider;
 
-import java.util.Optional;
-
 public class ProtocolVersionProviderImpl implements ProtocolVersionProvider {
     private static final String VERSION = "4.0.0";
 
@@ -27,8 +25,11 @@ public class ProtocolVersionProviderImpl implements ProtocolVersionProvider {
     // GitHub Issue https://github.com/International-Data-Spaces-Association/Java-Representation-of-IDS-Information-Model/issues/10
     @Override
     public IdsProtocolVersion getIdsProtocolVersion() {
-        return Optional.ofNullable(Connector.class.getPackage().getImplementationVersion())
-                .map(IdsProtocolVersion::new)
-                .orElseGet(() -> new IdsProtocolVersion(VERSION));
+        String protocolVersion = Connector.class.getPackage().getImplementationVersion();
+        if (protocolVersion == null) {
+            protocolVersion = VERSION;
+        }
+
+        return new IdsProtocolVersion(protocolVersion);
     }
 }

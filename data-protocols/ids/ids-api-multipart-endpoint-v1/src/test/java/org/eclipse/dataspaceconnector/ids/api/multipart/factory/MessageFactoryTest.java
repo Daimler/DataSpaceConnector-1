@@ -27,7 +27,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.net.URI;
-import java.util.Optional;
 
 public class MessageFactoryTest {
 
@@ -56,12 +55,12 @@ public class MessageFactoryTest {
         outboundProtocolVersionProvider = EasyMock.createMock(IdsOutboundProtocolVersionProvider.class);
         message = EasyMock.createMock(Message.class);
 
-        EasyMock.expect(configurationProvider.resolveId()).andReturn(Optional.of(Fixtures.ID)).anyTimes();
-        EasyMock.expect(configurationProvider.resolveTitle()).andReturn(Optional.of(Fixtures.TITLE)).anyTimes();
-        EasyMock.expect(configurationProvider.resolveDescription()).andReturn(Optional.of(Fixtures.DESCRIPTION)).anyTimes();
-        EasyMock.expect(configurationProvider.resolveMaintainer()).andReturn(Optional.of(Fixtures.MAINTAINER)).anyTimes();
-        EasyMock.expect(configurationProvider.resolveCurator()).andReturn(Optional.of(Fixtures.CURATOR)).anyTimes();
-        EasyMock.expect(configurationProvider.resolveConnectorEndpoint()).andReturn(Optional.of(Fixtures.CONNECTOR_ENDPOINT)).anyTimes();
+        EasyMock.expect(configurationProvider.resolveId()).andReturn(Fixtures.ID).anyTimes();
+        EasyMock.expect(configurationProvider.resolveTitle()).andReturn(Fixtures.TITLE).anyTimes();
+        EasyMock.expect(configurationProvider.resolveDescription()).andReturn(Fixtures.DESCRIPTION).anyTimes();
+        EasyMock.expect(configurationProvider.resolveMaintainer()).andReturn(Fixtures.MAINTAINER).anyTimes();
+        EasyMock.expect(configurationProvider.resolveCurator()).andReturn(Fixtures.CURATOR).anyTimes();
+        EasyMock.expect(configurationProvider.resolveConnectorEndpoint()).andReturn(Fixtures.CONNECTOR_ENDPOINT).anyTimes();
         EasyMock.expect(outboundProtocolVersionProvider.getIdsProtocolVersion()).andReturn(Fixtures.OUTBOUND_PROTOCOL_VERSION).anyTimes();
         EasyMock.expect(message.getId()).andReturn(Fixtures.MESSAGE_ID).anyTimes();
         EasyMock.expect(message.getSenderAgent()).andReturn(Fixtures.MESSAGE_SENDER_AGENT).anyTimes();

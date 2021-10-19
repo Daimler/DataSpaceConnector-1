@@ -20,16 +20,15 @@ import de.fraunhofer.iais.eis.ResourceCatalogBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 public class ResourceCatalogFactory {
 
     public ResourceCatalog createResourceCatalogBuilder(List<Resource> resources) {
         ResourceCatalogBuilder resourceCatalogBuilder = new ResourceCatalogBuilder();
 
-        Optional.ofNullable(resources)
-                .map(ArrayList::new)
-                .ifPresent(resourceCatalogBuilder::_offeredResource_);
+        if (resources != null) {
+            resourceCatalogBuilder._offeredResource_(new ArrayList<>(resources));
+        }
 
         return resourceCatalogBuilder.build();
     }

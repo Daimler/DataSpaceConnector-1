@@ -36,7 +36,6 @@ import java.util.Collections;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -56,16 +55,15 @@ public class ContractOfferFactory {
      * @param contractOffer EDC equivalent of the IDS contract offer
      * @return IDS contract offer
      */
-    @NotNull
-    public Optional<ContractOffer> createContractOffer(@NotNull org.eclipse.dataspaceconnector.spi.types.domain.contract.ContractOffer contractOffer) {
+    public ContractOffer createContractOffer(@NotNull org.eclipse.dataspaceconnector.spi.types.domain.contract.ContractOffer contractOffer) {
         try {
-            return Optional.of(createOffer(contractOffer));
+            return createOffer(contractOffer);
 
             // The policy of a contract offer may be described in a wide variety if ways.
             // If a mapping to IDS is not possible an UnsupportedOperationException is thrown.
         } catch (UnsupportedOperationException e) {
             monitor.info("Cannot create contract offer in IDS.", e);
-            return Optional.empty();
+            return null;
         }
     }
 
@@ -79,11 +77,27 @@ public class ContractOfferFactory {
 
         ContractOfferBuilder builder = new ContractOfferBuilder();
 
-        Optional.ofNullable(provider).ifPresent(builder::_provider_);
-        Optional.ofNullable(consumer).ifPresent(builder::_consumer_);
+        if (provider != null) {
+            builder._provider_(provider);
+        }
 
-        Optional.ofNullable(contractStart).map(this::mapToXmlGregorianCalendar).ifPresent(builder::_contractStart_);
-        Optional.ofNullable(contractEnd).map(this::mapToXmlGregorianCalendar).ifPresent(builder::_contractEnd_);
+        if (consumer != null) {
+            builder._consumer_(consumer);
+        }
+
+        if (contractStart != null) {
+            XMLGregorianCalendar calendar = mapToXmlGregorianCalendar(contractStart);
+            if (calendar != null) {
+                builder._contractStart_(calendar);
+            }
+        }
+
+        if (contractEnd != null) {
+            XMLGregorianCalendar calendar = mapToXmlGregorianCalendar(contractEnd);
+            if (calendar != null) {
+                builder._contractEnd_(calendar);
+            }
+        }
 
         ArrayList<Permission> permissions = new ArrayList<>();
         for (OfferedAsset offeredAsset : contractOffer.getAssets()) {
@@ -138,13 +152,15 @@ public class ContractOfferFactory {
 
             // Don't take assignee from the policy model, as the ContractOfferFramework, that provides policies,
             // doesn't know about IDS consumer URIs.
-            Optional.ofNullable(consumer)
-                    .ifPresent(c -> permissionBuilder._assignee_(new ArrayList<>(Collections.singletonList(c))));
+            if (consumer != null) {
+                permissionBuilder._assignee_(new ArrayList<>(Collections.singletonList(consumer)));
+            }
 
             // Don't take assigner from the policy model, as the ContractOfferFramework, that provides policies,
             // doesn't know about IDS provider URIs.
-            Optional.ofNullable(provider)
-                    .ifPresent(p -> permissionBuilder._assigner_(new ArrayList<>(Collections.singletonList(p))));
+            if (provider != null) {
+                permissionBuilder._assigner_(new ArrayList<>(Collections.singletonList(provider)));
+            }
 
             // The current permission object knows only one type of duty. It is undefined whether this represents an
             // IDS pre- or post-duty. This implementation will abstain from supporting duties until this issue has been resolved.
@@ -153,10 +169,10 @@ public class ContractOfferFactory {
                 throw new UnsupportedOperationException("Policy permission must not have a duty.");
             }
 
-            Optional.ofNullable(permission.getConstraints())
-                    .map(this::createConstraint)
-                    .map(ArrayList::new)
-                    .map(permissionBuilder::_constraint_);
+            List<org.eclipse.dataspaceconnector.policy.model.Constraint> constraints = permission.getConstraints();
+            if (constraints != null) {
+                permissionBuilder._constraint_(new ArrayList<>(createConstraint(constraints)));
+            }
 
             permissions.add(permissionBuilder.build());
         }
@@ -177,7 +193,6 @@ public class ContractOfferFactory {
     }
 
     private List<Constraint> createConstraint(List<org.eclipse.dataspaceconnector.policy.model.Constraint> edcConstraints) {
-
         for (org.eclipse.dataspaceconnector.policy.model.Constraint edcConstraint : edcConstraints) {
 
             // Non atomic constrains don't have the IDS left-operand, right-operand, operator properties and cannot be mapped to IDS constraints.
@@ -194,7 +209,7 @@ public class ContractOfferFactory {
             throw new UnsupportedOperationException("EDC constraints not supported in IDS.");
         }
 
-        return new ArrayList<>();
+        return Collections.emptyList();
     }
 
 }

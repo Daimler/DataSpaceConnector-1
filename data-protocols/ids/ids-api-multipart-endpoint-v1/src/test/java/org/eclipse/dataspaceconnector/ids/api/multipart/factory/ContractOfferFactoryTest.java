@@ -107,7 +107,7 @@ public class ContractOfferFactoryTest {
         ContractOfferFactory contractOfferFactory = new ContractOfferFactory(monitor);
 
         // invoke
-        de.fraunhofer.iais.eis.ContractOffer result = contractOfferFactory.createContractOffer(contractOffer).orElseThrow();
+        de.fraunhofer.iais.eis.ContractOffer result = contractOfferFactory.createContractOffer(contractOffer);
 
         // verify
         Assertions.assertThat(provider).isEqualTo(result.getProvider());
