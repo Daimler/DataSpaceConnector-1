@@ -28,7 +28,7 @@ public class InboundProtocolVersionManagerImpl implements InboundProtocolVersion
     private final List<ProtocolVersionProvider> inboundProviders = new LinkedList<>();
 
     @Override
-    public void addInboundProtocolVersionProvider(final ProtocolVersionProvider protocolVersionProvider) {
+    public void addInboundProtocolVersionProvider(ProtocolVersionProvider protocolVersionProvider) {
         if (protocolVersionProvider != null) {
             inboundProviders.add(protocolVersionProvider);
         }

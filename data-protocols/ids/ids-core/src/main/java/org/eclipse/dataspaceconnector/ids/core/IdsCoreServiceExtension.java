@@ -55,7 +55,7 @@ public class IdsCoreServiceExtension implements ServiceExtension {
     private Monitor monitor;
 
     @Override
-    public final Set<String> provides() {
+    public Set<String> provides() {
         return Set.of(PROVIDES);
     }
 
@@ -65,7 +65,7 @@ public class IdsCoreServiceExtension implements ServiceExtension {
     }
 
     @Override
-    public void initialize(final ServiceExtensionContext serviceExtensionContext) {
+    public void initialize(ServiceExtensionContext serviceExtensionContext) {
         monitor = serviceExtensionContext.getMonitor();
 
         registerConfigurationProvider(serviceExtensionContext);
@@ -101,18 +101,18 @@ public class IdsCoreServiceExtension implements ServiceExtension {
         monitor.info("Shutdown IDS Core extension");
     }
 
-    private void registerConfigurationProvider(final ServiceExtensionContext serviceExtensionContext) {
-        final ConfigurationProvider configurationProvider = new ConfigurationProviderImpl(serviceExtensionContext);
+    private void registerConfigurationProvider(ServiceExtensionContext serviceExtensionContext) {
+        ConfigurationProvider configurationProvider = new ConfigurationProviderImpl(serviceExtensionContext);
         serviceExtensionContext.registerService(ConfigurationProvider.class, configurationProvider);
     }
 
-    private void registerProtocolVersionManager(final ServiceExtensionContext serviceExtensionContext) {
-        final InboundProtocolVersionManager inboundProtocolVersionManager = new InboundProtocolVersionManagerImpl();
+    private void registerProtocolVersionManager(ServiceExtensionContext serviceExtensionContext) {
+        InboundProtocolVersionManager inboundProtocolVersionManager = new InboundProtocolVersionManagerImpl();
         serviceExtensionContext.registerService(InboundProtocolVersionManager.class, inboundProtocolVersionManager);
     }
 
-    private void registerConnectorVersionProvider(final ServiceExtensionContext serviceExtensionContext) {
-        final ConnectorVersionProvider connectorVersionProvider = new ConnectorVersionProviderImpl();
+    private void registerConnectorVersionProvider(ServiceExtensionContext serviceExtensionContext) {
+        ConnectorVersionProvider connectorVersionProvider = new ConnectorVersionProviderImpl();
         serviceExtensionContext.registerService(ConnectorVersionProvider.class, connectorVersionProvider);
     }
 

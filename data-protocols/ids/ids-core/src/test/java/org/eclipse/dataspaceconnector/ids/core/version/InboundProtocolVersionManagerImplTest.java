@@ -28,8 +28,8 @@ class InboundProtocolVersionManagerImplTest {
     @Test
     void testGetInboundProtocolVersions() {
         // prepare
-        final IdsProtocolVersion idsProtocolVersion = new IdsProtocolVersion("dummy");
-        final ProtocolVersionProvider protocolVersionProvider = EasyMock.mock(ProtocolVersionProvider.class);
+        IdsProtocolVersion idsProtocolVersion = new IdsProtocolVersion("dummy");
+        ProtocolVersionProvider protocolVersionProvider = EasyMock.mock(ProtocolVersionProvider.class);
         EasyMock.expect(protocolVersionProvider.getIdsProtocolVersion()).andReturn(idsProtocolVersion).times(1);
 
         EasyMock.replay(protocolVersionProvider);
@@ -37,7 +37,7 @@ class InboundProtocolVersionManagerImplTest {
         inboundProtocolVersionManager.addInboundProtocolVersionProvider(protocolVersionProvider);
 
         // invoke
-        final List<IdsProtocolVersion> result = inboundProtocolVersionManager.getInboundProtocolVersions();
+        List<IdsProtocolVersion> result = inboundProtocolVersionManager.getInboundProtocolVersions();
 
         // verify
         Assertions.assertThat(result).hasSize(1).containsExactlyElementsOf(Collections.singletonList(idsProtocolVersion));

@@ -23,10 +23,9 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 // TODO Add warnings for missing (but required) and invalid configuration
+public class ConfigurationProviderImpl implements ConfigurationProvider {
 
-public final class ConfigurationProviderImpl implements ConfigurationProvider {
-
-    private static final class Defaults {
+    private static class Defaults {
         // TODO define where the connector ID is defined and how it should look like
         public static final String ID = IdsId.connector("edc").getValue();
         public static final String TITLE = "Eclipse Dataspace Connector";
@@ -38,7 +37,7 @@ public final class ConfigurationProviderImpl implements ConfigurationProvider {
 
     private final ServiceExtensionContext context;
 
-    public ConfigurationProviderImpl(final ServiceExtensionContext context) {
+    public ConfigurationProviderImpl(ServiceExtensionContext context) {
         this.context = context;
     }
 
@@ -82,7 +81,7 @@ public final class ConfigurationProviderImpl implements ConfigurationProvider {
         return securityProfile;
     }
 
-    private SecurityProfile mapToSecurityProfile(final String securityProfile) {
+    private SecurityProfile mapToSecurityProfile(String securityProfile) {
         if (securityProfile == null) {
             return null;
         }
@@ -96,7 +95,7 @@ public final class ConfigurationProviderImpl implements ConfigurationProvider {
         return null;
     }
 
-    private URI resolveUri(final String uri) {
+    private URI resolveUri(String uri) {
         try {
             return new URI(uri);
         } catch (URISyntaxException ignored) {

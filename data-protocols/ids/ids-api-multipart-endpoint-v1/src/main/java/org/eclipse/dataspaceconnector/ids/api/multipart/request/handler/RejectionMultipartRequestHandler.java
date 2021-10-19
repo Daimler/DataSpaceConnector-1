@@ -26,21 +26,21 @@ import java.util.Objects;
 public class RejectionMultipartRequestHandler implements MultipartRequestHandler {
     private final MessageFactory messageFactory;
 
-    public RejectionMultipartRequestHandler(final MessageFactory messageFactory) {
+    public RejectionMultipartRequestHandler(MessageFactory messageFactory) {
         Objects.requireNonNull(messageFactory);
 
         this.messageFactory = messageFactory;
     }
 
     @Override
-    public boolean canHandle(final MultipartRequest multipartRequest) {
+    public boolean canHandle(MultipartRequest multipartRequest) {
         return true;
     }
 
     @Override
-    public @NotNull MultipartResponse handleRequest(final MultipartRequest multipartRequest) {
-        final RequestMessage requestMessage = multipartRequest.getHeader();
-        final RejectionMessage rejectionMessage = messageFactory.createRejectionMessage(requestMessage);
+    public @NotNull MultipartResponse handleRequest(MultipartRequest multipartRequest) {
+        RequestMessage requestMessage = multipartRequest.getHeader();
+        RejectionMessage rejectionMessage = messageFactory.createRejectionMessage(requestMessage);
 
         return MultipartResponse.Builder.newInstance()
                 .header(rejectionMessage)

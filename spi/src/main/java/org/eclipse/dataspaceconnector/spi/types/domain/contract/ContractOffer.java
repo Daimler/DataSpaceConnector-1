@@ -121,43 +121,43 @@ public class ContractOffer {
             return new Builder();
         }
 
-        public Builder provider(final URI provider) {
+        public Builder provider(URI provider) {
             this.provider = provider;
             return this;
         }
 
-        public Builder consumer(final URI consumer) {
+        public Builder consumer(URI consumer) {
             this.consumer = consumer;
             return this;
         }
 
-        public Builder assets(final List<OfferedAsset> offeredAsset) {
+        public Builder assets(List<OfferedAsset> offeredAsset) {
             this.offeredAsset = offeredAsset;
             return this;
         }
 
-        public Builder offerStart(final ZonedDateTime date) {
+        public Builder offerStart(ZonedDateTime date) {
             this.offerStart = date;
             return this;
         }
 
-        public Builder offerEnd(final ZonedDateTime date) {
+        public Builder offerEnd(ZonedDateTime date) {
             this.offerEnd = date;
             return this;
         }
 
-        public Builder contractStart(final ZonedDateTime date) {
+        public Builder contractStart(ZonedDateTime date) {
             this.contractStart = date;
             return this;
         }
 
-        public Builder contractEnd(final ZonedDateTime date) {
+        public Builder contractEnd(ZonedDateTime date) {
             this.contractEnd = date;
             return this;
         }
 
         public ContractOffer build() {
-            final ContractOffer offer = new ContractOffer();
+            ContractOffer offer = new ContractOffer();
             offer.assets = this.offeredAsset;
             offer.provider = this.provider;
             offer.consumer = this.consumer;

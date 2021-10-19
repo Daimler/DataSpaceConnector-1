@@ -24,7 +24,7 @@ public final class CalendarUtil {
 
     public static XMLGregorianCalendar gregorianNow() {
         try {
-            final GregorianCalendar gregorianCalendar = GregorianCalendar.from(ZonedDateTime.now());
+            GregorianCalendar gregorianCalendar = GregorianCalendar.from(ZonedDateTime.now());
             return DatatypeFactory.newInstance().newXMLGregorianCalendar(gregorianCalendar);
         } catch (DatatypeConfigurationException e) {
             throw new RuntimeException(e);
