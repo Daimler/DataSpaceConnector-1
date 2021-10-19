@@ -26,53 +26,53 @@ public class IdsId {
     private final Type type;
     private final String value;
 
-    public IdsId(final Type type, final String value) {
+    public IdsId(Type type, String value) {
         this.type = type;
         this.value = value;
     }
 
-    public static IdsId message(final String value) {
+    public static IdsId message(String value) {
         return new IdsId(Type.MESSAGE, value);
     }
 
-    public static IdsId participant(final String value) {
+    public static IdsId participant(String value) {
         return new IdsId(Type.PARTICIPANT, value);
     }
 
-    public static IdsId connector(final String value) {
+    public static IdsId connector(String value) {
         return new IdsId(Type.CONNECTOR, value);
     }
 
-    public static IdsId representation(final String value) {
+    public static IdsId representation(String value) {
         return new IdsId(Type.REPRESENTATION, value);
     }
 
-    public static IdsId resource(final String value) {
+    public static IdsId resource(String value) {
         return new IdsId(Type.RESOURCE, value);
     }
 
-    public static IdsId artifact(final String value) {
+    public static IdsId artifact(String value) {
         return new IdsId(Type.ARTIFACT, value);
     }
 
-    public static IdsId fromUri(final URI uri) {
+    public static IdsId fromUri(URI uri) {
         return parse(uri.toString());
     }
 
-    public static IdsId parse(final String urn) {
+    public static IdsId parse(String urn) {
         if (urn == null) {
             throw new IllegalArgumentException("urn must not be null");
         }
-        final String[] parts = urn.split(DELIMITER, 3);
+        String[] parts = urn.split(DELIMITER, 3);
 
-        final String scheme = parts[0];
+        String scheme = parts[0];
         if (parts.length < 3 || !scheme.equalsIgnoreCase(SCHEME)) {
             throw new IllegalArgumentException(String.format("Unexpected scheme: %s", scheme));
         }
-        final String typeString = parts[1];
-        final Type type = Type.fromValue(typeString);
+        String typeString = parts[1];
+        Type type = Type.fromValue(typeString);
 
-        final String idValue = parts[2];
+        String idValue = parts[2];
 
         return new IdsId(type, idValue);
     }
@@ -107,12 +107,12 @@ public class IdsId {
 
         private final String value;
 
-        Type(final String value) {
+        Type(String value) {
             this.value = value;
         }
 
-        public static Type fromValue(final String value) {
-            for (final Type es : Type.values()) {
+        public static Type fromValue(String value) {
+            for (Type es : Type.values()) {
                 if (es.value.equalsIgnoreCase(value)) {
                     return es;
                 }

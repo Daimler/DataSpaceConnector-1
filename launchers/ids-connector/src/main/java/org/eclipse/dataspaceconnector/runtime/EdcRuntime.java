@@ -32,19 +32,19 @@ public class EdcRuntime {
     private static final String NAME = "Eclipse Dataspace Connector";
 
     public static void main(String... arg) {
-        final TypeManager typeManager = new TypeManager();
-        final Monitor monitor = loadMonitor();
+        TypeManager typeManager = new TypeManager();
+        Monitor monitor = loadMonitor();
 
         MonitorProvider.setInstance(monitor);
 
-        final DefaultServiceExtensionContext context = new DefaultServiceExtensionContext(typeManager, monitor);
+        DefaultServiceExtensionContext context = new DefaultServiceExtensionContext(typeManager, monitor);
         context.initialize();
 
         try {
 
             loadVault(context);
 
-            final List<ServiceExtension> serviceExtensions = context.loadServiceExtensions();
+            List<ServiceExtension> serviceExtensions = context.loadServiceExtensions();
 
             Runtime.getRuntime().addShutdownHook(new Thread(() -> shutdown(serviceExtensions, monitor)));
 
@@ -57,7 +57,7 @@ public class EdcRuntime {
     }
 
     private static void shutdown(List<ServiceExtension> serviceExtensions, Monitor monitor) {
-        final ListIterator<ServiceExtension> iter = serviceExtensions.listIterator(serviceExtensions.size());
+        ListIterator<ServiceExtension> iter = serviceExtensions.listIterator(serviceExtensions.size());
         while (iter.hasPrevious()) {
             iter.previous().shutdown();
         }

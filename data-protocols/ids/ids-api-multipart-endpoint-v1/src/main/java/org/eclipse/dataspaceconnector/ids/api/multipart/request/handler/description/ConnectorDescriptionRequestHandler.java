@@ -62,6 +62,7 @@ public class ConnectorDescriptionRequestHandler implements DescriptionRequestMes
     private boolean isAskingForSelfDescription(DescriptionRequestMessage descriptionRequestMessage) {
         URI connectorId = configurationProvider.resolveId();
         URI requestedConnectorId = descriptionRequestMessage.getRequestedElement();
+
         if (connectorId == null || requestedConnectorId == null) {
             return false;
         }
