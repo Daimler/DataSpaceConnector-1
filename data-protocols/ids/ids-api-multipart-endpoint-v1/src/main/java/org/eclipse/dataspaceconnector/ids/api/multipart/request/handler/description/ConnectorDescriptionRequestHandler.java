@@ -17,56 +17,52 @@ package org.eclipse.dataspaceconnector.ids.api.multipart.request.handler.descrip
 import de.fraunhofer.iais.eis.Connector;
 import de.fraunhofer.iais.eis.DescriptionRequestMessage;
 import de.fraunhofer.iais.eis.DescriptionResponseMessage;
-import org.eclipse.dataspaceconnector.ids.api.multipart.factory.MessageFactory;
+import org.eclipse.dataspaceconnector.ids.api.multipart.factory.DescriptionResponseMessageFactory;
 import org.eclipse.dataspaceconnector.ids.api.multipart.http.MultipartResponse;
-import org.eclipse.dataspaceconnector.ids.api.multipart.service.SelfDescriptionService;
+import org.eclipse.dataspaceconnector.ids.api.multipart.service.ConnectorDescriptionService;
 import org.eclipse.dataspaceconnector.ids.spi.configuration.ConfigurationProvider;
 
 import java.net.URI;
 
 public class ConnectorDescriptionRequestHandler implements DescriptionRequestMessageHandler {
-    private final MessageFactory messageFactory;
-    private final SelfDescriptionService selfDescriptionService;
+    private final DescriptionResponseMessageFactory descriptionResponseMessageFactory;
+    private final ConnectorDescriptionService connectorDescriptionService;
     private final ConfigurationProvider configurationProvider;
 
     public ConnectorDescriptionRequestHandler(
-            MessageFactory messageFactory,
-            SelfDescriptionService connectorDescriptionService,
+            DescriptionResponseMessageFactory descriptionResponseMessageFactory,
+            ConnectorDescriptionService connectorDescriptionService,
             ConfigurationProvider configurationProvider) {
-        this.messageFactory = messageFactory;
-        this.selfDescriptionService = connectorDescriptionService;
+        this.descriptionResponseMessageFactory = descriptionResponseMessageFactory;
+        this.connectorDescriptionService = connectorDescriptionService;
         this.configurationProvider = configurationProvider;
     }
 
     @Override
     public MultipartResponse handle(DescriptionRequestMessage descriptionRequestMessage, String payload) {
-
-        // reject requests for other connector descriptions
-        if (!isAskingForSelfDescription(descriptionRequestMessage)) {
-            return MultipartResponse.Builder.newInstance()
-                    .header(messageFactory
-                            .createRejectionMessage(descriptionRequestMessage))
-                    .build();
+        if (!isRequestingCurrentConnectorsDescription(descriptionRequestMessage)) {
+            return null;
         }
 
-        // return self description
-        DescriptionResponseMessage descriptionResponseMessage = messageFactory
+        DescriptionResponseMessage descriptionResponseMessage = descriptionResponseMessageFactory
                 .createDescriptionResponseMessage(descriptionRequestMessage);
-        Connector connector = selfDescriptionService.createSelfDescription();
+
+        Connector connector = connectorDescriptionService.createSelfDescription();
+
         return MultipartResponse.Builder.newInstance()
                 .header(descriptionResponseMessage)
                 .payload(connector)
                 .build();
     }
 
-    private boolean isAskingForSelfDescription(DescriptionRequestMessage descriptionRequestMessage) {
-        URI connectorId = configurationProvider.resolveId();
+    private boolean isRequestingCurrentConnectorsDescription(DescriptionRequestMessage descriptionRequestMessage) {
         URI requestedConnectorId = descriptionRequestMessage.getRequestedElement();
+        URI connectorId = configurationProvider.resolveId();
 
-        if (connectorId == null || requestedConnectorId == null) {
-            return false;
+        if (requestedConnectorId == null) {
+            return true;
         }
 
-        return connectorId.equals(requestedConnectorId);
+        return requestedConnectorId.equals(connectorId);
     }
 }

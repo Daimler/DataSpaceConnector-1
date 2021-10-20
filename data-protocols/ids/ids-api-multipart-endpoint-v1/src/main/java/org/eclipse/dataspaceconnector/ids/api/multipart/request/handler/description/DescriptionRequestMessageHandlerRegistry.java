@@ -24,15 +24,12 @@ public class DescriptionRequestMessageHandlerRegistry {
     private final Map<IdsId.Type, DescriptionRequestMessageHandler> descriptionRequestMessageHandlers = new HashMap<>();
 
     public void add(IdsId.Type type, DescriptionRequestMessageHandler descriptionRequestMessageHandler) {
-        Objects.requireNonNull(type);
         Objects.requireNonNull(descriptionRequestMessageHandler);
 
         descriptionRequestMessageHandlers.put(type, descriptionRequestMessageHandler);
     }
 
     public DescriptionRequestMessageHandler get(IdsId.Type type) {
-        Objects.requireNonNull(type);
-
         return descriptionRequestMessageHandlers.get(type);
     }
 }

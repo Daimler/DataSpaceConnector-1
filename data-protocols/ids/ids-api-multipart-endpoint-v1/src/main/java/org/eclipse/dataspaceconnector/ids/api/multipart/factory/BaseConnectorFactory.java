@@ -44,13 +44,9 @@ public class BaseConnectorFactory {
             ConfigurationProvider configurationProvider,
             InboundProtocolVersionManager inboundProtocolVersionManager,
             ConnectorVersionProvider connectorVersionProvider) {
-        Objects.requireNonNull(configurationProvider);
-        Objects.requireNonNull(inboundProtocolVersionManager);
-        Objects.requireNonNull(connectorVersionProvider);
-
-        this.configurationProvider = configurationProvider;
-        this.inboundProtocolVersionManager = inboundProtocolVersionManager;
-        this.connectorVersionProvider = connectorVersionProvider;
+        this.configurationProvider = Objects.requireNonNull(configurationProvider);
+        this.inboundProtocolVersionManager = Objects.requireNonNull(inboundProtocolVersionManager);
+        this.connectorVersionProvider = Objects.requireNonNull(connectorVersionProvider);
     }
 
     public BaseConnector createBaseConnector(

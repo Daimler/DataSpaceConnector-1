@@ -24,7 +24,7 @@ public class MultipartRequest {
     private final String payload;
 
     private MultipartRequest(RequestMessage header, String payload) {
-        this.header = header;
+        this.header = Objects.requireNonNull(header);
         this.payload = payload;
     }
 
@@ -59,7 +59,6 @@ public class MultipartRequest {
         }
 
         public MultipartRequest build() {
-            Objects.requireNonNull(header);
             return new MultipartRequest(header, payload);
         }
     }

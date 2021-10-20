@@ -24,7 +24,7 @@ public class MultipartResponse {
     private final Object payload;
 
     private MultipartResponse(Message header, Object payload) {
-        this.header = header;
+        this.header = Objects.requireNonNull(header);
         this.payload = payload;
     }
 
@@ -59,7 +59,6 @@ public class MultipartResponse {
         }
 
         public MultipartResponse build() {
-            Objects.requireNonNull(header);
             return new MultipartResponse(header, payload);
         }
     }

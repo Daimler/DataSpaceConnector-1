@@ -16,6 +16,7 @@ package org.eclipse.dataspaceconnector.ids.api.multipart.controller;
 
 import de.fraunhofer.iais.eis.Message;
 import de.fraunhofer.iais.eis.RequestMessage;
+import de.fraunhofer.iais.eis.Token;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
@@ -27,6 +28,9 @@ import org.eclipse.dataspaceconnector.ids.api.multipart.http.MultipartResponse;
 import org.eclipse.dataspaceconnector.ids.api.multipart.request.MultipartRequestHandlerResolver;
 import org.eclipse.dataspaceconnector.ids.api.multipart.request.handler.MultipartRequestHandler;
 import org.eclipse.dataspaceconnector.ids.api.multipart.request.handler.RejectionMultipartRequestHandler;
+import org.eclipse.dataspaceconnector.spi.iam.IdentityService;
+import org.eclipse.dataspaceconnector.spi.iam.VerificationResult;
+import org.eclipse.dataspaceconnector.spi.monitor.Monitor;
 import org.glassfish.jersey.media.multipart.FormDataBodyPart;
 import org.glassfish.jersey.media.multipart.FormDataMultiPart;
 import org.glassfish.jersey.media.multipart.FormDataParam;
@@ -39,12 +43,18 @@ public class MultipartController {
     private static final String HEADER = "header";
     private static final String PAYLOAD = "payload";
 
+    private final Monitor monitor;
+    private final IdentityService identityService;
     private final MultipartRequestHandlerResolver multipartRequestHandlerResolver;
     private final RejectionMultipartRequestHandler rejectionMultipartRequestHandler;
 
     public MultipartController(
+            Monitor monitor,
+            IdentityService identityService,
             MultipartRequestHandlerResolver multipartRequestHandlerResolver,
             RejectionMultipartRequestHandler rejectionMultipartRequestHandler) {
+        this.monitor = monitor;
+        this.identityService = identityService;
         this.multipartRequestHandlerResolver = multipartRequestHandlerResolver;
         this.rejectionMultipartRequestHandler = rejectionMultipartRequestHandler;
     }
@@ -59,28 +69,52 @@ public class MultipartController {
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
 
+        Token token = header.getAuthorizationToken();
+        if (token == null || token.getTokenValue() == null) {
+            return Response.status(Response.Status.UNAUTHORIZED).build();
+        }
+
+        VerificationResult verificationResult = identityService.verifyJwtToken(token.getTokenValue(), null);
+        if (verificationResult == null) {
+            return Response.status(Response.Status.UNAUTHORIZED).build();
+        }
+        if (!verificationResult.valid()) {
+            String error = verificationResult.error();
+            if (error != null) {
+                monitor.warning(String.format("Invalid authentication attempt: %s", verificationResult.error()));
+            } else {
+                monitor.warning("Invalid authentication attempt");
+            }
+
+            return Response.status(Response.Status.UNAUTHORIZED).build();
+        }
+
         MultipartRequest multipartRequest = MultipartRequest.Builder.newInstance()
                 .header(header)
                 .payload(payload)
                 .build();
 
+        MultipartResponse multipartResponse = null;
         MultipartRequestHandler multipartRequestHandler = multipartRequestHandlerResolver.resolveHandler(multipartRequest);
-        if (multipartRequestHandler == null) {
-            multipartRequestHandler = rejectionMultipartRequestHandler;
+        if (multipartRequestHandler != null) {
+            multipartResponse = multipartRequestHandler.handleRequest(multipartRequest);
         }
 
-        MultipartResponse multipartResponse = multipartRequestHandler.handleRequest(multipartRequest);
+        if (multipartResponse == null) {
+            multipartResponse = rejectionMultipartRequestHandler.handleRequest(multipartRequest);
+        }
 
         FormDataMultiPart multiPart = new FormDataMultiPart();
+        if (multipartResponse != null) {
+            Message responseHeader = multipartResponse.getHeader();
+            if (responseHeader != null) {
+                multiPart.bodyPart(new FormDataBodyPart(HEADER, responseHeader, MediaType.APPLICATION_JSON_TYPE));
+            }
 
-        Message responseHeader = multipartResponse.getHeader();
-        if (responseHeader != null) {
-            multiPart.bodyPart(new FormDataBodyPart(HEADER, responseHeader, MediaType.APPLICATION_JSON_TYPE));
-        }
-
-        Object responsePayload = multipartResponse.getPayload();
-        if (responsePayload != null) {
-            multiPart.bodyPart(new FormDataBodyPart(PAYLOAD, responsePayload, MediaType.APPLICATION_JSON_TYPE));
+            Object responsePayload = multipartResponse.getPayload();
+            if (responsePayload != null) {
+                multiPart.bodyPart(new FormDataBodyPart(PAYLOAD, responsePayload, MediaType.APPLICATION_JSON_TYPE));
+            }
         }
 
         return Response.ok(multiPart).build();

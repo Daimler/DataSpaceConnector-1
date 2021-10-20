@@ -16,7 +16,7 @@ package org.eclipse.dataspaceconnector.ids.api.multipart.request.handler;
 
 import de.fraunhofer.iais.eis.RejectionMessage;
 import de.fraunhofer.iais.eis.RequestMessage;
-import org.eclipse.dataspaceconnector.ids.api.multipart.factory.MessageFactory;
+import org.eclipse.dataspaceconnector.ids.api.multipart.factory.RejectionMessageFactory;
 import org.eclipse.dataspaceconnector.ids.api.multipart.http.MultipartRequest;
 import org.eclipse.dataspaceconnector.ids.api.multipart.http.MultipartResponse;
 import org.jetbrains.annotations.NotNull;
@@ -24,23 +24,21 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Objects;
 
 public class RejectionMultipartRequestHandler implements MultipartRequestHandler {
-    private final MessageFactory messageFactory;
+    private final RejectionMessageFactory rejectionMessageFactory;
 
-    public RejectionMultipartRequestHandler(MessageFactory messageFactory) {
-        Objects.requireNonNull(messageFactory);
-
-        this.messageFactory = messageFactory;
+    public RejectionMultipartRequestHandler(RejectionMessageFactory rejectionMessageFactory) {
+        this.rejectionMessageFactory = Objects.requireNonNull(rejectionMessageFactory);
     }
 
     @Override
-    public boolean canHandle(MultipartRequest multipartRequest) {
+    public boolean canHandle(@NotNull MultipartRequest multipartRequest) {
         return true;
     }
 
     @Override
-    public @NotNull MultipartResponse handleRequest(MultipartRequest multipartRequest) {
+    public MultipartResponse handleRequest(@NotNull MultipartRequest multipartRequest) {
         RequestMessage requestMessage = multipartRequest.getHeader();
-        RejectionMessage rejectionMessage = messageFactory.createRejectionMessage(requestMessage);
+        RejectionMessage rejectionMessage = rejectionMessageFactory.createRejectionMessage(requestMessage);
 
         return MultipartResponse.Builder.newInstance()
                 .header(rejectionMessage)

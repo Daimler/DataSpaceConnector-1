@@ -17,8 +17,6 @@ package org.eclipse.dataspaceconnector.ids.api.multipart.factory;
 import de.fraunhofer.iais.eis.DescriptionResponseMessage;
 import de.fraunhofer.iais.eis.DescriptionResponseMessageBuilder;
 import de.fraunhofer.iais.eis.Message;
-import de.fraunhofer.iais.eis.RejectionMessage;
-import de.fraunhofer.iais.eis.RejectionMessageBuilder;
 import org.eclipse.dataspaceconnector.ids.core.util.CalendarUtil;
 import org.eclipse.dataspaceconnector.ids.spi.IdsId;
 import org.eclipse.dataspaceconnector.ids.spi.configuration.ConfigurationProvider;
@@ -28,19 +26,18 @@ import org.eclipse.dataspaceconnector.ids.spi.version.IdsProtocolVersion;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Optional;
 import java.util.UUID;
 
 
 // TODO Add security token to the messages
 // TODO Add authentication token to the messages
-public class MessageFactory {
+public class DescriptionResponseMessageFactory {
 
     private final ConfigurationProvider configurationProvider;
     private final IdsOutboundProtocolVersionProvider outboundProtocolVersionProvider;
 
-    public MessageFactory(ConfigurationProvider idsConfigurationProvider,
-                          IdsOutboundProtocolVersionProvider outboundProtocolVersionProvider) {
+    public DescriptionResponseMessageFactory(ConfigurationProvider idsConfigurationProvider,
+                                             IdsOutboundProtocolVersionProvider outboundProtocolVersionProvider) {
         this.configurationProvider = idsConfigurationProvider;
         this.outboundProtocolVersionProvider = outboundProtocolVersionProvider;
     }
@@ -84,35 +81,4 @@ public class MessageFactory {
 
         return builder.build();
     }
-
-    public RejectionMessage createRejectionMessage(Message correlationMessage) {
-        IdsId messageId = IdsId.message(UUID.randomUUID().toString());
-
-        RejectionMessageBuilder builder = new RejectionMessageBuilder(messageId.toUri());
-
-        builder._contentVersion_(outboundProtocolVersionProvider.getIdsProtocolVersion().getValue());
-        builder._modelVersion_(outboundProtocolVersionProvider.getIdsProtocolVersion().getValue());
-
-        URI connectorId = configurationProvider.resolveId();
-        if (connectorId != null) {
-            builder._issuerConnector_(connectorId);
-            builder._senderAgent_(connectorId);
-        }
-
-        builder._issued_(CalendarUtil.gregorianNow());
-
-        Optional.ofNullable(correlationMessage.getId())
-                .map(builder::_correlationMessage_);
-        Optional.ofNullable(correlationMessage.getSenderAgent())
-                .map(Collections::singletonList)
-                .map(ArrayList::new)
-                .map(builder::_recipientAgent_);
-        Optional.ofNullable(correlationMessage.getIssuerConnector())
-                .map(Collections::singletonList)
-                .map(ArrayList::new)
-                .map(builder::_recipientConnector_);
-
-        return builder.build();
-    }
-
 }

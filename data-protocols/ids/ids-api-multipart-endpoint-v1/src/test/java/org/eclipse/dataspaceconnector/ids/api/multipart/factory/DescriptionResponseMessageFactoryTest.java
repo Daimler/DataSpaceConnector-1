@@ -28,7 +28,7 @@ import org.junit.jupiter.api.Test;
 
 import java.net.URI;
 
-public class MessageFactoryTest {
+public class DescriptionResponseMessageFactoryTest {
 
     private static class Fixtures {
         public static final URI ID = URI.create("https://example.com/id");
@@ -77,10 +77,10 @@ public class MessageFactoryTest {
     @Test
     public void testMessageFactoryReturnsAsExpected() {
         // prepare
-        MessageFactory messageFactory = new MessageFactory(configurationProvider, outboundProtocolVersionProvider);
+        DescriptionResponseMessageFactory descriptionResponseMessageFactory = new DescriptionResponseMessageFactory(configurationProvider, outboundProtocolVersionProvider);
 
         // invoke
-        DescriptionResponseMessage response = messageFactory.createDescriptionResponseMessage(message);
+        DescriptionResponseMessage response = descriptionResponseMessageFactory.createDescriptionResponseMessage(message);
 
         // verify
         var responseType = IdsId.parse(response.getId().toString()).getType();

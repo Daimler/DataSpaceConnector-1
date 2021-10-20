@@ -15,44 +15,31 @@
 package org.eclipse.dataspaceconnector.ids.api.multipart.service;
 
 import de.fraunhofer.iais.eis.Connector;
-import de.fraunhofer.iais.eis.Resource;
 import de.fraunhofer.iais.eis.ResourceCatalog;
 import org.eclipse.dataspaceconnector.ids.api.multipart.factory.BaseConnectorFactory;
-import org.eclipse.dataspaceconnector.ids.api.multipart.factory.ContractOfferFactory;
 import org.eclipse.dataspaceconnector.ids.api.multipart.factory.ResourceCatalogFactory;
-import org.eclipse.dataspaceconnector.ids.api.multipart.factory.ResourceFactory;
 import org.eclipse.dataspaceconnector.ids.spi.configuration.ConfigurationProvider;
 import org.eclipse.dataspaceconnector.ids.spi.version.ConnectorVersionProvider;
 import org.eclipse.dataspaceconnector.ids.spi.version.InboundProtocolVersionManager;
-import org.eclipse.dataspaceconnector.spi.contract.ContractOfferQuery;
-import org.eclipse.dataspaceconnector.spi.contract.ContractOfferQueryResponse;
-import org.eclipse.dataspaceconnector.spi.contract.ContractOfferService;
 import org.eclipse.dataspaceconnector.spi.monitor.Monitor;
-import org.eclipse.dataspaceconnector.spi.types.domain.contract.ContractOffer;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.Collections;
 
 /**
  * The IDS service is able to create IDS compliant descriptions of resources.
  * These descriptions may be used to create a self-description or answer a Description Request Message.
  */
-public class SelfDescriptionService {
-    private final ContractOfferService contractOfferService;
+public class ConnectorDescriptionService {
+    private final Monitor monitor;
     private final ConfigurationProvider configurationProvider;
     private final InboundProtocolVersionManager inboundProtocolVersionManager;
     private final ConnectorVersionProvider connectorVersionProvider;
-    private final Monitor monitor;
 
-    public SelfDescriptionService(Monitor monitor,
-                                  ContractOfferService contractOfferService,
-                                  ConfigurationProvider configurationProvider,
-                                  InboundProtocolVersionManager inboundProtocolVersionManager,
-                                  ConnectorVersionProvider connectorVersionProvider) {
+    public ConnectorDescriptionService(Monitor monitor,
+                                       ConfigurationProvider configurationProvider,
+                                       InboundProtocolVersionManager inboundProtocolVersionManager,
+                                       ConnectorVersionProvider connectorVersionProvider) {
         this.monitor = monitor;
-        this.contractOfferService = contractOfferService;
         this.configurationProvider = configurationProvider;
         this.inboundProtocolVersionManager = inboundProtocolVersionManager;
         this.connectorVersionProvider = connectorVersionProvider;
@@ -65,24 +52,10 @@ public class SelfDescriptionService {
      * @return connector description
      */
     public Connector createSelfDescription() {
-        // factories
         BaseConnectorFactory baseConnectorBuilderFactory = new BaseConnectorFactory(configurationProvider, inboundProtocolVersionManager, connectorVersionProvider);
-        ContractOfferFactory contractOfferFactory = new ContractOfferFactory(monitor);
-        ResourceFactory resourceFactory = new ResourceFactory(contractOfferFactory);
         ResourceCatalogFactory resourceCatalogFactory = new ResourceCatalogFactory();
 
-        // resources
-        ContractOfferQuery contractOfferQuery = ContractOfferQuery.builder().build();
-        ContractOfferQueryResponse contractOfferQueryResponse = contractOfferService.queryContractOffers(contractOfferQuery);
-        Stream<ContractOffer> contractOffers = contractOfferQueryResponse.getContractOfferStream();
-
-        List<Resource> resources = contractOffers
-                .map(resourceFactory::createResource)
-                .filter(Objects::nonNull)
-                .collect(Collectors.toUnmodifiableList());
-
-        // connector description
-        ResourceCatalog resourceCatalog = resourceCatalogFactory.createResourceCatalogBuilder(resources);
+        ResourceCatalog resourceCatalog = resourceCatalogFactory.createResourceCatalogBuilder(Collections.emptyList());
 
         return baseConnectorBuilderFactory.createBaseConnector(resourceCatalog);
     }

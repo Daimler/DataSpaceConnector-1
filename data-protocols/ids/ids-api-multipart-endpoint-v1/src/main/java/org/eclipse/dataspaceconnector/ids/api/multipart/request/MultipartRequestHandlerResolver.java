@@ -16,7 +16,6 @@ package org.eclipse.dataspaceconnector.ids.api.multipart.request;
 
 import org.eclipse.dataspaceconnector.ids.api.multipart.http.MultipartRequest;
 import org.eclipse.dataspaceconnector.ids.api.multipart.request.handler.MultipartRequestHandler;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -40,7 +39,6 @@ public class MultipartRequestHandlerResolver {
         }
     }
 
-    @NotNull
     public MultipartRequestHandler resolveHandler(MultipartRequest multipartRequest) {
         for (MultipartRequestHandler multipartRequestHandler : multipartRequestHandlers) {
             if (multipartRequestHandler.canHandle(multipartRequest)) {

@@ -15,13 +15,14 @@
 package org.eclipse.dataspaceconnector.ids.api.multipart;
 
 import org.eclipse.dataspaceconnector.ids.api.multipart.controller.MultipartController;
-import org.eclipse.dataspaceconnector.ids.api.multipart.factory.MessageFactory;
+import org.eclipse.dataspaceconnector.ids.api.multipart.factory.DescriptionResponseMessageFactory;
+import org.eclipse.dataspaceconnector.ids.api.multipart.factory.RejectionMessageFactory;
 import org.eclipse.dataspaceconnector.ids.api.multipart.request.MultipartRequestHandlerResolver;
 import org.eclipse.dataspaceconnector.ids.api.multipart.request.handler.RejectionMultipartRequestHandler;
 import org.eclipse.dataspaceconnector.ids.api.multipart.request.handler.description.ConnectorDescriptionRequestHandler;
 import org.eclipse.dataspaceconnector.ids.api.multipart.request.handler.description.DescriptionRequestHandler;
 import org.eclipse.dataspaceconnector.ids.api.multipart.request.handler.description.DescriptionRequestMessageHandlerRegistry;
-import org.eclipse.dataspaceconnector.ids.api.multipart.service.SelfDescriptionService;
+import org.eclipse.dataspaceconnector.ids.api.multipart.service.ConnectorDescriptionService;
 import org.eclipse.dataspaceconnector.ids.api.multipart.version.ProtocolVersionProviderImpl;
 import org.eclipse.dataspaceconnector.ids.spi.IdsId;
 import org.eclipse.dataspaceconnector.ids.spi.configuration.ConfigurationProvider;
@@ -29,7 +30,7 @@ import org.eclipse.dataspaceconnector.ids.spi.version.ConnectorVersionProvider;
 import org.eclipse.dataspaceconnector.ids.spi.version.IdsOutboundProtocolVersionProvider;
 import org.eclipse.dataspaceconnector.ids.spi.version.InboundProtocolVersionManager;
 import org.eclipse.dataspaceconnector.ids.spi.version.ProtocolVersionProvider;
-import org.eclipse.dataspaceconnector.spi.contract.ContractOfferService;
+import org.eclipse.dataspaceconnector.spi.iam.IdentityService;
 import org.eclipse.dataspaceconnector.spi.monitor.Monitor;
 import org.eclipse.dataspaceconnector.spi.protocol.web.WebService;
 import org.eclipse.dataspaceconnector.spi.system.ServiceExtension;
@@ -90,25 +91,31 @@ public final class IdsMultipartApiServiceExtension implements ServiceExtension {
     }
 
     private void registerControllers(ServiceExtensionContext serviceExtensionContext) {
-        WebService webService = serviceExtensionContext.getService(WebService.class);
         Monitor monitor = serviceExtensionContext.getMonitor();
-        ContractOfferService contractOfferService = serviceExtensionContext.getService(ContractOfferService.class);
+        WebService webService = serviceExtensionContext.getService(WebService.class);
+
+        IdentityService identityService = serviceExtensionContext.getService(IdentityService.class);
         ConfigurationProvider configurationProvider = serviceExtensionContext.getService(ConfigurationProvider.class);
         InboundProtocolVersionManager inboundProtocolVersionManager = serviceExtensionContext.getService(InboundProtocolVersionManager.class);
         IdsOutboundProtocolVersionProvider outboundProtocolVersionProvider = serviceExtensionContext.getService(IdsOutboundProtocolVersionProvider.class);
         ConnectorVersionProvider connectorVersionProvider = serviceExtensionContext.getService(ConnectorVersionProvider.class);
-        SelfDescriptionService selfDescriptionService = new SelfDescriptionService(
-                monitor, contractOfferService, configurationProvider, inboundProtocolVersionManager, connectorVersionProvider
-        );
-        MessageFactory messageFactory = new MessageFactory(configurationProvider, outboundProtocolVersionProvider);
+
+        RejectionMessageFactory rejectionMessageFactory = new RejectionMessageFactory(configurationProvider, outboundProtocolVersionProvider);
+        RejectionMultipartRequestHandler rejectionMultipartRequestHandler = new RejectionMultipartRequestHandler(rejectionMessageFactory);
+
         DescriptionRequestMessageHandlerRegistry descriptionRequestMessageHandlerRegistry = new DescriptionRequestMessageHandlerRegistry();
-        descriptionRequestMessageHandlerRegistry.add(IdsId.Type.CONNECTOR, new ConnectorDescriptionRequestHandler(messageFactory, selfDescriptionService, configurationProvider));
-        RejectionMultipartRequestHandler rejectionMultipartRequestHandler = new RejectionMultipartRequestHandler(messageFactory);
-        DescriptionRequestHandler descriptionRequestHandler = new DescriptionRequestHandler(descriptionRequestMessageHandlerRegistry, rejectionMultipartRequestHandler);
+        DescriptionRequestHandler descriptionRequestHandler = new DescriptionRequestHandler(descriptionRequestMessageHandlerRegistry);
         MultipartRequestHandlerResolver multipartRequestHandlerResolver = new MultipartRequestHandlerResolver(
                 descriptionRequestHandler
         );
-        MultipartController multipartController = new MultipartController(multipartRequestHandlerResolver, rejectionMultipartRequestHandler);
+
+        ConnectorDescriptionService connectorDescriptionService = new ConnectorDescriptionService(monitor, configurationProvider, inboundProtocolVersionManager, connectorVersionProvider);
+        DescriptionResponseMessageFactory descriptionResponseMessageFactory = new DescriptionResponseMessageFactory(configurationProvider, outboundProtocolVersionProvider);
+        ConnectorDescriptionRequestHandler connectorDescriptionRequestHandler = new ConnectorDescriptionRequestHandler(descriptionResponseMessageFactory, connectorDescriptionService, configurationProvider);
+        descriptionRequestMessageHandlerRegistry.add(null, connectorDescriptionRequestHandler);
+        descriptionRequestMessageHandlerRegistry.add(IdsId.Type.CONNECTOR, connectorDescriptionRequestHandler);
+
+        MultipartController multipartController = new MultipartController(monitor, identityService, multipartRequestHandlerResolver, rejectionMultipartRequestHandler);
 
         webService.registerController(multipartController);
     }

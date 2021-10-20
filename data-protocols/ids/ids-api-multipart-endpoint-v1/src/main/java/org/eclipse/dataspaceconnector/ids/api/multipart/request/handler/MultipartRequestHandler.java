@@ -21,9 +21,7 @@ import org.jetbrains.annotations.NotNull;
 
 public interface MultipartRequestHandler {
 
-    boolean canHandle(MultipartRequest multipartRequest);
+    boolean canHandle(@NotNull MultipartRequest multipartRequest);
 
-    @NotNull
-    MultipartResponse handleRequest(MultipartRequest multipartRequest);
-
+    MultipartResponse handleRequest(@NotNull MultipartRequest multipartRequest);
 }

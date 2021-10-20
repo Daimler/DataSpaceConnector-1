@@ -18,7 +18,6 @@ import de.fraunhofer.iais.eis.DescriptionRequestMessage;
 import org.eclipse.dataspaceconnector.ids.api.multipart.http.MultipartRequest;
 import org.eclipse.dataspaceconnector.ids.api.multipart.http.MultipartResponse;
 import org.eclipse.dataspaceconnector.ids.api.multipart.request.handler.MultipartRequestHandler;
-import org.eclipse.dataspaceconnector.ids.api.multipart.request.handler.RejectionMultipartRequestHandler;
 import org.eclipse.dataspaceconnector.ids.spi.IdsId;
 import org.jetbrains.annotations.NotNull;
 
@@ -27,38 +26,32 @@ import java.net.URI;
 
 public class DescriptionRequestHandler implements MultipartRequestHandler {
     private final DescriptionRequestMessageHandlerRegistry descriptionRequestMessageHandlerRegistry;
-    private final RejectionMultipartRequestHandler rejectionMultipartRequestHandler;
 
     public DescriptionRequestHandler(
-            DescriptionRequestMessageHandlerRegistry descriptionRequestMessageHandlerRegistry,
-            RejectionMultipartRequestHandler rejectionMultipartRequestHandler) {
-        this.rejectionMultipartRequestHandler = rejectionMultipartRequestHandler;
+            DescriptionRequestMessageHandlerRegistry descriptionRequestMessageHandlerRegistry) {
         this.descriptionRequestMessageHandlerRegistry = descriptionRequestMessageHandlerRegistry;
     }
 
     @Override
-    public boolean canHandle(MultipartRequest multipartRequest) {
+    public boolean canHandle(@NotNull MultipartRequest multipartRequest) {
         return multipartRequest.getHeader() instanceof DescriptionRequestMessage;
     }
 
     @Override
-    @NotNull
-    public MultipartResponse handleRequest(MultipartRequest multipartRequest) {
+    public MultipartResponse handleRequest(@NotNull MultipartRequest multipartRequest) {
         DescriptionRequestMessage descriptionRequestMessage = (DescriptionRequestMessage) multipartRequest.getHeader();
 
         URI requestedElement = descriptionRequestMessage.getRequestedElement();
-        IdsId idsId = IdsId.fromUri(requestedElement);
+        IdsId.Type type = null;
+        if (requestedElement != null) {
+            type = IdsId.fromUri(requestedElement).getType();
+        }
 
-        // TODO fix problem when a non EDC compliant connector ID is configured
-        DescriptionRequestMessageHandler descriptionRequestMessageHandler = descriptionRequestMessageHandlerRegistry.get(idsId.getType());
+        DescriptionRequestMessageHandler descriptionRequestMessageHandler = descriptionRequestMessageHandlerRegistry.get(type);
         if (descriptionRequestMessageHandler != null) {
             return descriptionRequestMessageHandler.handle(descriptionRequestMessage, multipartRequest.getPayload());
         }
 
-        return reject(multipartRequest);
-    }
-
-    private MultipartResponse reject(MultipartRequest multipartRequest) {
-        return rejectionMultipartRequestHandler.handleRequest(multipartRequest);
+        return null;
     }
 }
