@@ -64,10 +64,10 @@ public class ResourceFactoryTest {
     public void testResourceCreatedAsExpected() {
 
         // prepare
-        ResourceFactory resourceFactory = new ResourceFactory(contractOfferFactory);
+        ResourceFactory resourceFactory = new ResourceFactory();
 
         // invoke
-        de.fraunhofer.iais.eis.Resource resource = resourceFactory.createResource(contractOffer);
+        de.fraunhofer.iais.eis.Resource resource = resourceFactory.createResource(contractOffer, contractOfferFactory);
 
         // verify offers
         Assertions.assertEquals(1, resource.getContractOffer().size());
