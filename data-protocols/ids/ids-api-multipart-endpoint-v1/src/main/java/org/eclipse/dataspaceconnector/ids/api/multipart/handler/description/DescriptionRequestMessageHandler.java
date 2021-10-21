@@ -12,12 +12,15 @@
  *
  */
 
-package org.eclipse.dataspaceconnector.ids.api.multipart.request.handler.description;
+package org.eclipse.dataspaceconnector.ids.api.multipart.handler.description;
 
 import de.fraunhofer.iais.eis.DescriptionRequestMessage;
-import org.eclipse.dataspaceconnector.ids.api.multipart.http.MultipartResponse;
+import org.eclipse.dataspaceconnector.ids.api.multipart.message.MultipartResponse;
 
+// TODO Find better SubHandlerName
 public interface DescriptionRequestMessageHandler {
+
+    // TODO Add CanHandle (opinion from Dominik)
 
     MultipartResponse handle(DescriptionRequestMessage descriptionRequestMessage, String payload);
 }

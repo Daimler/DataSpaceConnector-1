@@ -12,7 +12,7 @@
  *
  */
 
-package org.eclipse.dataspaceconnector.ids.api.multipart.request.handler.description;
+package org.eclipse.dataspaceconnector.ids.api.multipart.handler.description;
 
 import org.eclipse.dataspaceconnector.ids.spi.IdsId;
 
@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+// TODO Remove this class and add the registry to the description request handler
 public class DescriptionRequestMessageHandlerRegistry {
     private final Map<IdsId.Type, DescriptionRequestMessageHandler> descriptionRequestMessageHandlers = new HashMap<>();
 

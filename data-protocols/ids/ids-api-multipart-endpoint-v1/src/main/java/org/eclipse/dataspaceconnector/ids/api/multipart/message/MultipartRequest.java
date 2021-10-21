@@ -12,34 +12,34 @@
  *
  */
 
-package org.eclipse.dataspaceconnector.ids.api.multipart.http;
+package org.eclipse.dataspaceconnector.ids.api.multipart.message;
 
-import de.fraunhofer.iais.eis.Message;
+import de.fraunhofer.iais.eis.RequestMessage;
 
 import java.util.Objects;
 
-public class MultipartResponse {
+public class MultipartRequest {
 
-    private final Message header;
-    private final Object payload;
+    private final RequestMessage header;
+    private final String payload;
 
-    private MultipartResponse(Message header, Object payload) {
+    private MultipartRequest(RequestMessage header, String payload) {
         this.header = Objects.requireNonNull(header);
         this.payload = payload;
     }
 
-    public Message getHeader() {
+    public RequestMessage getHeader() {
         return header;
     }
 
-    public Object getPayload() {
+    public String getPayload() {
         return payload;
     }
 
     public static class Builder {
 
-        private Message header;
-        private Object payload;
+        private RequestMessage header;
+        private String payload;
 
         private Builder() {
         }
@@ -48,18 +48,18 @@ public class MultipartResponse {
             return new Builder();
         }
 
-        public Builder header(Message header) {
+        public Builder header(RequestMessage header) {
             this.header = header;
             return this;
         }
 
-        public Builder payload(Object payload) {
+        public Builder payload(String payload) {
             this.payload = payload;
             return this;
         }
 
-        public MultipartResponse build() {
-            return new MultipartResponse(header, payload);
+        public MultipartRequest build() {
+            return new MultipartRequest(header, payload);
         }
     }
 }

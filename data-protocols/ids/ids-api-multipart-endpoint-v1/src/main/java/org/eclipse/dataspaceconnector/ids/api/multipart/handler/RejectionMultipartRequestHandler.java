@@ -12,17 +12,18 @@
  *
  */
 
-package org.eclipse.dataspaceconnector.ids.api.multipart.request.handler;
+package org.eclipse.dataspaceconnector.ids.api.multipart.handler;
 
 import de.fraunhofer.iais.eis.RejectionMessage;
 import de.fraunhofer.iais.eis.RequestMessage;
 import org.eclipse.dataspaceconnector.ids.api.multipart.factory.RejectionMessageFactory;
-import org.eclipse.dataspaceconnector.ids.api.multipart.http.MultipartRequest;
-import org.eclipse.dataspaceconnector.ids.api.multipart.http.MultipartResponse;
+import org.eclipse.dataspaceconnector.ids.api.multipart.message.MultipartRequest;
+import org.eclipse.dataspaceconnector.ids.api.multipart.message.MultipartResponse;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
+// TODO Remove this class
 public class RejectionMultipartRequestHandler implements MultipartRequestHandler {
     private final RejectionMessageFactory rejectionMessageFactory;
 

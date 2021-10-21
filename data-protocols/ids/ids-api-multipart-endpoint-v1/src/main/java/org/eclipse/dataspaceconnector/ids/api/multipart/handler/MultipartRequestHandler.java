@@ -12,10 +12,10 @@
  *
  */
 
-package org.eclipse.dataspaceconnector.ids.api.multipart.request.handler;
+package org.eclipse.dataspaceconnector.ids.api.multipart.handler;
 
-import org.eclipse.dataspaceconnector.ids.api.multipart.http.MultipartRequest;
-import org.eclipse.dataspaceconnector.ids.api.multipart.http.MultipartResponse;
+import org.eclipse.dataspaceconnector.ids.api.multipart.message.MultipartRequest;
+import org.eclipse.dataspaceconnector.ids.api.multipart.message.MultipartResponse;
 import org.jetbrains.annotations.NotNull;
 
 
@@ -23,5 +23,6 @@ public interface MultipartRequestHandler {
 
     boolean canHandle(@NotNull MultipartRequest multipartRequest);
 
+    // TODO Add Exception (opinion from Dominik)
     MultipartResponse handleRequest(@NotNull MultipartRequest multipartRequest);
 }

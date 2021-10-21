@@ -31,6 +31,7 @@ import java.util.UUID;
 
 // TODO Add security token to the messages
 // TODO Add authentication token to the messages
+@Deprecated // This functionality will be moved to a transformer class
 public class DescriptionResponseMessageFactory {
 
     private final ConfigurationProvider configurationProvider;

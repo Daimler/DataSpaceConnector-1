@@ -22,7 +22,10 @@ import org.eclipse.dataspaceconnector.spi.system.ServiceExtensionContext;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-// TODO Add warnings for missing (but required) and invalid configuration
+// TODO No Lazy Loading
+// TODO Create validation classes for generalized setting validation (for whoever uses them).
+// TODO Move this out and hand configuration POJOs to their corresponding service
+// TODO Add warnings for missing and required and invalid configuration
 public class ConfigurationProviderImpl implements ConfigurationProvider {
 
     private static class Defaults {

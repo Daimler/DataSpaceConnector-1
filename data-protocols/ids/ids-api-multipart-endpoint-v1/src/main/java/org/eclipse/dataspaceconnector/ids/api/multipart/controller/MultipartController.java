@@ -23,17 +23,19 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-import org.eclipse.dataspaceconnector.ids.api.multipart.http.MultipartRequest;
-import org.eclipse.dataspaceconnector.ids.api.multipart.http.MultipartResponse;
-import org.eclipse.dataspaceconnector.ids.api.multipart.request.MultipartRequestHandlerResolver;
-import org.eclipse.dataspaceconnector.ids.api.multipart.request.handler.MultipartRequestHandler;
-import org.eclipse.dataspaceconnector.ids.api.multipart.request.handler.RejectionMultipartRequestHandler;
+import org.eclipse.dataspaceconnector.ids.api.multipart.message.MultipartRequest;
+import org.eclipse.dataspaceconnector.ids.api.multipart.message.MultipartResponse;
+import org.eclipse.dataspaceconnector.ids.api.multipart.handler.MultipartRequestHandlerResolver;
+import org.eclipse.dataspaceconnector.ids.api.multipart.handler.MultipartRequestHandler;
+import org.eclipse.dataspaceconnector.ids.api.multipart.handler.RejectionMultipartRequestHandler;
 import org.eclipse.dataspaceconnector.spi.iam.IdentityService;
 import org.eclipse.dataspaceconnector.spi.iam.VerificationResult;
 import org.eclipse.dataspaceconnector.spi.monitor.Monitor;
 import org.glassfish.jersey.media.multipart.FormDataBodyPart;
 import org.glassfish.jersey.media.multipart.FormDataMultiPart;
 import org.glassfish.jersey.media.multipart.FormDataParam;
+
+// TODO Add Integration Test with real request
 
 @Consumes({ MediaType.MULTIPART_FORM_DATA })
 @Produces({ MediaType.MULTIPART_FORM_DATA })

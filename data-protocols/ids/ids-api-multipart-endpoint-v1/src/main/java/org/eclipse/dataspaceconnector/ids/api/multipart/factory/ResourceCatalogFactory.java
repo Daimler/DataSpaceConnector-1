@@ -21,6 +21,7 @@ import de.fraunhofer.iais.eis.ResourceCatalogBuilder;
 import java.util.ArrayList;
 import java.util.List;
 
+@Deprecated // This functionality will be moved to a transformer class
 public class ResourceCatalogFactory {
 
     public ResourceCatalog createResourceCatalogBuilder(List<Resource> resources) {

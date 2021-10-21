@@ -12,10 +12,9 @@
  *
  */
 
-package org.eclipse.dataspaceconnector.ids.api.multipart.request;
+package org.eclipse.dataspaceconnector.ids.api.multipart.handler;
 
-import org.eclipse.dataspaceconnector.ids.api.multipart.http.MultipartRequest;
-import org.eclipse.dataspaceconnector.ids.api.multipart.request.handler.MultipartRequestHandler;
+import org.eclipse.dataspaceconnector.ids.api.multipart.message.MultipartRequest;
 
 import java.util.Arrays;
 import java.util.Collections;

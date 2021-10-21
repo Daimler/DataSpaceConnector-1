@@ -12,13 +12,13 @@
  *
  */
 
-package org.eclipse.dataspaceconnector.ids.api.multipart.request.handler.description;
+package org.eclipse.dataspaceconnector.ids.api.multipart.handler.description;
 
 import de.fraunhofer.iais.eis.Connector;
 import de.fraunhofer.iais.eis.DescriptionRequestMessage;
 import de.fraunhofer.iais.eis.DescriptionResponseMessage;
 import org.eclipse.dataspaceconnector.ids.api.multipart.factory.DescriptionResponseMessageFactory;
-import org.eclipse.dataspaceconnector.ids.api.multipart.http.MultipartResponse;
+import org.eclipse.dataspaceconnector.ids.api.multipart.message.MultipartResponse;
 import org.eclipse.dataspaceconnector.ids.api.multipart.service.ConnectorDescriptionService;
 import org.eclipse.dataspaceconnector.ids.spi.configuration.ConfigurationProvider;
 

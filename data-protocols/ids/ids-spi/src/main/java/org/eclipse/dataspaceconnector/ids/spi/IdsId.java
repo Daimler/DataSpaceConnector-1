@@ -19,6 +19,7 @@ import java.net.URI;
 /**
  * ID / URI generator for IDS resources.
  */
+@Deprecated // This functionality will be moved to a transformer class
 public class IdsId {
     private static final String SCHEME = "urn";
     private static final String DELIMITER = ":";

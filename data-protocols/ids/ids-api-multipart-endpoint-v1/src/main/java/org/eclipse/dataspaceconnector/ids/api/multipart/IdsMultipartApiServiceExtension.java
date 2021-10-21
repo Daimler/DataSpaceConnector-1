@@ -17,11 +17,11 @@ package org.eclipse.dataspaceconnector.ids.api.multipart;
 import org.eclipse.dataspaceconnector.ids.api.multipart.controller.MultipartController;
 import org.eclipse.dataspaceconnector.ids.api.multipart.factory.DescriptionResponseMessageFactory;
 import org.eclipse.dataspaceconnector.ids.api.multipart.factory.RejectionMessageFactory;
-import org.eclipse.dataspaceconnector.ids.api.multipart.request.MultipartRequestHandlerResolver;
-import org.eclipse.dataspaceconnector.ids.api.multipart.request.handler.RejectionMultipartRequestHandler;
-import org.eclipse.dataspaceconnector.ids.api.multipart.request.handler.description.ConnectorDescriptionRequestHandler;
-import org.eclipse.dataspaceconnector.ids.api.multipart.request.handler.description.DescriptionRequestHandler;
-import org.eclipse.dataspaceconnector.ids.api.multipart.request.handler.description.DescriptionRequestMessageHandlerRegistry;
+import org.eclipse.dataspaceconnector.ids.api.multipart.handler.MultipartRequestHandlerResolver;
+import org.eclipse.dataspaceconnector.ids.api.multipart.handler.RejectionMultipartRequestHandler;
+import org.eclipse.dataspaceconnector.ids.api.multipart.handler.description.ConnectorDescriptionRequestHandler;
+import org.eclipse.dataspaceconnector.ids.api.multipart.handler.description.DescriptionRequestHandler;
+import org.eclipse.dataspaceconnector.ids.api.multipart.handler.description.DescriptionRequestMessageHandlerRegistry;
 import org.eclipse.dataspaceconnector.ids.api.multipart.service.ConnectorDescriptionService;
 import org.eclipse.dataspaceconnector.ids.api.multipart.version.ProtocolVersionProviderImpl;
 import org.eclipse.dataspaceconnector.ids.spi.IdsId;
@@ -45,6 +45,7 @@ public final class IdsMultipartApiServiceExtension implements ServiceExtension {
     private static final String NAME = "IDS Multipart API extension";
 
     private static final String[] REQUIRES = {
+            // TODO Add IDENTITY SERVICE
             "edc:ids:core"
     };
 

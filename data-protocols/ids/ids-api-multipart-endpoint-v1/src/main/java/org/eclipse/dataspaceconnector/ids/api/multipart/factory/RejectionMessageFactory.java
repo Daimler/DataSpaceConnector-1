@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.UUID;
 
+@Deprecated // This functionality will be moved to a transformer class
 public class RejectionMessageFactory {
     private final ConfigurationProvider configurationProvider;
     private final IdsOutboundProtocolVersionProvider outboundProtocolVersionProvider;

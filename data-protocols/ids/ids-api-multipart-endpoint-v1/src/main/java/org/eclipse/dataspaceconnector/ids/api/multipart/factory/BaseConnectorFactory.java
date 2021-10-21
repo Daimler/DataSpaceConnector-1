@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+@Deprecated // This functionality will be moved to a transformer class
 public class BaseConnectorFactory {
 
     private final ConfigurationProvider configurationProvider;
