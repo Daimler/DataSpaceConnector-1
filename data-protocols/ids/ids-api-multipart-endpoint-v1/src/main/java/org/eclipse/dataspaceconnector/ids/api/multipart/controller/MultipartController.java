@@ -14,6 +14,7 @@
 
 package org.eclipse.dataspaceconnector.ids.api.multipart.controller;
 
+import de.fraunhofer.iais.eis.DynamicAttributeToken;
 import de.fraunhofer.iais.eis.Message;
 import de.fraunhofer.iais.eis.RequestMessage;
 import de.fraunhofer.iais.eis.Token;
@@ -69,12 +70,13 @@ public class MultipartController {
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
 
-        Token token = header.getAuthorizationToken();
-        if (token == null || token.getTokenValue() == null) {
+        DynamicAttributeToken dynamicAttributeToken = header.getSecurityToken();
+        if (dynamicAttributeToken == null || dynamicAttributeToken.getTokenValue() == null) {
             return Response.status(Response.Status.UNAUTHORIZED).build();
         }
 
-        VerificationResult verificationResult = identityService.verifyJwtToken(token.getTokenValue(), null);
+        VerificationResult verificationResult = identityService.verifyJwtToken(
+                dynamicAttributeToken.getTokenValue(), null);
         if (verificationResult == null) {
             return Response.status(Response.Status.UNAUTHORIZED).build();
         }
