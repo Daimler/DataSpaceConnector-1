@@ -87,6 +87,7 @@ include(":extensions:transfer-functions:transfer-functions-core")
 include(":launchers:basic")
 include(":launchers:junit")
 include(":launchers:test")
+include(":launchers:ids-connector")
 include(":launchers:registration-service-app")
 
 // modules for code samples

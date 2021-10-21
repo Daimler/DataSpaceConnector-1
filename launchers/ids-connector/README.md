@@ -18,5 +18,4 @@ This launcher includes all extensions that are required for an IDS Dataspace Con
 - extensions:iam:iam-mock
 - [extensions:filesystem:configuration-fs](../../extensions/filesystem/configuration-fs/README.md)
 - [data-protocols:ids](../../data-protocols/ids/README.md)
-- [samples:demo-asset-index](../../samples/demo-asset-index/README.md)
 - [samples:demo-contract-framework](../../samples/demo-contract-framework/README.md)
