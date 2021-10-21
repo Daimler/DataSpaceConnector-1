@@ -30,10 +30,11 @@ dependencies {
 
     implementation(project(":extensions:in-memory:transfer-store-memory"))
     implementation(project(":extensions:in-memory:policy-registry-memory"))
+    implementation(project(":extensions:in-memory:assetindex-memory"))
 
     implementation(project(":data-protocols:ids"))
 
-    implementation(project(":samples:demo-asset-index"))
+    //implementation(project(":samples:demo-asset-index"))
     implementation(project(":samples:demo-contract-framework"))
     implementation(project(":extensions:iam:iam-mock"))
 
@@ -45,7 +46,7 @@ dependencies {
 
 application {
     @Suppress("DEPRECATION")
-    mainClassName = "org.eclipse.dataspaceconnector.runtime.EdcRuntime"
+    mainClassName = "org.eclipse.dataspaceconnector.system.runtime.BaseRuntime"
 }
 
 tasks.withType<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar> {
