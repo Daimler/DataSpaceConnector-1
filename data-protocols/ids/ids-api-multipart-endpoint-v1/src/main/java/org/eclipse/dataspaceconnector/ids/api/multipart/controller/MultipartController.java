@@ -23,11 +23,11 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import org.eclipse.dataspaceconnector.ids.api.multipart.handler.MultipartRequestHandlerResolver;
+import org.eclipse.dataspaceconnector.ids.api.multipart.handler.RejectionMultipartRequestHandler;
+import org.eclipse.dataspaceconnector.ids.api.multipart.handler.RequestHandler;
 import org.eclipse.dataspaceconnector.ids.api.multipart.message.MultipartRequest;
 import org.eclipse.dataspaceconnector.ids.api.multipart.message.MultipartResponse;
-import org.eclipse.dataspaceconnector.ids.api.multipart.handler.MultipartRequestHandlerResolver;
-import org.eclipse.dataspaceconnector.ids.api.multipart.handler.RequestHandler;
-import org.eclipse.dataspaceconnector.ids.api.multipart.handler.RejectionMultipartRequestHandler;
 import org.eclipse.dataspaceconnector.spi.iam.IdentityService;
 import org.eclipse.dataspaceconnector.spi.iam.VerificationResult;
 import org.eclipse.dataspaceconnector.spi.monitor.Monitor;
@@ -60,8 +60,6 @@ public class MultipartController {
         this.multipartRequestHandlerResolver = multipartRequestHandlerResolver;
         this.rejectionMultipartRequestHandler = rejectionMultipartRequestHandler;
     }
-
-    // TODO Add self description response on GET root path
 
     @POST
     public Response request(

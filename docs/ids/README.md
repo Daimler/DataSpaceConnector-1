@@ -21,3 +21,5 @@ At the root path of the API IDS requires the connector to return a self-descript
 will never fulfil. The self-description is only returned on the corresponding REST or Multipart requests.
 
 #### 2. Only one Information Model version supported at a time
+
+The EDC connector will not be able to support more than one IDS Information model per running instance.
