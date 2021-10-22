@@ -40,7 +40,7 @@ public class ConnectorDescriptionRequestHandler implements DescriptionRequestHan
     @Override
     public MultipartResponse handle(DescriptionRequestMessage descriptionRequestMessage, String payload) {
         if (!isRequestingCurrentConnectorsDescription(descriptionRequestMessage)) {
-            return null;
+            return null; // should return error response
         }
 
         DescriptionResponseMessage descriptionResponseMessage = descriptionResponseMessageFactory

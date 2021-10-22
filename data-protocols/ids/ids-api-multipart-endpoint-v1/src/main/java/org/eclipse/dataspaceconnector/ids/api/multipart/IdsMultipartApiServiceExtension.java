@@ -19,11 +19,8 @@ import org.eclipse.dataspaceconnector.ids.api.multipart.factory.BaseConnectorFac
 import org.eclipse.dataspaceconnector.ids.api.multipart.factory.BaseConnectorFactorySettingsFactory;
 import org.eclipse.dataspaceconnector.ids.api.multipart.factory.DescriptionResponseMessageFactory;
 import org.eclipse.dataspaceconnector.ids.api.multipart.factory.DescriptionResponseMessageFactorySettingsFactory;
-import org.eclipse.dataspaceconnector.ids.api.multipart.factory.RejectionMessageFactory;
 import org.eclipse.dataspaceconnector.ids.api.multipart.factory.RejectionMessageFactorySettingsFactory;
 import org.eclipse.dataspaceconnector.ids.api.multipart.factory.ResourceCatalogFactory;
-import org.eclipse.dataspaceconnector.ids.api.multipart.handler.MultipartRequestHandlerResolver;
-import org.eclipse.dataspaceconnector.ids.api.multipart.handler.RejectionMultipartRequestHandler;
 import org.eclipse.dataspaceconnector.ids.api.multipart.handler.description.ConnectorDescriptionRequestHandler;
 import org.eclipse.dataspaceconnector.ids.api.multipart.handler.description.ConnectorDescriptionRequestHandlerSettingsFactory;
 import org.eclipse.dataspaceconnector.ids.api.multipart.handler.description.DescriptionRequestHandlerImpl;
@@ -41,6 +38,7 @@ import org.eclipse.dataspaceconnector.spi.protocol.web.WebService;
 import org.eclipse.dataspaceconnector.spi.system.ServiceExtension;
 import org.eclipse.dataspaceconnector.spi.system.ServiceExtensionContext;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -130,7 +128,6 @@ public final class IdsMultipartApiServiceExtension implements ServiceExtension {
         if (rejectionMessageFactorySettings == null) {
             throw new EdcException("RejectionMessageFactorySettingsFactoryResult empty");
         }
-        var rejectionMessageFactory = new RejectionMessageFactory(rejectionMessageFactorySettings, outboundProtocolVersionProvider);
 
         var baseConnectorFactorySettings = baseConnectorFactorySettingsFactoryResult.getBaseConnectorFactorySettings();
         if (baseConnectorFactorySettings == null) {
@@ -151,17 +148,13 @@ public final class IdsMultipartApiServiceExtension implements ServiceExtension {
             throw new EdcException("ConnectorDescriptionRequestHandlerSettingsFactoryResult empty");
         }
         var connectorDescriptionRequestHandler = new ConnectorDescriptionRequestHandler(descriptionResponseMessageFactory, connectorDescriptionService, connectorDescriptionRequestHandlerSettings);
-        var rejectionMultipartRequestHandler = new RejectionMultipartRequestHandler(rejectionMessageFactory);
 
         var descriptionRequestHandler = new DescriptionRequestHandlerImpl();
         descriptionRequestHandler.add(null, connectorDescriptionRequestHandler);
         descriptionRequestHandler.add(IdsId.Type.CONNECTOR, connectorDescriptionRequestHandler);
-        var multipartRequestHandlerResolver = new MultipartRequestHandlerResolver(descriptionRequestHandler);
 
-        var multipartController = new MultipartController(monitor, identityService, multipartRequestHandlerResolver, rejectionMultipartRequestHandler);
+        var multipartController = new MultipartController(monitor, identityService, Collections.singletonList(descriptionRequestHandler));
 
         webService.registerController(multipartController);
     }
-
-
 }
