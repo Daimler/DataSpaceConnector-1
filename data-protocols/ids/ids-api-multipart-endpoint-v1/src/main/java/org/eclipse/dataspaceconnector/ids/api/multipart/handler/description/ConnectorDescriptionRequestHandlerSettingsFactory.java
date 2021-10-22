@@ -25,7 +25,7 @@ public class ConnectorDescriptionRequestHandlerSettingsFactory {
             errors.add(e.getMessage());
         }
 
-        var settings = new ConnectorDescriptionRequestHandlerSettings(id);
+        var settings = ConnectorDescriptionRequestHandlerSettings.Builder.newInstance().id(id).build();
 
         return new ConnectorDescriptionRequestHandlerSettingsFactoryResult(settings, errors);
     }

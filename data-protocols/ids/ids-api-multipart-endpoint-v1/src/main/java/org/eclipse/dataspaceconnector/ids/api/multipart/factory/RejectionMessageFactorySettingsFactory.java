@@ -27,7 +27,7 @@ public class RejectionMessageFactorySettingsFactory {
             errors.add(e.getMessage());
         }
 
-        var settings = new RejectionMessageFactorySettings(id);
+        var settings = RejectionMessageFactorySettings.Builder.newInstance().id(id).build();
 
         return new RejectionMessageFactorySettingsFactoryResult(settings, errors);
     }

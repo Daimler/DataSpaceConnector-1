@@ -14,11 +14,9 @@
 
 package org.eclipse.dataspaceconnector.ids.api.multipart.factory;
 
-import de.fraunhofer.iais.eis.DescriptionResponseMessage;
 import de.fraunhofer.iais.eis.Message;
 import org.easymock.EasyMock;
 import org.eclipse.dataspaceconnector.ids.spi.IdsId;
-import org.eclipse.dataspaceconnector.ids.spi.configuration.ConfigurationProvider;
 import org.eclipse.dataspaceconnector.ids.spi.version.IdsOutboundProtocolVersionProvider;
 import org.eclipse.dataspaceconnector.ids.spi.version.IdsProtocolVersion;
 import org.junit.jupiter.api.AfterEach;
@@ -32,55 +30,44 @@ public class DescriptionResponseMessageFactoryTest {
 
     private static class Fixtures {
         public static final URI ID = URI.create("https://example.com/id");
-        public static final String TITLE = "title";
-        public static final String DESCRIPTION = "description";
-        public static final URI MAINTAINER = URI.create("https://example.com/maintainer");
-        public static final URI CURATOR = URI.create("https://example.com/curator");
-        public static final URI CONNECTOR_ENDPOINT = URI.create("https://example.com/connector/endpoint");
         public static final IdsProtocolVersion OUTBOUND_PROTOCOL_VERSION = new IdsProtocolVersion("4.2.1");
         private static final URI MESSAGE_ID = URI.create("https://example.com/message");
         private static final URI MESSAGE_SENDER_AGENT = URI.create("https://example.com/sender/agent");
         private static final URI MESSAGE_ISSUER = URI.create("https://example.com/issuer");
     }
 
-
     // mocks
-    private ConfigurationProvider configurationProvider;
+    private DescriptionResponseMessageFactorySettings descriptionResponseMessageFactorySettings;
     private IdsOutboundProtocolVersionProvider outboundProtocolVersionProvider;
     private Message message;
 
     @BeforeEach
     public void setup() {
-        configurationProvider = EasyMock.createMock(ConfigurationProvider.class);
+        descriptionResponseMessageFactorySettings = EasyMock.createMock(DescriptionResponseMessageFactorySettings.class);
         outboundProtocolVersionProvider = EasyMock.createMock(IdsOutboundProtocolVersionProvider.class);
         message = EasyMock.createMock(Message.class);
 
-        EasyMock.expect(configurationProvider.resolveId()).andReturn(Fixtures.ID).anyTimes();
-        EasyMock.expect(configurationProvider.resolveTitle()).andReturn(Fixtures.TITLE).anyTimes();
-        EasyMock.expect(configurationProvider.resolveDescription()).andReturn(Fixtures.DESCRIPTION).anyTimes();
-        EasyMock.expect(configurationProvider.resolveMaintainer()).andReturn(Fixtures.MAINTAINER).anyTimes();
-        EasyMock.expect(configurationProvider.resolveCurator()).andReturn(Fixtures.CURATOR).anyTimes();
-        EasyMock.expect(configurationProvider.resolveConnectorEndpoint()).andReturn(Fixtures.CONNECTOR_ENDPOINT).anyTimes();
+        EasyMock.expect(descriptionResponseMessageFactorySettings.getId()).andReturn(Fixtures.ID).anyTimes();
         EasyMock.expect(outboundProtocolVersionProvider.getIdsProtocolVersion()).andReturn(Fixtures.OUTBOUND_PROTOCOL_VERSION).anyTimes();
         EasyMock.expect(message.getId()).andReturn(Fixtures.MESSAGE_ID).anyTimes();
         EasyMock.expect(message.getSenderAgent()).andReturn(Fixtures.MESSAGE_SENDER_AGENT).anyTimes();
         EasyMock.expect(message.getIssuerConnector()).andReturn(Fixtures.MESSAGE_ISSUER).anyTimes();
 
-        EasyMock.replay(configurationProvider, outboundProtocolVersionProvider, message);
+        EasyMock.replay(descriptionResponseMessageFactorySettings, outboundProtocolVersionProvider, message);
     }
 
     @AfterEach
     public void teardown() {
-        EasyMock.verify(configurationProvider, outboundProtocolVersionProvider);
+        EasyMock.verify(descriptionResponseMessageFactorySettings, outboundProtocolVersionProvider);
     }
 
     @Test
     public void testMessageFactoryReturnsAsExpected() {
         // prepare
-        DescriptionResponseMessageFactory descriptionResponseMessageFactory = new DescriptionResponseMessageFactory(configurationProvider, outboundProtocolVersionProvider);
+        var descriptionResponseMessageFactory = new DescriptionResponseMessageFactory(descriptionResponseMessageFactorySettings, outboundProtocolVersionProvider);
 
         // invoke
-        DescriptionResponseMessage response = descriptionResponseMessageFactory.createDescriptionResponseMessage(message);
+        var response = descriptionResponseMessageFactory.createDescriptionResponseMessage(message);
 
         // verify
         var responseType = IdsId.parse(response.getId().toString()).getType();

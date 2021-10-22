@@ -26,7 +26,7 @@ public class DescriptionResponseMessageFactorySettingsFactory {
             errors.add(e.getMessage());
         }
 
-        var settings = new DescriptionResponseMessageFactorySettings(id);
+        var settings = DescriptionResponseMessageFactorySettings.Builder.newInstance().id(id).build();
 
         return new DescriptionResponseMessageFactorySettingsFactoryResult(settings, errors);
     }

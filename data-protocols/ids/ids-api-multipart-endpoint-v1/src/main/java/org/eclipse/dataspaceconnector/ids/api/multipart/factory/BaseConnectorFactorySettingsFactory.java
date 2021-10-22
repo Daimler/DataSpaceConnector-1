@@ -19,9 +19,9 @@ public class BaseConnectorFactorySettingsFactory {
 
         List<String> errors = new ArrayList<>();
 
+        String title;
+        String description;
         URI id = null;
-        String title = null;
-        String description = null;
         URI maintainer = null;
         URI curator = null;
         URI connectorEndpoint = null;
@@ -60,7 +60,15 @@ public class BaseConnectorFactorySettingsFactory {
             errors.add(e.getMessage());
         }
 
-        var settings = new BaseConnectorFactorySettings(id, title, description, maintainer, curator, connectorEndpoint, securityProfile);
+        var settings = BaseConnectorFactorySettings.Builder.newInstance()
+                .id(id)
+                .title(title)
+                .description(description)
+                .maintainer(maintainer)
+                .curator(curator)
+                .connectorEndpoint(connectorEndpoint)
+                .securityProfile(securityProfile)
+                .build();
 
         return new BaseConnectorFactorySettingsFactoryResult(settings, errors);
     }

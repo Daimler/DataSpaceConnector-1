@@ -15,7 +15,6 @@
 package org.eclipse.dataspaceconnector.ids.core;
 
 import okhttp3.OkHttpClient;
-import org.eclipse.dataspaceconnector.ids.core.configuration.ConfigurationProviderImpl;
 import org.eclipse.dataspaceconnector.ids.core.daps.DapsServiceImpl;
 import org.eclipse.dataspaceconnector.ids.core.descriptor.IdsDescriptorServiceImpl;
 import org.eclipse.dataspaceconnector.ids.core.message.DataRequestMessageSender;
@@ -24,7 +23,6 @@ import org.eclipse.dataspaceconnector.ids.core.message.QueryMessageSender;
 import org.eclipse.dataspaceconnector.ids.core.policy.IdsPolicyServiceImpl;
 import org.eclipse.dataspaceconnector.ids.core.version.ConnectorVersionProviderImpl;
 import org.eclipse.dataspaceconnector.ids.core.version.InboundProtocolVersionManagerImpl;
-import org.eclipse.dataspaceconnector.ids.spi.configuration.ConfigurationProvider;
 import org.eclipse.dataspaceconnector.ids.spi.daps.DapsService;
 import org.eclipse.dataspaceconnector.ids.spi.descriptor.IdsDescriptorService;
 import org.eclipse.dataspaceconnector.ids.spi.policy.IdsPolicyService;
@@ -68,7 +66,6 @@ public class IdsCoreServiceExtension implements ServiceExtension {
     public void initialize(ServiceExtensionContext serviceExtensionContext) {
         monitor = serviceExtensionContext.getMonitor();
 
-        registerConfigurationProvider(serviceExtensionContext);
         registerProtocolVersionManager(serviceExtensionContext);
         registerConnectorVersionProvider(serviceExtensionContext);
         registerOther(serviceExtensionContext);
@@ -99,11 +96,6 @@ public class IdsCoreServiceExtension implements ServiceExtension {
     @Override
     public void shutdown() {
         monitor.info("Shutdown IDS Core extension");
-    }
-
-    private void registerConfigurationProvider(ServiceExtensionContext serviceExtensionContext) {
-        ConfigurationProvider configurationProvider = new ConfigurationProviderImpl(serviceExtensionContext);
-        serviceExtensionContext.registerService(ConfigurationProvider.class, configurationProvider);
     }
 
     private void registerProtocolVersionManager(ServiceExtensionContext serviceExtensionContext) {
