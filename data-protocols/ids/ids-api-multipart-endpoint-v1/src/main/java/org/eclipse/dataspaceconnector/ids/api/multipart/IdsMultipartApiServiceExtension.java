@@ -15,15 +15,12 @@
 package org.eclipse.dataspaceconnector.ids.api.multipart;
 
 import org.eclipse.dataspaceconnector.ids.api.multipart.controller.MultipartController;
+import org.eclipse.dataspaceconnector.ids.api.multipart.controller.MultipartControllerSettingsFactory;
 import org.eclipse.dataspaceconnector.ids.api.multipart.factory.BaseConnectorFactory;
 import org.eclipse.dataspaceconnector.ids.api.multipart.factory.BaseConnectorFactorySettingsFactory;
 import org.eclipse.dataspaceconnector.ids.api.multipart.factory.DescriptionResponseMessageFactory;
 import org.eclipse.dataspaceconnector.ids.api.multipart.factory.DescriptionResponseMessageFactorySettingsFactory;
-import org.eclipse.dataspaceconnector.ids.api.multipart.factory.RejectionMessageFactory;
-import org.eclipse.dataspaceconnector.ids.api.multipart.factory.RejectionMessageFactorySettingsFactory;
 import org.eclipse.dataspaceconnector.ids.api.multipart.factory.ResourceCatalogFactory;
-import org.eclipse.dataspaceconnector.ids.api.multipart.handler.MultipartRequestHandlerResolver;
-import org.eclipse.dataspaceconnector.ids.api.multipart.handler.RejectionMultipartRequestHandler;
 import org.eclipse.dataspaceconnector.ids.api.multipart.handler.description.ConnectorDescriptionRequestHandler;
 import org.eclipse.dataspaceconnector.ids.api.multipart.handler.description.ConnectorDescriptionRequestHandlerSettingsFactory;
 import org.eclipse.dataspaceconnector.ids.api.multipart.handler.description.DescriptionRequestHandlerImpl;
@@ -38,6 +35,7 @@ import org.eclipse.dataspaceconnector.spi.protocol.web.WebService;
 import org.eclipse.dataspaceconnector.spi.system.ServiceExtension;
 import org.eclipse.dataspaceconnector.spi.system.ServiceExtensionContext;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -96,8 +94,8 @@ public final class IdsMultipartApiServiceExtension implements ServiceExtension {
 
         // First create all objects that may return errors and ensure success
         var settingResolver = new SettingResolver(serviceExtensionContext);
-        var rejectionMessageFactorySettingsFactory = new RejectionMessageFactorySettingsFactory(settingResolver);
-        var rejectionMessageFactorySettingsFactoryResult = rejectionMessageFactorySettingsFactory.createRejectionMessageFactorySettings();
+        var multipartControllerSettingsFactory = new MultipartControllerSettingsFactory(settingResolver);
+        var multipartControllerSettingsFactoryResult = multipartControllerSettingsFactory.createRejectionMessageFactorySettings();
         var baseConnectorFactorySettingsFactory = new BaseConnectorFactorySettingsFactory(settingResolver);
         var baseConnectorFactorySettingsFactoryResult = baseConnectorFactorySettingsFactory.createBaseConnectorFactorySettings();
         var descriptionResponseMessageFactorySettingsFactory = new DescriptionResponseMessageFactorySettingsFactory(settingResolver);
@@ -106,7 +104,7 @@ public final class IdsMultipartApiServiceExtension implements ServiceExtension {
         var connectorDescriptionRequestHandlerSettingsFactoryResult = connectorDescriptionRequestHandlerSettingsFactory.createConnectorDescriptionRequestHandlerSettings();
 
         var allErrorsDistinct = new HashSet<String>();
-        allErrorsDistinct.addAll(rejectionMessageFactorySettingsFactoryResult.getErrors());
+        allErrorsDistinct.addAll(multipartControllerSettingsFactoryResult.getErrors());
         allErrorsDistinct.addAll(baseConnectorFactorySettingsFactoryResult.getErrors());
         allErrorsDistinct.addAll(descriptionResponseMessageFactorySettingsFactoryResult.getErrors());
         allErrorsDistinct.addAll(connectorDescriptionRequestHandlerSettingsFactoryResult.getErrors());
@@ -114,11 +112,6 @@ public final class IdsMultipartApiServiceExtension implements ServiceExtension {
             throw new EdcException(String.join(", ", allErrorsDistinct));
         }
 
-        var rejectionMessageFactorySettings = rejectionMessageFactorySettingsFactoryResult.getRejectionMessageFactorySettings();
-        if (rejectionMessageFactorySettings == null) {
-            throw new EdcException("RejectionMessageFactorySettingsFactoryResult empty");
-        }
-        var rejectionMessageFactory = new RejectionMessageFactory(rejectionMessageFactorySettings);
 
         var baseConnectorFactorySettings = baseConnectorFactorySettingsFactoryResult.getBaseConnectorFactorySettings();
         if (baseConnectorFactorySettings == null) {
@@ -138,15 +131,18 @@ public final class IdsMultipartApiServiceExtension implements ServiceExtension {
         if (connectorDescriptionRequestHandlerSettings == null) {
             throw new EdcException("ConnectorDescriptionRequestHandlerSettingsFactoryResult empty");
         }
-        var connectorDescriptionRequestHandler = new ConnectorDescriptionRequestHandler(descriptionResponseMessageFactory, connectorDescriptionService, connectorDescriptionRequestHandlerSettings);
-        var rejectionMultipartRequestHandler = new RejectionMultipartRequestHandler(rejectionMessageFactory);
 
+        var connectorDescriptionRequestHandler = new ConnectorDescriptionRequestHandler(descriptionResponseMessageFactory, connectorDescriptionService, connectorDescriptionRequestHandlerSettings);
         var descriptionRequestHandler = new DescriptionRequestHandlerImpl();
         descriptionRequestHandler.add(null, connectorDescriptionRequestHandler);
         descriptionRequestHandler.add(IdsId.Type.CONNECTOR, connectorDescriptionRequestHandler);
-        var multipartRequestHandlerResolver = new MultipartRequestHandlerResolver(descriptionRequestHandler);
 
-        var multipartController = new MultipartController(monitor, identityService, multipartRequestHandlerResolver, rejectionMultipartRequestHandler);
+
+        var multipartControllerSettings = multipartControllerSettingsFactoryResult.getRejectionMessageFactorySettings();
+        if (multipartControllerSettings == null) {
+            throw new EdcException("RejectionMessageFactorySettingsFactoryResult empty");
+        }
+        var multipartController = new MultipartController(multipartControllerSettings, monitor, identityService, Collections.singletonList(descriptionRequestHandler));
 
         webService.registerController(multipartController);
     }

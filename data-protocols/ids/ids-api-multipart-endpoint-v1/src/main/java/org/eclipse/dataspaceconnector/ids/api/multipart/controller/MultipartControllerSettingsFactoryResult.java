@@ -7,20 +7,20 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class RejectionMessageFactorySettingsFactoryResult {
-    private final RejectionMessageFactorySettings rejectionMessageFactorySettings;
+public class MultipartControllerSettingsFactoryResult {
+    private final MultipartControllerSettings multipartControllerSettings;
     private final List<String> errors;
 
-    public RejectionMessageFactorySettingsFactoryResult(
-            @Nullable RejectionMessageFactorySettings rejectionMessageFactorySettings,
+    public MultipartControllerSettingsFactoryResult(
+            @Nullable MultipartControllerSettings multipartControllerSettings,
             @Nullable List<String> errors) {
-        this.rejectionMessageFactorySettings = rejectionMessageFactorySettings;
+        this.multipartControllerSettings = multipartControllerSettings;
         this.errors = errors == null ? new ArrayList<>() : errors;
     }
 
     @Nullable
-    public RejectionMessageFactorySettings getRejectionMessageFactorySettings() {
-        return rejectionMessageFactorySettings;
+    public MultipartControllerSettings getRejectionMessageFactorySettings() {
+        return multipartControllerSettings;
     }
 
     @NotNull

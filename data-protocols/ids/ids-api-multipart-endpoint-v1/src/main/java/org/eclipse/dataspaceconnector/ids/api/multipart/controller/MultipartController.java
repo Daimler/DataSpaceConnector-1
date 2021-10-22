@@ -39,7 +39,6 @@ import static org.eclipse.dataspaceconnector.ids.api.multipart.factory.Rejection
 import static org.eclipse.dataspaceconnector.ids.api.multipart.factory.RejectionMessageUtil.notAuthorized;
 import static org.eclipse.dataspaceconnector.ids.api.multipart.factory.RejectionMessageUtil.notFound;
 
-// TODO Add Integration Test with real request
 @Consumes({ MediaType.MULTIPART_FORM_DATA })
 @Produces({ MediaType.MULTIPART_FORM_DATA })
 @Path(MultipartController.PATH)
@@ -51,14 +50,17 @@ public class MultipartController {
     private final Monitor monitor;
     private final IdentityService identityService;
     private final List<RequestHandler> multipartRequestHandlers;
+    private final MultipartControllerSettings multipartControllerSettings;
 
     public MultipartController(
+            MultipartControllerSettings multipartControllerSettings,
             Monitor monitor,
             IdentityService identityService,
             List<RequestHandler> multipartRequestHandlers) {
         this.monitor = monitor;
         this.identityService = identityService;
         this.multipartRequestHandlers = multipartRequestHandlers;
+        this.multipartControllerSettings = multipartControllerSettings;
     }
 
     @POST
@@ -73,7 +75,7 @@ public class MultipartController {
         if (dynamicAttributeToken == null || dynamicAttributeToken.getTokenValue() == null) {
             return Response.ok(
                     createFormDataMultiPart(
-                            notAuthenticated(header, null, null), null)).build();
+                            notAuthenticated(header, multipartControllerSettings.getId()), null)).build();
         }
 
         VerificationResult verificationResult = identityService.verifyJwtToken(
@@ -81,13 +83,13 @@ public class MultipartController {
         if (verificationResult == null) {
             return Response.ok(
                     createFormDataMultiPart(
-                            notAuthenticated(header, null, null), null)).build();
+                            notAuthenticated(header, multipartControllerSettings.getId()), null)).build();
         }
 
         if (!verificationResult.valid()) {
             return Response.ok(
                     createFormDataMultiPart(
-                            notAuthorized(header, null, null), null)).build();
+                            notAuthorized(header, multipartControllerSettings.getId()), null)).build();
         }
 
         MultipartRequest multipartRequest = MultipartRequest.Builder.newInstance()
@@ -100,7 +102,7 @@ public class MultipartController {
         if (requestHandler == null) {
             return Response.ok(
                     createFormDataMultiPart(
-                            messageTypeNotSupported(header, null, null), null)).build();
+                            messageTypeNotSupported(header, multipartControllerSettings.getId()), null)).build();
         }
 
         MultipartResponse multipartResponse = requestHandler.handleRequest(multipartRequest);
@@ -111,7 +113,7 @@ public class MultipartController {
 
         return Response.ok(
                 createFormDataMultiPart(
-                        notFound(header, null, null), null)).build();
+                        notFound(header, multipartControllerSettings.getId()), null)).build();
     }
 
     private FormDataMultiPart createFormDataMultiPart(MultipartResponse multipartResponse) {

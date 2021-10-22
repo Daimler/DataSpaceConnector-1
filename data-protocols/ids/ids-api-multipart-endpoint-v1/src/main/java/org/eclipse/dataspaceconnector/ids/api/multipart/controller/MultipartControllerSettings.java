@@ -4,10 +4,10 @@ import org.jetbrains.annotations.Nullable;
 
 import java.net.URI;
 
-public class RejectionMessageFactorySettings {
+public class MultipartControllerSettings {
     private final URI id;
 
-    private RejectionMessageFactorySettings(@Nullable URI id) {
+    private MultipartControllerSettings(@Nullable URI id) {
         this.id = id;
     }
 
@@ -31,8 +31,8 @@ public class RejectionMessageFactorySettings {
             return this;
         }
 
-        public RejectionMessageFactorySettings build() {
-            return new RejectionMessageFactorySettings(id);
+        public MultipartControllerSettings build() {
+            return new MultipartControllerSettings(id);
         }
     }
 }

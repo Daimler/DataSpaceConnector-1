@@ -7,15 +7,15 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RejectionMessageFactorySettingsFactory {
+public class MultipartControllerSettingsFactory {
 
     private final SettingResolver settingResolver;
 
-    public RejectionMessageFactorySettingsFactory(SettingResolver settingResolver) {
+    public MultipartControllerSettingsFactory(SettingResolver settingResolver) {
         this.settingResolver = settingResolver;
     }
 
-    public RejectionMessageFactorySettingsFactoryResult createRejectionMessageFactorySettings() {
+    public MultipartControllerSettingsFactoryResult createRejectionMessageFactorySettings() {
 
         List<String> errors = new ArrayList<>();
 
@@ -27,8 +27,8 @@ public class RejectionMessageFactorySettingsFactory {
             errors.add(e.getMessage());
         }
 
-        var settings = RejectionMessageFactorySettings.Builder.newInstance().id(id).build();
+        var settings = MultipartControllerSettings.Builder.newInstance().id(id).build();
 
-        return new RejectionMessageFactorySettingsFactoryResult(settings, errors);
+        return new MultipartControllerSettingsFactoryResult(settings, errors);
     }
 }
