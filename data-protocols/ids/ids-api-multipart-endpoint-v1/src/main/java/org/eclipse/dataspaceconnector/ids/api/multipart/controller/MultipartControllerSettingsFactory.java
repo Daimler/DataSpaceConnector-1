@@ -1,4 +1,4 @@
-package org.eclipse.dataspaceconnector.ids.api.multipart.factory;
+package org.eclipse.dataspaceconnector.ids.api.multipart.controller;
 
 import org.eclipse.dataspaceconnector.ids.core.configuration.IllegalSettingException;
 import org.eclipse.dataspaceconnector.ids.core.configuration.SettingResolver;

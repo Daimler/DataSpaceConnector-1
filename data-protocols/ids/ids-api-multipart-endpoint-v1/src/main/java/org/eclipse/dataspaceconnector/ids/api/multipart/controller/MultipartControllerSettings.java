@@ -1,4 +1,4 @@
-package org.eclipse.dataspaceconnector.ids.api.multipart.factory;
+package org.eclipse.dataspaceconnector.ids.api.multipart.controller;
 
 import org.jetbrains.annotations.Nullable;
 
