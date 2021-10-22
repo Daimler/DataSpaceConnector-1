@@ -15,43 +15,8 @@
 package org.eclipse.dataspaceconnector.ids.api.multipart.handler.description;
 
 import de.fraunhofer.iais.eis.DescriptionRequestMessage;
-import org.eclipse.dataspaceconnector.ids.api.multipart.handler.MultipartRequestHandler;
-import org.eclipse.dataspaceconnector.ids.api.multipart.message.MultipartRequest;
 import org.eclipse.dataspaceconnector.ids.api.multipart.message.MultipartResponse;
-import org.eclipse.dataspaceconnector.ids.spi.IdsId;
-import org.jetbrains.annotations.NotNull;
 
-import java.net.URI;
-
-
-public class DescriptionRequestHandler implements MultipartRequestHandler {
-    private final DescriptionRequestMessageHandlerRegistry descriptionRequestMessageHandlerRegistry;
-
-    public DescriptionRequestHandler(
-            DescriptionRequestMessageHandlerRegistry descriptionRequestMessageHandlerRegistry) {
-        this.descriptionRequestMessageHandlerRegistry = descriptionRequestMessageHandlerRegistry;
-    }
-
-    @Override
-    public boolean canHandle(@NotNull MultipartRequest multipartRequest) {
-        return multipartRequest.getHeader() instanceof DescriptionRequestMessage;
-    }
-
-    @Override
-    public MultipartResponse handleRequest(@NotNull MultipartRequest multipartRequest) {
-        DescriptionRequestMessage descriptionRequestMessage = (DescriptionRequestMessage) multipartRequest.getHeader();
-
-        URI requestedElement = descriptionRequestMessage.getRequestedElement();
-        IdsId.Type type = null;
-        if (requestedElement != null) {
-            type = IdsId.fromUri(requestedElement).getType();
-        }
-
-        DescriptionRequestMessageHandler descriptionRequestMessageHandler = descriptionRequestMessageHandlerRegistry.get(type);
-        if (descriptionRequestMessageHandler != null) {
-            return descriptionRequestMessageHandler.handle(descriptionRequestMessage, multipartRequest.getPayload());
-        }
-
-        return null;
-    }
+public interface DescriptionRequestHandler {
+    MultipartResponse handle(DescriptionRequestMessage descriptionRequestMessage, String payload);
 }

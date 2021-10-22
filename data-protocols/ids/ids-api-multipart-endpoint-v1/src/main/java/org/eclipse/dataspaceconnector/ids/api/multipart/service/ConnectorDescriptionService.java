@@ -18,33 +18,25 @@ import de.fraunhofer.iais.eis.Connector;
 import de.fraunhofer.iais.eis.ResourceCatalog;
 import org.eclipse.dataspaceconnector.ids.api.multipart.factory.BaseConnectorFactory;
 import org.eclipse.dataspaceconnector.ids.api.multipart.factory.ResourceCatalogFactory;
-import org.eclipse.dataspaceconnector.ids.spi.configuration.ConfigurationProvider;
-import org.eclipse.dataspaceconnector.ids.spi.version.ConnectorVersionProvider;
-import org.eclipse.dataspaceconnector.ids.spi.version.InboundProtocolVersionManager;
-import org.eclipse.dataspaceconnector.spi.monitor.Monitor;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
+import java.util.Objects;
 
 /**
  * The IDS service is able to create IDS compliant descriptions of resources.
  * These descriptions may be used to create a self-description or answer a Description Request Message.
  */
 public class ConnectorDescriptionService {
-    private final Monitor monitor;
-    private final ConfigurationProvider configurationProvider;
-    private final InboundProtocolVersionManager inboundProtocolVersionManager;
-    private final ConnectorVersionProvider connectorVersionProvider;
+    private final BaseConnectorFactory baseConnectorFactory;
+    private final ResourceCatalogFactory resourceCatalogFactory;
 
-    public ConnectorDescriptionService(Monitor monitor,
-                                       ConfigurationProvider configurationProvider,
-                                       InboundProtocolVersionManager inboundProtocolVersionManager,
-                                       ConnectorVersionProvider connectorVersionProvider) {
-        this.monitor = monitor;
-        this.configurationProvider = configurationProvider;
-        this.inboundProtocolVersionManager = inboundProtocolVersionManager;
-        this.connectorVersionProvider = connectorVersionProvider;
+    public ConnectorDescriptionService(
+            @NotNull BaseConnectorFactory baseConnectorFactory,
+            @NotNull ResourceCatalogFactory resourceCatalogFactory) {
+        this.baseConnectorFactory = Objects.requireNonNull(baseConnectorFactory);
+        this.resourceCatalogFactory = Objects.requireNonNull(resourceCatalogFactory);
     }
-
 
     /**
      * Provides the connector object, which may be used by the IDS self-description of the connector.
@@ -52,11 +44,8 @@ public class ConnectorDescriptionService {
      * @return connector description
      */
     public Connector createSelfDescription() {
-        BaseConnectorFactory baseConnectorBuilderFactory = new BaseConnectorFactory(configurationProvider, inboundProtocolVersionManager, connectorVersionProvider);
-        ResourceCatalogFactory resourceCatalogFactory = new ResourceCatalogFactory();
-
         ResourceCatalog resourceCatalog = resourceCatalogFactory.createResourceCatalogBuilder(Collections.emptyList());
 
-        return baseConnectorBuilderFactory.createBaseConnector(resourceCatalog);
+        return baseConnectorFactory.createBaseConnector(resourceCatalog);
     }
 }

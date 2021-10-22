@@ -5,23 +5,24 @@ import de.fraunhofer.iais.eis.RejectionMessage;
 import de.fraunhofer.iais.eis.RejectionMessageBuilder;
 import org.eclipse.dataspaceconnector.ids.core.util.CalendarUtil;
 import org.eclipse.dataspaceconnector.ids.spi.IdsId;
-import org.eclipse.dataspaceconnector.ids.spi.configuration.ConfigurationProvider;
 import org.eclipse.dataspaceconnector.ids.spi.version.IdsOutboundProtocolVersionProvider;
+import org.jetbrains.annotations.NotNull;
 
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Objects;
 import java.util.UUID;
 
 @Deprecated // This functionality will be moved to a transformer class
 public class RejectionMessageFactory {
-    private final ConfigurationProvider configurationProvider;
+    private final RejectionMessageFactorySettings rejectionMessageFactorySettings;
     private final IdsOutboundProtocolVersionProvider outboundProtocolVersionProvider;
 
-    public RejectionMessageFactory(ConfigurationProvider configurationProvider,
-                                   IdsOutboundProtocolVersionProvider outboundProtocolVersionProvider) {
-        this.configurationProvider = configurationProvider;
-        this.outboundProtocolVersionProvider = outboundProtocolVersionProvider;
+    public RejectionMessageFactory(@NotNull RejectionMessageFactorySettings rejectionMessageFactorySettings,
+                                   @NotNull IdsOutboundProtocolVersionProvider outboundProtocolVersionProvider) {
+        this.rejectionMessageFactorySettings = Objects.requireNonNull(rejectionMessageFactorySettings);
+        this.outboundProtocolVersionProvider = Objects.requireNonNull(outboundProtocolVersionProvider);
     }
 
     public RejectionMessage createRejectionMessage(Message correlationMessage) {
@@ -32,7 +33,7 @@ public class RejectionMessageFactory {
         builder._contentVersion_(outboundProtocolVersionProvider.getIdsProtocolVersion().getValue());
         builder._modelVersion_(outboundProtocolVersionProvider.getIdsProtocolVersion().getValue());
 
-        URI connectorId = configurationProvider.resolveId();
+        URI connectorId = rejectionMessageFactorySettings.getId();
         if (connectorId != null) {
             builder._issuerConnector_(connectorId);
             builder._senderAgent_(connectorId);
@@ -56,6 +57,7 @@ public class RejectionMessageFactory {
                 builder._recipientConnector_(new ArrayList<>(Collections.singletonList(issuerConnector)));
             }
         }
+
         return builder.build();
     }
 }

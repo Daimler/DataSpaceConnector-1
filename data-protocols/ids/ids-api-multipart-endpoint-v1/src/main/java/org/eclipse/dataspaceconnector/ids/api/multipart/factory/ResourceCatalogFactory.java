@@ -25,6 +25,7 @@ import java.util.List;
 public class ResourceCatalogFactory {
 
     public ResourceCatalog createResourceCatalogBuilder(List<Resource> resources) {
+        // TODO Create static ID
         ResourceCatalogBuilder resourceCatalogBuilder = new ResourceCatalogBuilder();
 
         if (resources != null) {

@@ -17,7 +17,6 @@ package org.eclipse.dataspaceconnector.ids.api.multipart.controller;
 import de.fraunhofer.iais.eis.DynamicAttributeToken;
 import de.fraunhofer.iais.eis.Message;
 import de.fraunhofer.iais.eis.RequestMessage;
-import de.fraunhofer.iais.eis.Token;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
@@ -27,7 +26,7 @@ import jakarta.ws.rs.core.Response;
 import org.eclipse.dataspaceconnector.ids.api.multipart.message.MultipartRequest;
 import org.eclipse.dataspaceconnector.ids.api.multipart.message.MultipartResponse;
 import org.eclipse.dataspaceconnector.ids.api.multipart.handler.MultipartRequestHandlerResolver;
-import org.eclipse.dataspaceconnector.ids.api.multipart.handler.MultipartRequestHandler;
+import org.eclipse.dataspaceconnector.ids.api.multipart.handler.RequestHandler;
 import org.eclipse.dataspaceconnector.ids.api.multipart.handler.RejectionMultipartRequestHandler;
 import org.eclipse.dataspaceconnector.spi.iam.IdentityService;
 import org.eclipse.dataspaceconnector.spi.iam.VerificationResult;
@@ -99,7 +98,7 @@ public class MultipartController {
                 .build();
 
         MultipartResponse multipartResponse = null;
-        MultipartRequestHandler multipartRequestHandler = multipartRequestHandlerResolver.resolveHandler(multipartRequest);
+        RequestHandler multipartRequestHandler = multipartRequestHandlerResolver.resolveHandler(multipartRequest);
         if (multipartRequestHandler != null) {
             multipartResponse = multipartRequestHandler.handleRequest(multipartRequest);
         }

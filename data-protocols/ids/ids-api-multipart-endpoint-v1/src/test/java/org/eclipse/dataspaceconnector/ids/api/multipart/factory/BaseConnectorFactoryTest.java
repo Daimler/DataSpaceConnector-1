@@ -17,7 +17,6 @@ package org.eclipse.dataspaceconnector.ids.api.multipart.factory;
 import de.fraunhofer.iais.eis.BaseConnector;
 import org.assertj.core.api.Assertions;
 import org.easymock.EasyMock;
-import org.eclipse.dataspaceconnector.ids.spi.configuration.ConfigurationProvider;
 import org.eclipse.dataspaceconnector.ids.spi.types.SecurityProfile;
 import org.eclipse.dataspaceconnector.ids.spi.version.ConnectorVersionProvider;
 import org.eclipse.dataspaceconnector.ids.spi.version.IdsProtocolVersion;
@@ -46,14 +45,14 @@ class BaseConnectorFactoryTest {
     }
 
     // Mocks
-    private ConfigurationProvider configurationProvider;
+    private BaseConnectorFactorySettings baseConnectorFactorySettings;
     private InboundProtocolVersionManager inboundProtocolVersionManager;
     private ConnectorVersionProvider connectorVersionProvider;
 
     @BeforeEach
     public void setUp() {
         // prepare/instantiate mock instances
-        configurationProvider = EasyMock.createMock(ConfigurationProvider.class);
+        baseConnectorFactorySettings = EasyMock.createMock(BaseConnectorFactorySettings.class);
         inboundProtocolVersionManager = EasyMock.createMock(InboundProtocolVersionManager.class);
         connectorVersionProvider = EasyMock.createMock(ConnectorVersionProvider.class);
     }
@@ -61,31 +60,31 @@ class BaseConnectorFactoryTest {
     @AfterEach
     public void tearDown() {
         // verify - no more invocations on mock
-        EasyMock.verify(configurationProvider, inboundProtocolVersionManager, connectorVersionProvider);
+        EasyMock.verify(baseConnectorFactorySettings, inboundProtocolVersionManager, connectorVersionProvider);
     }
 
     @Test
     void testBaseConnectorFactoryReturnsAsExpected() {
         // prepare
         BaseConnectorFactory baseConnectorFactory = new BaseConnectorFactory(
-                configurationProvider,
+                baseConnectorFactorySettings,
                 inboundProtocolVersionManager,
                 connectorVersionProvider
         );
 
-        EasyMock.expect(configurationProvider.resolveId()).andReturn(Fixtures.ID).times(1);
-        EasyMock.expect(configurationProvider.resolveTitle()).andReturn(Fixtures.TITLE).times(1);
-        EasyMock.expect(configurationProvider.resolveDescription()).andReturn(Fixtures.DESCRIPTION).times(1);
-        EasyMock.expect(configurationProvider.resolveMaintainer()).andReturn(Fixtures.MAINTAINER).times(1);
-        EasyMock.expect(configurationProvider.resolveCurator()).andReturn(Fixtures.CURATOR).times(1);
-        EasyMock.expect(configurationProvider.resolveConnectorEndpoint()).andReturn(Fixtures.CONNECTOR_ENDPOINT).times(1);
-        EasyMock.expect(configurationProvider.resolveSecurityProfile()).andReturn(Fixtures.SECURITY_PROFILE).times(1);
+        EasyMock.expect(baseConnectorFactorySettings.getId()).andReturn(Fixtures.ID).times(1);
+        EasyMock.expect(baseConnectorFactorySettings.getTitle()).andReturn(Fixtures.TITLE).times(1);
+        EasyMock.expect(baseConnectorFactorySettings.getDescription()).andReturn(Fixtures.DESCRIPTION).times(1);
+        EasyMock.expect(baseConnectorFactorySettings.getMaintainer()).andReturn(Fixtures.MAINTAINER).times(1);
+        EasyMock.expect(baseConnectorFactorySettings.getCurator()).andReturn(Fixtures.CURATOR).times(1);
+        EasyMock.expect(baseConnectorFactorySettings.getConnectorEndpoint()).andReturn(Fixtures.CONNECTOR_ENDPOINT).times(1);
+        EasyMock.expect(baseConnectorFactorySettings.getSecurityProfile()).andReturn(Fixtures.SECURITY_PROFILE).times(1);
 
         EasyMock.expect(inboundProtocolVersionManager.getInboundProtocolVersions()).andReturn(Fixtures.INBOUND_PROTOCOL_VERSIONS).times(1);
 
         EasyMock.expect(connectorVersionProvider.getVersion()).andReturn(Fixtures.CONNECTOR_VERSION).times(1);
 
-        EasyMock.replay(configurationProvider, inboundProtocolVersionManager, connectorVersionProvider);
+        EasyMock.replay(baseConnectorFactorySettings, inboundProtocolVersionManager, connectorVersionProvider);
 
         // invoke
         BaseConnector connector = baseConnectorFactory.createBaseConnector();

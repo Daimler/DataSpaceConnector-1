@@ -24,7 +24,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Objects;
 
 // TODO Remove this class
-public class RejectionMultipartRequestHandler implements MultipartRequestHandler {
+public class RejectionMultipartRequestHandler implements RequestHandler {
     private final RejectionMessageFactory rejectionMessageFactory;
 
     public RejectionMultipartRequestHandler(RejectionMessageFactory rejectionMessageFactory) {

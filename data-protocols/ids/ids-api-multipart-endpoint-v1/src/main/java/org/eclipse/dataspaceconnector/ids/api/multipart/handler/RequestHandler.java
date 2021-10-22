@@ -17,12 +17,20 @@ package org.eclipse.dataspaceconnector.ids.api.multipart.handler;
 import org.eclipse.dataspaceconnector.ids.api.multipart.message.MultipartRequest;
 import org.eclipse.dataspaceconnector.ids.api.multipart.message.MultipartResponse;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 
-public interface MultipartRequestHandler {
+public interface RequestHandler {
 
+    /**
+     * @param multipartRequest from another connector
+     * @return true if the handler can handle the request
+     */
     boolean canHandle(@NotNull MultipartRequest multipartRequest);
 
-    // TODO Add Exception (opinion from Dominik)
-    MultipartResponse handleRequest(@NotNull MultipartRequest multipartRequest);
+    /**
+     * @param multipartRequest from another connector
+     * @return {@link MultipartResponse} or null, if the request cannot be handled (e.g. when content missing)
+     */
+    @Nullable MultipartResponse handleRequest(@NotNull MultipartRequest multipartRequest);
 }

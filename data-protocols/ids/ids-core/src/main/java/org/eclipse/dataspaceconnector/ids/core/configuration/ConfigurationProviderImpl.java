@@ -46,37 +46,37 @@ public class ConfigurationProviderImpl implements ConfigurationProvider {
 
     @Override
     public URI resolveId() {
-        return resolveUri(context.getSetting(IdsSettings.EDC_IDS_ID, Defaults.ID));
+        return resolveUri(context.getSetting(SettingKeys.EDC_IDS_ID, Defaults.ID));
     }
 
     @Override
     public String resolveTitle() {
-        return context.getSetting(IdsSettings.EDC_IDS_TITLE, Defaults.TITLE);
+        return context.getSetting(SettingKeys.EDC_IDS_TITLE, Defaults.TITLE);
     }
 
     @Override
     public String resolveDescription() {
-        return context.getSetting(IdsSettings.EDC_IDS_DESCRIPTION, Defaults.DESCRIPTION);
+        return context.getSetting(SettingKeys.EDC_IDS_DESCRIPTION, Defaults.DESCRIPTION);
     }
 
     @Override
     public URI resolveMaintainer() {
-        return resolveUri(context.getSetting(IdsSettings.EDC_IDS_MAINTAINER, Defaults.MAINTAINER));
+        return resolveUri(context.getSetting(SettingKeys.EDC_IDS_MAINTAINER, Defaults.MAINTAINER));
     }
 
     @Override
     public URI resolveCurator() {
-        return resolveUri(context.getSetting(IdsSettings.EDC_IDS_CURATOR, Defaults.CURATOR));
+        return resolveUri(context.getSetting(SettingKeys.EDC_IDS_CURATOR, Defaults.CURATOR));
     }
 
     @Override
     public URI resolveConnectorEndpoint() {
-        return resolveUri(context.getSetting(IdsSettings.EDC_IDS_ENDPOINT, Defaults.ENDPOINT));
+        return resolveUri(context.getSetting(SettingKeys.EDC_IDS_ENDPOINT, Defaults.ENDPOINT));
     }
 
     @Override
     public SecurityProfile resolveSecurityProfile() {
-        String securityProfileValue = context.getSetting(IdsSettings.EDC_IDS_SECURITY_PROFILE, null);
+        String securityProfileValue = context.getSetting(SettingKeys.EDC_IDS_SECURITY_PROFILE, null);
         SecurityProfile securityProfile = null;
         if (securityProfileValue != null) {
             securityProfile = mapToSecurityProfile(securityProfileValue);

@@ -19,13 +19,14 @@ import de.fraunhofer.iais.eis.DescriptionResponseMessageBuilder;
 import de.fraunhofer.iais.eis.Message;
 import org.eclipse.dataspaceconnector.ids.core.util.CalendarUtil;
 import org.eclipse.dataspaceconnector.ids.spi.IdsId;
-import org.eclipse.dataspaceconnector.ids.spi.configuration.ConfigurationProvider;
 import org.eclipse.dataspaceconnector.ids.spi.version.IdsOutboundProtocolVersionProvider;
 import org.eclipse.dataspaceconnector.ids.spi.version.IdsProtocolVersion;
+import org.jetbrains.annotations.NotNull;
 
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Objects;
 import java.util.UUID;
 
 
@@ -34,13 +35,13 @@ import java.util.UUID;
 @Deprecated // This functionality will be moved to a transformer class
 public class DescriptionResponseMessageFactory {
 
-    private final ConfigurationProvider configurationProvider;
+    private final DescriptionResponseMessageFactorySettings descriptionResponseMessageFactorySettings;
     private final IdsOutboundProtocolVersionProvider outboundProtocolVersionProvider;
 
-    public DescriptionResponseMessageFactory(ConfigurationProvider idsConfigurationProvider,
-                                             IdsOutboundProtocolVersionProvider outboundProtocolVersionProvider) {
-        this.configurationProvider = idsConfigurationProvider;
-        this.outboundProtocolVersionProvider = outboundProtocolVersionProvider;
+    public DescriptionResponseMessageFactory(@NotNull DescriptionResponseMessageFactorySettings descriptionResponseMessageFactorySettings,
+                                             @NotNull IdsOutboundProtocolVersionProvider outboundProtocolVersionProvider) {
+        this.descriptionResponseMessageFactorySettings = Objects.requireNonNull(descriptionResponseMessageFactorySettings);
+        this.outboundProtocolVersionProvider = Objects.requireNonNull(outboundProtocolVersionProvider);
     }
 
     public DescriptionResponseMessage createDescriptionResponseMessage(
@@ -57,7 +58,7 @@ public class DescriptionResponseMessageFactory {
             builder._modelVersion_(outboundProtocolVersionValue);
         }
 
-        URI connectorId = configurationProvider.resolveId();
+        URI connectorId = descriptionResponseMessageFactorySettings.getId();
         if (connectorId != null) {
             builder._issuerConnector_(connectorId);
             builder._senderAgent_(connectorId);

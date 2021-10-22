@@ -16,7 +16,7 @@ package org.eclipse.dataspaceconnector.ids.core.configuration;
 
 import org.eclipse.dataspaceconnector.spi.EdcSetting;
 
-public final class IdsSettings {
+public final class SettingKeys {
     @EdcSetting
     public static final String EDC_IDS_ID = "edc.ids.id";
 

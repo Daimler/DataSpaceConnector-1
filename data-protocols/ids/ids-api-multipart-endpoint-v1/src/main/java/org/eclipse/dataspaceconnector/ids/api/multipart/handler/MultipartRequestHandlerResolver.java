@@ -22,24 +22,24 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class MultipartRequestHandlerResolver {
-    private final List<MultipartRequestHandler> multipartRequestHandlers = new LinkedList<>();
+    private final List<RequestHandler> multipartRequestHandlers = new LinkedList<>();
 
-    public MultipartRequestHandlerResolver(MultipartRequestHandler... multipartRequestHandlers) {
+    public MultipartRequestHandlerResolver(RequestHandler... multipartRequestHandlers) {
         this(Arrays.asList(multipartRequestHandlers));
     }
 
     public MultipartRequestHandlerResolver(
-            List<MultipartRequestHandler> multipartRequestHandlers) {
+            List<RequestHandler> multipartRequestHandlers) {
         multipartRequestHandlers = multipartRequestHandlers != null ? multipartRequestHandlers : Collections.emptyList();
-        for (MultipartRequestHandler multipartRequestHandler : multipartRequestHandlers) {
+        for (RequestHandler multipartRequestHandler : multipartRequestHandlers) {
             if (multipartRequestHandler != null) {
                 this.multipartRequestHandlers.add(multipartRequestHandler);
             }
         }
     }
 
-    public MultipartRequestHandler resolveHandler(MultipartRequest multipartRequest) {
-        for (MultipartRequestHandler multipartRequestHandler : multipartRequestHandlers) {
+    public RequestHandler resolveHandler(MultipartRequest multipartRequest) {
+        for (RequestHandler multipartRequestHandler : multipartRequestHandlers) {
             if (multipartRequestHandler.canHandle(multipartRequest)) {
                 return multipartRequestHandler;
             }
