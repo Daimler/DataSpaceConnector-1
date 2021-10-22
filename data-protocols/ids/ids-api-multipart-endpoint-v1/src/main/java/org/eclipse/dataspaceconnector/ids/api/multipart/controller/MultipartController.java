@@ -22,7 +22,7 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-import org.eclipse.dataspaceconnector.ids.api.multipart.handler.RequestHandler;
+import org.eclipse.dataspaceconnector.ids.api.multipart.handler.Handler;
 import org.eclipse.dataspaceconnector.ids.api.multipart.message.MultipartRequest;
 import org.eclipse.dataspaceconnector.ids.api.multipart.message.MultipartResponse;
 import org.eclipse.dataspaceconnector.spi.iam.IdentityService;
@@ -34,10 +34,10 @@ import org.glassfish.jersey.media.multipart.FormDataParam;
 
 import java.util.List;
 
-import static org.eclipse.dataspaceconnector.ids.api.multipart.factory.RejectionMessageUtil.messageTypeNotSupported;
-import static org.eclipse.dataspaceconnector.ids.api.multipart.factory.RejectionMessageUtil.notAuthenticated;
-import static org.eclipse.dataspaceconnector.ids.api.multipart.factory.RejectionMessageUtil.notAuthorized;
-import static org.eclipse.dataspaceconnector.ids.api.multipart.factory.RejectionMessageUtil.notFound;
+import static org.eclipse.dataspaceconnector.ids.api.multipart.util.RejectionMessageUtil.messageTypeNotSupported;
+import static org.eclipse.dataspaceconnector.ids.api.multipart.util.RejectionMessageUtil.notAuthenticated;
+import static org.eclipse.dataspaceconnector.ids.api.multipart.util.RejectionMessageUtil.notAuthorized;
+import static org.eclipse.dataspaceconnector.ids.api.multipart.util.RejectionMessageUtil.notFound;
 
 @Consumes({ MediaType.MULTIPART_FORM_DATA })
 @Produces({ MediaType.MULTIPART_FORM_DATA })
@@ -49,17 +49,17 @@ public class MultipartController {
 
     private final Monitor monitor;
     private final IdentityService identityService;
-    private final List<RequestHandler> multipartRequestHandlers;
+    private final List<Handler> multipartHandlers;
     private final MultipartControllerSettings multipartControllerSettings;
 
     public MultipartController(
             MultipartControllerSettings multipartControllerSettings,
             Monitor monitor,
             IdentityService identityService,
-            List<RequestHandler> multipartRequestHandlers) {
+            List<Handler> multipartHandlers) {
         this.monitor = monitor;
         this.identityService = identityService;
-        this.multipartRequestHandlers = multipartRequestHandlers;
+        this.multipartHandlers = multipartHandlers;
         this.multipartControllerSettings = multipartControllerSettings;
     }
 
@@ -98,14 +98,14 @@ public class MultipartController {
                 .verificationResult(verificationResult)
                 .build();
 
-        RequestHandler requestHandler = getRequestHandler(multipartRequest);
-        if (requestHandler == null) {
+        Handler handler = getRequestHandler(multipartRequest);
+        if (handler == null) {
             return Response.ok(
                     createFormDataMultiPart(
                             messageTypeNotSupported(header, multipartControllerSettings.getId()), null)).build();
         }
 
-        MultipartResponse multipartResponse = requestHandler.handleRequest(multipartRequest);
+        MultipartResponse multipartResponse = handler.handleRequest(multipartRequest);
         if (multipartResponse != null) {
             return Response.ok(
                     createFormDataMultiPart(multipartResponse)).build();
@@ -133,10 +133,10 @@ public class MultipartController {
         return multiPart;
     }
 
-    private RequestHandler getRequestHandler(MultipartRequest multipartRequest) {
-        for (RequestHandler multipartRequestHandler : multipartRequestHandlers) {
-            if (multipartRequestHandler.canHandle(multipartRequest)) {
-                return multipartRequestHandler;
+    private Handler getRequestHandler(MultipartRequest multipartRequest) {
+        for (Handler multipartHandler : multipartHandlers) {
+            if (multipartHandler.canHandle(multipartRequest)) {
+                return multipartHandler;
             }
         }
 

@@ -12,10 +12,10 @@
  *
  */
 
-package org.eclipse.dataspaceconnector.ids.api.multipart.handler.description;
+package org.eclipse.dataspaceconnector.ids.api.multipart.handler;
 
 import de.fraunhofer.iais.eis.DescriptionRequestMessage;
-import org.eclipse.dataspaceconnector.ids.api.multipart.handler.RequestHandler;
+import org.eclipse.dataspaceconnector.ids.api.multipart.handler.description.DescriptionRequestHandler;
 import org.eclipse.dataspaceconnector.ids.api.multipart.message.MultipartRequest;
 import org.eclipse.dataspaceconnector.ids.api.multipart.message.MultipartResponse;
 import org.eclipse.dataspaceconnector.ids.spi.IdsId;
@@ -26,7 +26,7 @@ import java.util.Map;
 import java.util.Objects;
 
 
-public class DescriptionRequestHandlerImpl implements RequestHandler {
+public class DescriptionHandlerImpl implements Handler {
     private final Map<IdsId.Type, DescriptionRequestHandler> descriptionRequestMessageHandlers = new HashMap<>();
 
     @Override

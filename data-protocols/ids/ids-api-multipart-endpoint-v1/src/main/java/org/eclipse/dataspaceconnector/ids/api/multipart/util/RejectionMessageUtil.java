@@ -1,4 +1,4 @@
-package org.eclipse.dataspaceconnector.ids.api.multipart.factory;
+package org.eclipse.dataspaceconnector.ids.api.multipart.util;
 
 import de.fraunhofer.iais.eis.Message;
 import de.fraunhofer.iais.eis.RejectionMessage;

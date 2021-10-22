@@ -23,7 +23,7 @@ import org.eclipse.dataspaceconnector.ids.api.multipart.factory.DescriptionRespo
 import org.eclipse.dataspaceconnector.ids.api.multipart.factory.ResourceCatalogFactory;
 import org.eclipse.dataspaceconnector.ids.api.multipart.handler.description.ConnectorDescriptionRequestHandler;
 import org.eclipse.dataspaceconnector.ids.api.multipart.handler.description.ConnectorDescriptionRequestHandlerSettingsFactory;
-import org.eclipse.dataspaceconnector.ids.api.multipart.handler.description.DescriptionRequestHandlerImpl;
+import org.eclipse.dataspaceconnector.ids.api.multipart.handler.DescriptionHandlerImpl;
 import org.eclipse.dataspaceconnector.ids.api.multipart.service.ConnectorDescriptionService;
 import org.eclipse.dataspaceconnector.ids.core.configuration.SettingResolver;
 import org.eclipse.dataspaceconnector.ids.spi.IdsId;
@@ -133,7 +133,7 @@ public final class IdsMultipartApiServiceExtension implements ServiceExtension {
         }
 
         var connectorDescriptionRequestHandler = new ConnectorDescriptionRequestHandler(descriptionResponseMessageFactory, connectorDescriptionService, connectorDescriptionRequestHandlerSettings);
-        var descriptionRequestHandler = new DescriptionRequestHandlerImpl();
+        var descriptionRequestHandler = new DescriptionHandlerImpl();
         descriptionRequestHandler.add(null, connectorDescriptionRequestHandler);
         descriptionRequestHandler.add(IdsId.Type.CONNECTOR, connectorDescriptionRequestHandler);
 
