@@ -23,30 +23,25 @@ import de.fraunhofer.iais.eis.SecurityProfile;
 import de.fraunhofer.iais.eis.util.TypedLiteral;
 import de.fraunhofer.iais.eis.util.Util;
 import org.eclipse.dataspaceconnector.ids.spi.version.ConnectorVersionProvider;
-import org.eclipse.dataspaceconnector.ids.spi.version.IdsProtocolVersion;
-import org.eclipse.dataspaceconnector.ids.spi.version.InboundProtocolVersionManager;
+import org.eclipse.dataspaceconnector.ids.spi.version.IdsProtocol;
 import org.jetbrains.annotations.NotNull;
 
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
+import java.util.Collections;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Deprecated // This functionality will be moved to a transformer class
 public class BaseConnectorFactory {
 
     private final BaseConnectorFactorySettings baseConnectorFactorySettings;
-    private final InboundProtocolVersionManager inboundProtocolVersionManager;
     private final ConnectorVersionProvider connectorVersionProvider;
 
     public BaseConnectorFactory(
             @NotNull BaseConnectorFactorySettings baseConnectorFactorySettings,
-            @NotNull InboundProtocolVersionManager inboundProtocolVersionManager,
             @NotNull ConnectorVersionProvider connectorVersionProvider) {
         this.baseConnectorFactorySettings = Objects.requireNonNull(baseConnectorFactorySettings);
-        this.inboundProtocolVersionManager = Objects.requireNonNull(inboundProtocolVersionManager);
         this.connectorVersionProvider = Objects.requireNonNull(connectorVersionProvider);
     }
 
@@ -62,9 +57,9 @@ public class BaseConnectorFactory {
         }
 
         builder._resourceCatalog_(new ArrayList<>(Arrays.asList(resourceCatalog)));
-        builder._inboundModelVersion_(new ArrayList<>(resolveInboundModelVersion()));
-        // TODO There should be a process how the security profile is defined/found
+        builder._inboundModelVersion_(new ArrayList<>(Collections.singletonList(IdsProtocol.INFORMATION_MODEL_VERSION)));
 
+        // TODO There should be a process how the security profile is defined/found
         SecurityProfile securityProfile = resolveSecurityProfile();
         if (securityProfile != null) {
             builder._securityProfile_(securityProfile);
@@ -133,14 +128,5 @@ public class BaseConnectorFactory {
         ConnectorEndpointBuilder endpoint = new ConnectorEndpointBuilder();
         endpoint._accessURL_(uri);
         return endpoint.build();
-    }
-
-
-    private List<String> resolveInboundModelVersion() {
-        return inboundProtocolVersionManager.getInboundProtocolVersions()
-                .stream()
-                .map(IdsProtocolVersion::getValue)
-                .distinct()
-                .collect(Collectors.toList());
     }
 }

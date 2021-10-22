@@ -35,8 +35,6 @@ import org.glassfish.jersey.media.multipart.FormDataBodyPart;
 import org.glassfish.jersey.media.multipart.FormDataMultiPart;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 
-// TODO Add Integration Test with real request
-
 @Consumes({ MediaType.MULTIPART_FORM_DATA })
 @Produces({ MediaType.MULTIPART_FORM_DATA })
 @Path(MultipartController.PATH)

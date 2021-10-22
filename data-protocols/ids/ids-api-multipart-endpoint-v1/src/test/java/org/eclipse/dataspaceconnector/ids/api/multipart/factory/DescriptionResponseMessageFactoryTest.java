@@ -18,7 +18,7 @@ import de.fraunhofer.iais.eis.Message;
 import org.easymock.EasyMock;
 import org.eclipse.dataspaceconnector.ids.spi.IdsId;
 import org.eclipse.dataspaceconnector.ids.spi.version.IdsOutboundProtocolVersionProvider;
-import org.eclipse.dataspaceconnector.ids.spi.version.IdsProtocolVersion;
+import org.eclipse.dataspaceconnector.ids.spi.version.IdsProtocol;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -30,7 +30,7 @@ public class DescriptionResponseMessageFactoryTest {
 
     private static class Fixtures {
         public static final URI ID = URI.create("https://example.com/id");
-        public static final IdsProtocolVersion OUTBOUND_PROTOCOL_VERSION = new IdsProtocolVersion("4.2.1");
+        public static final IdsProtocol OUTBOUND_PROTOCOL_VERSION = new IdsProtocol("4.2.1");
         private static final URI MESSAGE_ID = URI.create("https://example.com/message");
         private static final URI MESSAGE_SENDER_AGENT = URI.create("https://example.com/sender/agent");
         private static final URI MESSAGE_ISSUER = URI.create("https://example.com/issuer");

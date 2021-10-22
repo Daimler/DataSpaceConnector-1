@@ -4,7 +4,6 @@ import org.eclipse.dataspaceconnector.ids.spi.types.SecurityProfile;
 import org.jetbrains.annotations.Nullable;
 
 import java.net.URI;
-import java.util.Objects;
 
 public class BaseConnectorFactorySettings {
     private final URI id;
@@ -22,13 +21,13 @@ public class BaseConnectorFactorySettings {
                                          @Nullable URI curator,
                                          @Nullable URI connectorEndpoint,
                                          @Nullable SecurityProfile securityProfile) {
-        this.id = Objects.requireNonNull(id);
-        this.title = Objects.requireNonNull(title);
-        this.description = Objects.requireNonNull(description);
-        this.maintainer = Objects.requireNonNull(maintainer);
-        this.curator = Objects.requireNonNull(curator);
-        this.connectorEndpoint = Objects.requireNonNull(connectorEndpoint);
-        this.securityProfile = Objects.requireNonNull(securityProfile);
+        this.id = id;
+        this.title = title;
+        this.description = description;
+        this.maintainer = maintainer;
+        this.curator = curator;
+        this.connectorEndpoint = connectorEndpoint;
+        this.securityProfile = securityProfile;
     }
 
     @Nullable

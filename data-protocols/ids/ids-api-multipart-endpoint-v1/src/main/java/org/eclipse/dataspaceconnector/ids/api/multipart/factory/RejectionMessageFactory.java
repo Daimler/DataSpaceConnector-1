@@ -5,7 +5,7 @@ import de.fraunhofer.iais.eis.RejectionMessage;
 import de.fraunhofer.iais.eis.RejectionMessageBuilder;
 import org.eclipse.dataspaceconnector.ids.core.util.CalendarUtil;
 import org.eclipse.dataspaceconnector.ids.spi.IdsId;
-import org.eclipse.dataspaceconnector.ids.spi.version.IdsOutboundProtocolVersionProvider;
+import org.eclipse.dataspaceconnector.ids.spi.version.IdsProtocol;
 import org.jetbrains.annotations.NotNull;
 
 import java.net.URI;
@@ -17,12 +17,9 @@ import java.util.UUID;
 @Deprecated // This functionality will be moved to a transformer class
 public class RejectionMessageFactory {
     private final RejectionMessageFactorySettings rejectionMessageFactorySettings;
-    private final IdsOutboundProtocolVersionProvider outboundProtocolVersionProvider;
 
-    public RejectionMessageFactory(@NotNull RejectionMessageFactorySettings rejectionMessageFactorySettings,
-                                   @NotNull IdsOutboundProtocolVersionProvider outboundProtocolVersionProvider) {
+    public RejectionMessageFactory(@NotNull RejectionMessageFactorySettings rejectionMessageFactorySettings) {
         this.rejectionMessageFactorySettings = Objects.requireNonNull(rejectionMessageFactorySettings);
-        this.outboundProtocolVersionProvider = Objects.requireNonNull(outboundProtocolVersionProvider);
     }
 
     public RejectionMessage createRejectionMessage(Message correlationMessage) {
@@ -30,8 +27,8 @@ public class RejectionMessageFactory {
 
         RejectionMessageBuilder builder = new RejectionMessageBuilder(messageId.toUri());
 
-        builder._contentVersion_(outboundProtocolVersionProvider.getIdsProtocolVersion().getValue());
-        builder._modelVersion_(outboundProtocolVersionProvider.getIdsProtocolVersion().getValue());
+        builder._contentVersion_(IdsProtocol.INFORMATION_MODEL_VERSION);
+        builder._modelVersion_(IdsProtocol.INFORMATION_MODEL_VERSION);
 
         URI connectorId = rejectionMessageFactorySettings.getId();
         if (connectorId != null) {

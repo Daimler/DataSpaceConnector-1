@@ -19,8 +19,7 @@ import de.fraunhofer.iais.eis.DescriptionResponseMessageBuilder;
 import de.fraunhofer.iais.eis.Message;
 import org.eclipse.dataspaceconnector.ids.core.util.CalendarUtil;
 import org.eclipse.dataspaceconnector.ids.spi.IdsId;
-import org.eclipse.dataspaceconnector.ids.spi.version.IdsOutboundProtocolVersionProvider;
-import org.eclipse.dataspaceconnector.ids.spi.version.IdsProtocolVersion;
+import org.eclipse.dataspaceconnector.ids.spi.version.IdsProtocol;
 import org.jetbrains.annotations.NotNull;
 
 import java.net.URI;
@@ -36,12 +35,9 @@ import java.util.UUID;
 public class DescriptionResponseMessageFactory {
 
     private final DescriptionResponseMessageFactorySettings descriptionResponseMessageFactorySettings;
-    private final IdsOutboundProtocolVersionProvider outboundProtocolVersionProvider;
 
-    public DescriptionResponseMessageFactory(@NotNull DescriptionResponseMessageFactorySettings descriptionResponseMessageFactorySettings,
-                                             @NotNull IdsOutboundProtocolVersionProvider outboundProtocolVersionProvider) {
+    public DescriptionResponseMessageFactory(@NotNull DescriptionResponseMessageFactorySettings descriptionResponseMessageFactorySettings) {
         this.descriptionResponseMessageFactorySettings = Objects.requireNonNull(descriptionResponseMessageFactorySettings);
-        this.outboundProtocolVersionProvider = Objects.requireNonNull(outboundProtocolVersionProvider);
     }
 
     public DescriptionResponseMessage createDescriptionResponseMessage(
@@ -51,12 +47,8 @@ public class DescriptionResponseMessageFactory {
 
         DescriptionResponseMessageBuilder builder = new DescriptionResponseMessageBuilder(messageId.toUri());
 
-        IdsProtocolVersion outboundProtocolVersion = outboundProtocolVersionProvider.getIdsProtocolVersion();
-        String outboundProtocolVersionValue;
-        if (outboundProtocolVersion != null && (outboundProtocolVersionValue = outboundProtocolVersion.getValue()) != null) {
-            builder._contentVersion_(outboundProtocolVersionValue);
-            builder._modelVersion_(outboundProtocolVersionValue);
-        }
+        builder._contentVersion_(IdsProtocol.INFORMATION_MODEL_VERSION);
+        builder._modelVersion_(IdsProtocol.INFORMATION_MODEL_VERSION);
 
         URI connectorId = descriptionResponseMessageFactorySettings.getId();
         if (connectorId != null) {

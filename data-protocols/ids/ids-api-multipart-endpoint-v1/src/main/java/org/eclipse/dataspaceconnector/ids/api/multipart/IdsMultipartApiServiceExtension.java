@@ -28,12 +28,9 @@ import org.eclipse.dataspaceconnector.ids.api.multipart.handler.description.Conn
 import org.eclipse.dataspaceconnector.ids.api.multipart.handler.description.ConnectorDescriptionRequestHandlerSettingsFactory;
 import org.eclipse.dataspaceconnector.ids.api.multipart.handler.description.DescriptionRequestHandlerImpl;
 import org.eclipse.dataspaceconnector.ids.api.multipart.service.ConnectorDescriptionService;
-import org.eclipse.dataspaceconnector.ids.api.multipart.version.ProtocolVersionProviderImpl;
 import org.eclipse.dataspaceconnector.ids.core.configuration.SettingResolver;
 import org.eclipse.dataspaceconnector.ids.spi.IdsId;
 import org.eclipse.dataspaceconnector.ids.spi.version.ConnectorVersionProvider;
-import org.eclipse.dataspaceconnector.ids.spi.version.IdsOutboundProtocolVersionProvider;
-import org.eclipse.dataspaceconnector.ids.spi.version.InboundProtocolVersionManager;
 import org.eclipse.dataspaceconnector.spi.EdcException;
 import org.eclipse.dataspaceconnector.spi.iam.IdentityService;
 import org.eclipse.dataspaceconnector.spi.monitor.Monitor;
@@ -75,16 +72,9 @@ public final class IdsMultipartApiServiceExtension implements ServiceExtension {
     public void initialize(ServiceExtensionContext serviceExtensionContext) {
         monitor = serviceExtensionContext.getMonitor();
 
-        registerComponents(serviceExtensionContext);
         registerControllers(serviceExtensionContext);
 
         monitor.info(String.format("Initialized %s", NAME));
-    }
-
-    private void registerComponents(ServiceExtensionContext serviceExtensionContext) {
-        var protocolVersionProvider = new ProtocolVersionProviderImpl();
-        var inboundProtocolVersionManager = serviceExtensionContext.getService(InboundProtocolVersionManager.class);
-        inboundProtocolVersionManager.addInboundProtocolVersionProvider(protocolVersionProvider);
     }
 
     @Override
@@ -102,8 +92,6 @@ public final class IdsMultipartApiServiceExtension implements ServiceExtension {
         var webService = serviceExtensionContext.getService(WebService.class);
 
         var identityService = serviceExtensionContext.getService(IdentityService.class);
-        var inboundProtocolVersionManager = serviceExtensionContext.getService(InboundProtocolVersionManager.class);
-        var outboundProtocolVersionProvider = serviceExtensionContext.getService(IdsOutboundProtocolVersionProvider.class);
         var connectorVersionProvider = serviceExtensionContext.getService(ConnectorVersionProvider.class);
 
         // First create all objects that may return errors and ensure success
@@ -130,13 +118,13 @@ public final class IdsMultipartApiServiceExtension implements ServiceExtension {
         if (rejectionMessageFactorySettings == null) {
             throw new EdcException("RejectionMessageFactorySettingsFactoryResult empty");
         }
-        var rejectionMessageFactory = new RejectionMessageFactory(rejectionMessageFactorySettings, outboundProtocolVersionProvider);
+        var rejectionMessageFactory = new RejectionMessageFactory(rejectionMessageFactorySettings);
 
         var baseConnectorFactorySettings = baseConnectorFactorySettingsFactoryResult.getBaseConnectorFactorySettings();
         if (baseConnectorFactorySettings == null) {
             throw new EdcException("BaseConnectorFactorySettingsFactoryResult empty");
         }
-        var baseConnectorFactory = new BaseConnectorFactory(baseConnectorFactorySettings, inboundProtocolVersionManager, connectorVersionProvider);
+        var baseConnectorFactory = new BaseConnectorFactory(baseConnectorFactorySettings, connectorVersionProvider);
 
         var resourceCatalogFactory = new ResourceCatalogFactory();
         var connectorDescriptionService = new ConnectorDescriptionService(baseConnectorFactory, resourceCatalogFactory);
@@ -145,7 +133,7 @@ public final class IdsMultipartApiServiceExtension implements ServiceExtension {
         if (descriptionResponseMessageFactorySettings == null) {
             throw new EdcException("DescriptionResponseMessageFactorySettingsFactoryResult empty");
         }
-        var descriptionResponseMessageFactory = new DescriptionResponseMessageFactory(descriptionResponseMessageFactorySettings, outboundProtocolVersionProvider);
+        var descriptionResponseMessageFactory = new DescriptionResponseMessageFactory(descriptionResponseMessageFactorySettings);
         var connectorDescriptionRequestHandlerSettings = connectorDescriptionRequestHandlerSettingsFactoryResult.getConnectorDescriptionRequestHandlerSettings();
         if (connectorDescriptionRequestHandlerSettings == null) {
             throw new EdcException("ConnectorDescriptionRequestHandlerSettingsFactoryResult empty");

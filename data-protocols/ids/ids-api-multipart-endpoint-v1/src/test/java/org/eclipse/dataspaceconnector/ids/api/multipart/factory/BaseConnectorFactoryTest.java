@@ -19,7 +19,7 @@ import org.assertj.core.api.Assertions;
 import org.easymock.EasyMock;
 import org.eclipse.dataspaceconnector.ids.spi.types.SecurityProfile;
 import org.eclipse.dataspaceconnector.ids.spi.version.ConnectorVersionProvider;
-import org.eclipse.dataspaceconnector.ids.spi.version.IdsProtocolVersion;
+import org.eclipse.dataspaceconnector.ids.spi.version.IdsProtocol;
 import org.eclipse.dataspaceconnector.ids.spi.version.InboundProtocolVersionManager;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -40,7 +40,7 @@ class BaseConnectorFactoryTest {
         public static final URI CURATOR = URI.create("https://example.com/curator");
         public static final URI CONNECTOR_ENDPOINT = URI.create("https://example.com/connector/endpoint");
         public static final SecurityProfile SECURITY_PROFILE = SecurityProfile.BASE_SECURITY_PROFILE;
-        public static final List<IdsProtocolVersion> INBOUND_PROTOCOL_VERSIONS = Collections.singletonList(new IdsProtocolVersion("4.2.1"));
+        public static final List<IdsProtocol> INBOUND_PROTOCOL_VERSIONS = Collections.singletonList(new IdsProtocol("4.2.1"));
         public static final String CONNECTOR_VERSION = "0.0.1";
     }
 
@@ -96,7 +96,7 @@ class BaseConnectorFactoryTest {
         Assertions.assertThat(Fixtures.MAINTAINER).isEqualTo(connector.getMaintainer());
         Assertions.assertThat(Fixtures.CURATOR).isEqualTo(connector.getCurator());
 
-        Assertions.assertThat(Fixtures.INBOUND_PROTOCOL_VERSIONS.stream().map(IdsProtocolVersion::getValue).collect(Collectors.toList()))
+        Assertions.assertThat(Fixtures.INBOUND_PROTOCOL_VERSIONS.stream().map(IdsProtocol::getValue).collect(Collectors.toList()))
                 .containsAll(connector.getInboundModelVersion());
 
         Assertions.assertThat(Fixtures.CONNECTOR_VERSION).isEqualTo(connector.getVersion());

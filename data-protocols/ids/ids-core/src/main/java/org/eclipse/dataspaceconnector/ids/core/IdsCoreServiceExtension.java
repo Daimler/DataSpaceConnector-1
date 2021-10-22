@@ -22,12 +22,10 @@ import org.eclipse.dataspaceconnector.ids.core.message.IdsRemoteMessageDispatche
 import org.eclipse.dataspaceconnector.ids.core.message.QueryMessageSender;
 import org.eclipse.dataspaceconnector.ids.core.policy.IdsPolicyServiceImpl;
 import org.eclipse.dataspaceconnector.ids.core.version.ConnectorVersionProviderImpl;
-import org.eclipse.dataspaceconnector.ids.core.version.InboundProtocolVersionManagerImpl;
 import org.eclipse.dataspaceconnector.ids.spi.daps.DapsService;
 import org.eclipse.dataspaceconnector.ids.spi.descriptor.IdsDescriptorService;
 import org.eclipse.dataspaceconnector.ids.spi.policy.IdsPolicyService;
 import org.eclipse.dataspaceconnector.ids.spi.version.ConnectorVersionProvider;
-import org.eclipse.dataspaceconnector.ids.spi.version.InboundProtocolVersionManager;
 import org.eclipse.dataspaceconnector.spi.iam.IdentityService;
 import org.eclipse.dataspaceconnector.spi.message.RemoteMessageDispatcherRegistry;
 import org.eclipse.dataspaceconnector.spi.monitor.Monitor;
@@ -66,7 +64,6 @@ public class IdsCoreServiceExtension implements ServiceExtension {
     public void initialize(ServiceExtensionContext serviceExtensionContext) {
         monitor = serviceExtensionContext.getMonitor();
 
-        registerProtocolVersionManager(serviceExtensionContext);
         registerConnectorVersionProvider(serviceExtensionContext);
         registerOther(serviceExtensionContext);
 
@@ -96,11 +93,6 @@ public class IdsCoreServiceExtension implements ServiceExtension {
     @Override
     public void shutdown() {
         monitor.info("Shutdown IDS Core extension");
-    }
-
-    private void registerProtocolVersionManager(ServiceExtensionContext serviceExtensionContext) {
-        InboundProtocolVersionManager inboundProtocolVersionManager = new InboundProtocolVersionManagerImpl();
-        serviceExtensionContext.registerService(InboundProtocolVersionManager.class, inboundProtocolVersionManager);
     }
 
     private void registerConnectorVersionProvider(ServiceExtensionContext serviceExtensionContext) {
