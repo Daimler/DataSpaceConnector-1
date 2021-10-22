@@ -19,16 +19,19 @@ import org.eclipse.dataspaceconnector.ids.api.multipart.message.MultipartRespons
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-
 public interface Handler {
 
     /**
+     * Examines whether the current handler instance is applicable handling a certain {@link MultipartRequest}.
+     *
      * @param multipartRequest from another connector
      * @return true if the handler can handle the request
      */
     boolean canHandle(@NotNull MultipartRequest multipartRequest);
 
     /**
+     * Handles the given {@link MultipartRequest}.
+     *
      * @param multipartRequest from another connector
      * @return {@link MultipartResponse} or null, if the request cannot be handled (e.g. when content missing)
      */

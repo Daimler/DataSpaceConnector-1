@@ -20,8 +20,11 @@ import de.fraunhofer.iais.eis.DescriptionResponseMessage;
 import org.eclipse.dataspaceconnector.ids.api.multipart.factory.DescriptionResponseMessageFactory;
 import org.eclipse.dataspaceconnector.ids.api.multipart.message.MultipartResponse;
 import org.eclipse.dataspaceconnector.ids.api.multipart.service.ConnectorDescriptionService;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.net.URI;
+import java.util.Objects;
 
 public class ConnectorDescriptionRequestHandler implements DescriptionRequestHandler {
     private final DescriptionResponseMessageFactory descriptionResponseMessageFactory;
@@ -29,16 +32,18 @@ public class ConnectorDescriptionRequestHandler implements DescriptionRequestHan
     private final ConnectorDescriptionRequestHandlerSettings connectorDescriptionRequestHandlerSettings;
 
     public ConnectorDescriptionRequestHandler(
-            DescriptionResponseMessageFactory descriptionResponseMessageFactory,
-            ConnectorDescriptionService connectorDescriptionService,
-            ConnectorDescriptionRequestHandlerSettings connectorDescriptionRequestHandlerSettings) {
-        this.descriptionResponseMessageFactory = descriptionResponseMessageFactory;
-        this.connectorDescriptionService = connectorDescriptionService;
-        this.connectorDescriptionRequestHandlerSettings = connectorDescriptionRequestHandlerSettings;
+            @NotNull DescriptionResponseMessageFactory descriptionResponseMessageFactory,
+            @NotNull ConnectorDescriptionService connectorDescriptionService,
+            @NotNull ConnectorDescriptionRequestHandlerSettings connectorDescriptionRequestHandlerSettings) {
+        this.descriptionResponseMessageFactory = Objects.requireNonNull(descriptionResponseMessageFactory);
+        this.connectorDescriptionService = Objects.requireNonNull(connectorDescriptionService);
+        this.connectorDescriptionRequestHandlerSettings = Objects.requireNonNull(connectorDescriptionRequestHandlerSettings);
     }
 
     @Override
-    public MultipartResponse handle(DescriptionRequestMessage descriptionRequestMessage, String payload) {
+    public MultipartResponse handle(@NotNull DescriptionRequestMessage descriptionRequestMessage, @Nullable String payload) {
+        Objects.requireNonNull(descriptionRequestMessage);
+
         if (!isRequestingCurrentConnectorsDescription(descriptionRequestMessage)) {
             return null; // should return error response
         }

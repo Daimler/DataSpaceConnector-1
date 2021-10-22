@@ -21,6 +21,7 @@ import org.eclipse.dataspaceconnector.ids.core.util.CalendarUtil;
 import org.eclipse.dataspaceconnector.ids.spi.IdsId;
 import org.eclipse.dataspaceconnector.ids.spi.version.IdsProtocol;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.net.URI;
 import java.util.ArrayList;
@@ -41,7 +42,7 @@ public class DescriptionResponseMessageFactory {
     }
 
     public DescriptionResponseMessage createDescriptionResponseMessage(
-            Message correlationMessage) {
+            @Nullable Message correlationMessage) {
 
         IdsId messageId = IdsId.message(UUID.randomUUID().toString());
 
@@ -58,19 +59,21 @@ public class DescriptionResponseMessageFactory {
 
         builder._issued_(CalendarUtil.gregorianNow());
 
-        URI id = correlationMessage.getId();
-        if (id != null) {
-            builder._correlationMessage_(id);
-        }
+        if (correlationMessage != null) {
+            URI id = correlationMessage.getId();
+            if (id != null) {
+                builder._correlationMessage_(id);
+            }
 
-        URI senderAgent = correlationMessage.getSenderAgent();
-        if (senderAgent != null) {
-            builder._recipientAgent_(new ArrayList<>(Collections.singletonList(senderAgent)));
-        }
+            URI senderAgent = correlationMessage.getSenderAgent();
+            if (senderAgent != null) {
+                builder._recipientAgent_(new ArrayList<>(Collections.singletonList(senderAgent)));
+            }
 
-        URI issuerConnector = correlationMessage.getIssuerConnector();
-        if (issuerConnector != null) {
-            builder._recipientConnector_(new ArrayList<>(Collections.singletonList(issuerConnector)));
+            URI issuerConnector = correlationMessage.getIssuerConnector();
+            if (issuerConnector != null) {
+                builder._recipientConnector_(new ArrayList<>(Collections.singletonList(issuerConnector)));
+            }
         }
 
         return builder.build();

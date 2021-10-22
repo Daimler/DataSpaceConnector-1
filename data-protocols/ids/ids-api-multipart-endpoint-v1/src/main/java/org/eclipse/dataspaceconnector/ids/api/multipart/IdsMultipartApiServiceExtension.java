@@ -25,7 +25,7 @@ import org.eclipse.dataspaceconnector.ids.api.multipart.handler.DescriptionHandl
 import org.eclipse.dataspaceconnector.ids.api.multipart.handler.DescriptionHandlerSettingsFactory;
 import org.eclipse.dataspaceconnector.ids.api.multipart.handler.description.ConnectorDescriptionRequestHandler;
 import org.eclipse.dataspaceconnector.ids.api.multipart.handler.description.ConnectorDescriptionRequestHandlerSettingsFactory;
-import org.eclipse.dataspaceconnector.ids.api.multipart.service.ConnectorDescriptionService;
+import org.eclipse.dataspaceconnector.ids.api.multipart.service.ConnectorDescriptionServiceImpl;
 import org.eclipse.dataspaceconnector.ids.core.configuration.SettingResolver;
 import org.eclipse.dataspaceconnector.ids.spi.version.ConnectorVersionProvider;
 import org.eclipse.dataspaceconnector.spi.EdcException;
@@ -107,6 +107,7 @@ public final class IdsMultipartApiServiceExtension implements ServiceExtension {
 
         var allErrorsDistinct = new HashSet<String>();
         allErrorsDistinct.addAll(multipartControllerSettingsFactoryResult.getErrors());
+        allErrorsDistinct.addAll(descriptionHandlerSettingsFactoryResult.getErrors());
         allErrorsDistinct.addAll(baseConnectorFactorySettingsFactoryResult.getErrors());
         allErrorsDistinct.addAll(descriptionResponseMessageFactorySettingsFactoryResult.getErrors());
         allErrorsDistinct.addAll(connectorDescriptionRequestHandlerSettingsFactoryResult.getErrors());
@@ -122,7 +123,7 @@ public final class IdsMultipartApiServiceExtension implements ServiceExtension {
         var baseConnectorFactory = new BaseConnectorFactory(baseConnectorFactorySettings, connectorVersionProvider);
 
         var resourceCatalogFactory = new ResourceCatalogFactory();
-        var connectorDescriptionService = new ConnectorDescriptionService(baseConnectorFactory, resourceCatalogFactory);
+        var connectorDescriptionService = new ConnectorDescriptionServiceImpl(baseConnectorFactory, resourceCatalogFactory);
 
         var descriptionResponseMessageFactorySettings = descriptionResponseMessageFactorySettingsFactoryResult.getDescriptionResponseMessageFactorySettings();
         if (descriptionResponseMessageFactorySettings == null) {

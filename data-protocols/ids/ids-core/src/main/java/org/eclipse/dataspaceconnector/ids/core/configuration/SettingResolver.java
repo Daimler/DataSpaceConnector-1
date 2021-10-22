@@ -29,7 +29,7 @@ public class SettingResolver {
 
     @NotNull
     public URI resolveId() throws IllegalSettingException {
-        var id = resolveURIAndWarnIfDefaultUsed(SettingKeys.EDC_IDS_ID, SettingDefaults.ID);
+        var id = resolveUriAndWarnIfDefaultUsed(SettingKeys.EDC_IDS_ID, SettingDefaults.ID);
 
         try {
             var isConnectorId = IdsId.fromUri(id).getType() == IdsId.Type.CONNECTOR;
@@ -70,20 +70,20 @@ public class SettingResolver {
 
     @NotNull
     public URI resolveMaintainer() throws IllegalSettingException {
-        return resolveURIAndWarnIfDefaultUsed(SettingKeys.EDC_IDS_MAINTAINER, SettingDefaults.MAINTAINER);
+        return resolveUriAndWarnIfDefaultUsed(SettingKeys.EDC_IDS_MAINTAINER, SettingDefaults.MAINTAINER);
     }
 
     @NotNull
     public URI resolveCurator() throws IllegalSettingException {
-        return resolveURIAndWarnIfDefaultUsed(SettingKeys.EDC_IDS_CURATOR, SettingDefaults.CURATOR);
+        return resolveUriAndWarnIfDefaultUsed(SettingKeys.EDC_IDS_CURATOR, SettingDefaults.CURATOR);
     }
 
     @NotNull
     public URI resolveEndpoint() throws IllegalSettingException {
-        return resolveURIAndWarnIfDefaultUsed(SettingKeys.EDC_IDS_ENDPOINT, SettingDefaults.ENDPOINT);
+        return resolveUriAndWarnIfDefaultUsed(SettingKeys.EDC_IDS_ENDPOINT, SettingDefaults.ENDPOINT);
     }
 
-    private URI resolveURIAndWarnIfDefaultUsed(String settingKey, String settingDefault) throws IllegalSettingException {
+    private URI resolveUriAndWarnIfDefaultUsed(String settingKey, String settingDefault) throws IllegalSettingException {
         var setting = resolveTextAndWarnIfDefaultUsed(settingKey, settingDefault);
         try {
             return new URI(setting);

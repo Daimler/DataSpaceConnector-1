@@ -26,7 +26,6 @@ import java.util.Objects;
 
 import static org.eclipse.dataspaceconnector.ids.api.multipart.util.RejectionMessageUtil.messageTypeNotSupported;
 
-
 public class DescriptionHandler implements Handler {
     private final DescriptionHandlerSettings descriptionHandlerSettings;
     private final ConnectorDescriptionRequestHandler connectorDescriptionRequestHandler;
@@ -41,12 +40,14 @@ public class DescriptionHandler implements Handler {
     @Override
     public boolean canHandle(@NotNull MultipartRequest multipartRequest) {
         Objects.requireNonNull(multipartRequest);
+
         return multipartRequest.getHeader() instanceof DescriptionRequestMessage;
     }
 
     @Override
     public MultipartResponse handleRequest(@NotNull MultipartRequest multipartRequest) {
         Objects.requireNonNull(multipartRequest);
+
         var descriptionRequestMessage = (DescriptionRequestMessage) multipartRequest.getHeader();
 
         var requestedElement = descriptionRequestMessage.getRequestedElement();

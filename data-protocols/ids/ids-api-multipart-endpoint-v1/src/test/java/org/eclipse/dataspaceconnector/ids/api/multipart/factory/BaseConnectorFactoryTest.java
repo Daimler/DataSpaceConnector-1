@@ -19,16 +19,11 @@ import org.assertj.core.api.Assertions;
 import org.easymock.EasyMock;
 import org.eclipse.dataspaceconnector.ids.spi.types.SecurityProfile;
 import org.eclipse.dataspaceconnector.ids.spi.version.ConnectorVersionProvider;
-import org.eclipse.dataspaceconnector.ids.spi.version.IdsProtocol;
-import org.eclipse.dataspaceconnector.ids.spi.version.InboundProtocolVersionManager;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.net.URI;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
 
 class BaseConnectorFactoryTest {
 
@@ -40,27 +35,24 @@ class BaseConnectorFactoryTest {
         public static final URI CURATOR = URI.create("https://example.com/curator");
         public static final URI CONNECTOR_ENDPOINT = URI.create("https://example.com/connector/endpoint");
         public static final SecurityProfile SECURITY_PROFILE = SecurityProfile.BASE_SECURITY_PROFILE;
-        public static final List<IdsProtocol> INBOUND_PROTOCOL_VERSIONS = Collections.singletonList(new IdsProtocol("4.2.1"));
         public static final String CONNECTOR_VERSION = "0.0.1";
     }
 
     // Mocks
     private BaseConnectorFactorySettings baseConnectorFactorySettings;
-    private InboundProtocolVersionManager inboundProtocolVersionManager;
     private ConnectorVersionProvider connectorVersionProvider;
 
     @BeforeEach
     public void setUp() {
         // prepare/instantiate mock instances
         baseConnectorFactorySettings = EasyMock.createMock(BaseConnectorFactorySettings.class);
-        inboundProtocolVersionManager = EasyMock.createMock(InboundProtocolVersionManager.class);
         connectorVersionProvider = EasyMock.createMock(ConnectorVersionProvider.class);
     }
 
     @AfterEach
     public void tearDown() {
         // verify - no more invocations on mock
-        EasyMock.verify(baseConnectorFactorySettings, inboundProtocolVersionManager, connectorVersionProvider);
+        EasyMock.verify(baseConnectorFactorySettings, connectorVersionProvider);
     }
 
     @Test
@@ -68,7 +60,6 @@ class BaseConnectorFactoryTest {
         // prepare
         BaseConnectorFactory baseConnectorFactory = new BaseConnectorFactory(
                 baseConnectorFactorySettings,
-                inboundProtocolVersionManager,
                 connectorVersionProvider
         );
 
@@ -80,11 +71,9 @@ class BaseConnectorFactoryTest {
         EasyMock.expect(baseConnectorFactorySettings.getConnectorEndpoint()).andReturn(Fixtures.CONNECTOR_ENDPOINT).times(1);
         EasyMock.expect(baseConnectorFactorySettings.getSecurityProfile()).andReturn(Fixtures.SECURITY_PROFILE).times(1);
 
-        EasyMock.expect(inboundProtocolVersionManager.getInboundProtocolVersions()).andReturn(Fixtures.INBOUND_PROTOCOL_VERSIONS).times(1);
-
         EasyMock.expect(connectorVersionProvider.getVersion()).andReturn(Fixtures.CONNECTOR_VERSION).times(1);
 
-        EasyMock.replay(baseConnectorFactorySettings, inboundProtocolVersionManager, connectorVersionProvider);
+        EasyMock.replay(baseConnectorFactorySettings, connectorVersionProvider);
 
         // invoke
         BaseConnector connector = baseConnectorFactory.createBaseConnector();
@@ -95,9 +84,6 @@ class BaseConnectorFactoryTest {
         Assertions.assertThat(Fixtures.CONNECTOR_ENDPOINT).isEqualTo(connector.getHasDefaultEndpoint().getAccessURL());
         Assertions.assertThat(Fixtures.MAINTAINER).isEqualTo(connector.getMaintainer());
         Assertions.assertThat(Fixtures.CURATOR).isEqualTo(connector.getCurator());
-
-        Assertions.assertThat(Fixtures.INBOUND_PROTOCOL_VERSIONS.stream().map(IdsProtocol::getValue).collect(Collectors.toList()))
-                .containsAll(connector.getInboundModelVersion());
 
         Assertions.assertThat(Fixtures.CONNECTOR_VERSION).isEqualTo(connector.getVersion());
     }

@@ -1,3 +1,17 @@
+/*
+ *  Copyright (c) 2021 Daimler TSS GmbH
+ *
+ *  This program and the accompanying materials are made available under the
+ *  terms of the Apache License, Version 2.0 which is available at
+ *  https://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  SPDX-License-Identifier: Apache-2.0
+ *
+ *  Contributors:
+ *       Daimler TSS GmbH - Initial API and Implementation
+ *
+ */
+
 package org.eclipse.dataspaceconnector.ids.api.multipart.factory;
 
 import org.eclipse.dataspaceconnector.ids.spi.types.SecurityProfile;
@@ -81,37 +95,37 @@ public class BaseConnectorFactorySettings {
         private Builder() {
         }
 
-        public Builder id(URI id) {
+        public Builder id(@Nullable URI id) {
             this.id = id;
             return this;
         }
 
-        public Builder title(String title) {
+        public Builder title(@Nullable String title) {
             this.title = title;
             return this;
         }
 
-        public Builder description(String description) {
+        public Builder description(@Nullable String description) {
             this.description = description;
             return this;
         }
 
-        public Builder maintainer(URI maintainer) {
+        public Builder maintainer(@Nullable URI maintainer) {
             this.maintainer = maintainer;
             return this;
         }
 
-        public Builder curator(URI curator) {
+        public Builder curator(@Nullable URI curator) {
             this.curator = curator;
             return this;
         }
 
-        public Builder connectorEndpoint(URI connectorEndpoint) {
+        public Builder connectorEndpoint(@Nullable URI connectorEndpoint) {
             this.connectorEndpoint = connectorEndpoint;
             return this;
         }
 
-        public Builder securityProfile(SecurityProfile securityProfile) {
+        public Builder securityProfile(@Nullable SecurityProfile securityProfile) {
             this.securityProfile = securityProfile;
             return this;
         }

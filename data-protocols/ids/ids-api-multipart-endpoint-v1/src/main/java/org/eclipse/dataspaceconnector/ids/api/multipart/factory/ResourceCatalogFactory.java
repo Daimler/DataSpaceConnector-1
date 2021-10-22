@@ -18,6 +18,8 @@ import de.fraunhofer.iais.eis.Resource;
 import de.fraunhofer.iais.eis.ResourceCatalog;
 import de.fraunhofer.iais.eis.ResourceCatalogBuilder;
 import org.eclipse.dataspaceconnector.ids.spi.IdsId;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +33,8 @@ public class ResourceCatalogFactory {
      */
     private static final String CONSTANT_RESOURCE_CATALOG_ID = "acf91712-e626-4f20-9f31-f4e241619dcd";
 
-    public ResourceCatalog createResourceCatalogBuilder(List<Resource> resources) {
+    @NotNull
+    public ResourceCatalog createResourceCatalogBuilder(@Nullable List<Resource> resources) {
 
         var resourceCatalogBuilder = new ResourceCatalogBuilder(IdsId.resourceCatalog(CONSTANT_RESOURCE_CATALOG_ID).toUri());
 

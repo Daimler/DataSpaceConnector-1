@@ -1,22 +1,38 @@
+/*
+ *  Copyright (c) 2021 Daimler TSS GmbH
+ *
+ *  This program and the accompanying materials are made available under the
+ *  terms of the Apache License, Version 2.0 which is available at
+ *  https://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  SPDX-License-Identifier: Apache-2.0
+ *
+ *  Contributors:
+ *       Daimler TSS GmbH - Initial API and Implementation
+ *
+ */
+
 package org.eclipse.dataspaceconnector.ids.api.multipart.factory;
 
 import org.eclipse.dataspaceconnector.ids.core.configuration.IllegalSettingException;
 import org.eclipse.dataspaceconnector.ids.core.configuration.SettingResolver;
 import org.eclipse.dataspaceconnector.ids.spi.types.SecurityProfile;
+import org.jetbrains.annotations.NotNull;
 
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class BaseConnectorFactorySettingsFactory {
     private final SettingResolver settingResolver;
 
-    public BaseConnectorFactorySettingsFactory(SettingResolver settingResolver) {
-        this.settingResolver = settingResolver;
+    public BaseConnectorFactorySettingsFactory(@NotNull SettingResolver settingResolver) {
+        this.settingResolver = Objects.requireNonNull(settingResolver);
     }
 
+    @NotNull
     public BaseConnectorFactorySettingsFactoryResult createBaseConnectorFactorySettings() {
-
         List<String> errors = new ArrayList<>();
 
         String title;
@@ -70,6 +86,9 @@ public class BaseConnectorFactorySettingsFactory {
                 .securityProfile(securityProfile)
                 .build();
 
-        return new BaseConnectorFactorySettingsFactoryResult(settings, errors);
+        return BaseConnectorFactorySettingsFactoryResult.Builder.newInstance()
+                .baseConnectorFactorySettings(settings)
+                .errors(errors)
+                .build();
     }
 }

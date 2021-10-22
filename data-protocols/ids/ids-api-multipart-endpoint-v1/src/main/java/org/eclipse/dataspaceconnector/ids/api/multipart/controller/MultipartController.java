@@ -34,6 +34,7 @@ import org.glassfish.jersey.media.multipart.FormDataParam;
 
 import java.util.List;
 
+import static org.eclipse.dataspaceconnector.ids.api.multipart.util.RejectionMessageUtil.malformedMessage;
 import static org.eclipse.dataspaceconnector.ids.api.multipart.util.RejectionMessageUtil.messageTypeNotSupported;
 import static org.eclipse.dataspaceconnector.ids.api.multipart.util.RejectionMessageUtil.notAuthenticated;
 import static org.eclipse.dataspaceconnector.ids.api.multipart.util.RejectionMessageUtil.notAuthorized;
@@ -68,7 +69,9 @@ public class MultipartController {
             @FormDataParam("header") RequestMessage header,
             @FormDataParam("payload") String payload) {
         if (header == null) {
-            return Response.status(Response.Status.BAD_REQUEST).build();
+            return Response.ok(
+                    createFormDataMultiPart(
+                            malformedMessage(null, multipartControllerSettings.getId()), null)).build();
         }
 
         DynamicAttributeToken dynamicAttributeToken = header.getSecurityToken();

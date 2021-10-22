@@ -16,7 +16,11 @@ package org.eclipse.dataspaceconnector.ids.api.multipart.handler.description;
 
 import de.fraunhofer.iais.eis.DescriptionRequestMessage;
 import org.eclipse.dataspaceconnector.ids.api.multipart.message.MultipartResponse;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public interface DescriptionRequestHandler {
-    MultipartResponse handle(DescriptionRequestMessage descriptionRequestMessage, String payload);
+
+    @Nullable
+    MultipartResponse handle(@NotNull DescriptionRequestMessage descriptionRequestMessage, @Nullable String payload);
 }
