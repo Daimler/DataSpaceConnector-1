@@ -21,12 +21,12 @@ import org.eclipse.dataspaceconnector.ids.api.multipart.factory.BaseConnectorFac
 import org.eclipse.dataspaceconnector.ids.api.multipart.factory.DescriptionResponseMessageFactory;
 import org.eclipse.dataspaceconnector.ids.api.multipart.factory.DescriptionResponseMessageFactorySettingsFactory;
 import org.eclipse.dataspaceconnector.ids.api.multipart.factory.ResourceCatalogFactory;
+import org.eclipse.dataspaceconnector.ids.api.multipart.handler.DescriptionHandler;
+import org.eclipse.dataspaceconnector.ids.api.multipart.handler.DescriptionHandlerSettingsFactory;
 import org.eclipse.dataspaceconnector.ids.api.multipart.handler.description.ConnectorDescriptionRequestHandler;
 import org.eclipse.dataspaceconnector.ids.api.multipart.handler.description.ConnectorDescriptionRequestHandlerSettingsFactory;
-import org.eclipse.dataspaceconnector.ids.api.multipart.handler.DescriptionHandlerImpl;
 import org.eclipse.dataspaceconnector.ids.api.multipart.service.ConnectorDescriptionService;
 import org.eclipse.dataspaceconnector.ids.core.configuration.SettingResolver;
-import org.eclipse.dataspaceconnector.ids.spi.IdsId;
 import org.eclipse.dataspaceconnector.ids.spi.version.ConnectorVersionProvider;
 import org.eclipse.dataspaceconnector.spi.EdcException;
 import org.eclipse.dataspaceconnector.spi.iam.IdentityService;
@@ -96,6 +96,8 @@ public final class IdsMultipartApiServiceExtension implements ServiceExtension {
         var settingResolver = new SettingResolver(serviceExtensionContext);
         var multipartControllerSettingsFactory = new MultipartControllerSettingsFactory(settingResolver);
         var multipartControllerSettingsFactoryResult = multipartControllerSettingsFactory.createRejectionMessageFactorySettings();
+        var descriptionHandlerSettingsFactory = new DescriptionHandlerSettingsFactory(settingResolver);
+        var descriptionHandlerSettingsFactoryResult = descriptionHandlerSettingsFactory.createDescriptionHandlerSettings();
         var baseConnectorFactorySettingsFactory = new BaseConnectorFactorySettingsFactory(settingResolver);
         var baseConnectorFactorySettingsFactoryResult = baseConnectorFactorySettingsFactory.createBaseConnectorFactorySettings();
         var descriptionResponseMessageFactorySettingsFactory = new DescriptionResponseMessageFactorySettingsFactory(settingResolver);
@@ -132,11 +134,9 @@ public final class IdsMultipartApiServiceExtension implements ServiceExtension {
             throw new EdcException("ConnectorDescriptionRequestHandlerSettingsFactoryResult empty");
         }
 
+        var descriptionHandlerSettings = descriptionHandlerSettingsFactoryResult.getDescriptionHandlerSettings();
         var connectorDescriptionRequestHandler = new ConnectorDescriptionRequestHandler(descriptionResponseMessageFactory, connectorDescriptionService, connectorDescriptionRequestHandlerSettings);
-        var descriptionRequestHandler = new DescriptionHandlerImpl();
-        descriptionRequestHandler.add(null, connectorDescriptionRequestHandler);
-        descriptionRequestHandler.add(IdsId.Type.CONNECTOR, connectorDescriptionRequestHandler);
-
+        var descriptionRequestHandler = new DescriptionHandler(descriptionHandlerSettings, connectorDescriptionRequestHandler);
 
         var multipartControllerSettings = multipartControllerSettingsFactoryResult.getRejectionMessageFactorySettings();
         if (multipartControllerSettings == null) {
