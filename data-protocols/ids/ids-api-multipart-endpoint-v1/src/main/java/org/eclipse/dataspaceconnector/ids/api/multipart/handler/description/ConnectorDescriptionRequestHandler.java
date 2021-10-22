@@ -17,6 +17,7 @@ package org.eclipse.dataspaceconnector.ids.api.multipart.handler.description;
 import de.fraunhofer.iais.eis.Connector;
 import de.fraunhofer.iais.eis.DescriptionRequestMessage;
 import de.fraunhofer.iais.eis.DescriptionResponseMessage;
+import de.fraunhofer.iais.eis.Message;
 import org.eclipse.dataspaceconnector.ids.api.multipart.factory.DescriptionResponseMessageFactory;
 import org.eclipse.dataspaceconnector.ids.api.multipart.message.MultipartResponse;
 import org.eclipse.dataspaceconnector.ids.api.multipart.service.ConnectorDescriptionService;
@@ -25,6 +26,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.net.URI;
 import java.util.Objects;
+
+import static org.eclipse.dataspaceconnector.ids.api.multipart.util.RejectionMessageUtil.messageTypeNotSupported;
 
 public class ConnectorDescriptionRequestHandler implements DescriptionRequestHandler {
     private final DescriptionResponseMessageFactory descriptionResponseMessageFactory;
@@ -45,7 +48,7 @@ public class ConnectorDescriptionRequestHandler implements DescriptionRequestHan
         Objects.requireNonNull(descriptionRequestMessage);
 
         if (!isRequestingCurrentConnectorsDescription(descriptionRequestMessage)) {
-            return null; // should return error response
+            return createErrorMultipartResponse(descriptionRequestMessage);
         }
 
         DescriptionResponseMessage descriptionResponseMessage = descriptionResponseMessageFactory
@@ -68,5 +71,11 @@ public class ConnectorDescriptionRequestHandler implements DescriptionRequestHan
         }
 
         return requestedConnectorId.equals(connectorId);
+    }
+
+    private MultipartResponse createErrorMultipartResponse(Message message) {
+        return MultipartResponse.Builder.newInstance()
+                .header(messageTypeNotSupported(message, connectorDescriptionRequestHandlerSettings.getId()))
+                .build();
     }
 }

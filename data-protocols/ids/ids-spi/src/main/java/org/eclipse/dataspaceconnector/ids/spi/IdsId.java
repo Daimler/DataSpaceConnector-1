@@ -61,7 +61,7 @@ public class IdsId {
     }
 
     public static IdsId fromUri(URI uri) {
-        return parse(uri.getSchemeSpecificPart());
+        return parse(uri.getScheme() + DELIMITER + uri.getSchemeSpecificPart());
     }
 
     public static IdsId parse(String urn) {

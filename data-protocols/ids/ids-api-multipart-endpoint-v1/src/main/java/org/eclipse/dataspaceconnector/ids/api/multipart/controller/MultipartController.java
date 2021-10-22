@@ -27,7 +27,6 @@ import org.eclipse.dataspaceconnector.ids.api.multipart.message.MultipartRequest
 import org.eclipse.dataspaceconnector.ids.api.multipart.message.MultipartResponse;
 import org.eclipse.dataspaceconnector.spi.iam.IdentityService;
 import org.eclipse.dataspaceconnector.spi.iam.VerificationResult;
-import org.eclipse.dataspaceconnector.spi.monitor.Monitor;
 import org.glassfish.jersey.media.multipart.FormDataBodyPart;
 import org.glassfish.jersey.media.multipart.FormDataMultiPart;
 import org.glassfish.jersey.media.multipart.FormDataParam;
@@ -48,17 +47,14 @@ public class MultipartController {
     private static final String HEADER = "header";
     private static final String PAYLOAD = "payload";
 
-    private final Monitor monitor;
     private final IdentityService identityService;
     private final List<Handler> multipartHandlers;
     private final MultipartControllerSettings multipartControllerSettings;
 
     public MultipartController(
             MultipartControllerSettings multipartControllerSettings,
-            Monitor monitor,
             IdentityService identityService,
             List<Handler> multipartHandlers) {
-        this.monitor = monitor;
         this.identityService = identityService;
         this.multipartHandlers = multipartHandlers;
         this.multipartControllerSettings = multipartControllerSettings;
@@ -71,14 +67,14 @@ public class MultipartController {
         if (header == null) {
             return Response.ok(
                     createFormDataMultiPart(
-                            malformedMessage(null, multipartControllerSettings.getId()), null)).build();
+                            malformedMessage(null, multipartControllerSettings.getId()))).build();
         }
 
         DynamicAttributeToken dynamicAttributeToken = header.getSecurityToken();
         if (dynamicAttributeToken == null || dynamicAttributeToken.getTokenValue() == null) {
             return Response.ok(
                     createFormDataMultiPart(
-                            notAuthenticated(header, multipartControllerSettings.getId()), null)).build();
+                            notAuthenticated(header, multipartControllerSettings.getId()))).build();
         }
 
         VerificationResult verificationResult = identityService.verifyJwtToken(
@@ -86,13 +82,13 @@ public class MultipartController {
         if (verificationResult == null) {
             return Response.ok(
                     createFormDataMultiPart(
-                            notAuthenticated(header, multipartControllerSettings.getId()), null)).build();
+                            notAuthenticated(header, multipartControllerSettings.getId()))).build();
         }
 
         if (!verificationResult.valid()) {
             return Response.ok(
                     createFormDataMultiPart(
-                            notAuthorized(header, multipartControllerSettings.getId()), null)).build();
+                            notAuthorized(header, multipartControllerSettings.getId()))).build();
         }
 
         MultipartRequest multipartRequest = MultipartRequest.Builder.newInstance()
@@ -105,7 +101,7 @@ public class MultipartController {
         if (handler == null) {
             return Response.ok(
                     createFormDataMultiPart(
-                            messageTypeNotSupported(header, multipartControllerSettings.getId()), null)).build();
+                            messageTypeNotSupported(header, multipartControllerSettings.getId()))).build();
         }
 
         MultipartResponse multipartResponse = handler.handleRequest(multipartRequest);
@@ -116,13 +112,17 @@ public class MultipartController {
 
         return Response.ok(
                 createFormDataMultiPart(
-                        notFound(header, multipartControllerSettings.getId()), null)).build();
+                        notFound(header, multipartControllerSettings.getId()))).build();
     }
 
     private FormDataMultiPart createFormDataMultiPart(MultipartResponse multipartResponse) {
         return createFormDataMultiPart(multipartResponse.getHeader(), multipartResponse.getPayload());
     }
 
+    private FormDataMultiPart createFormDataMultiPart(Object header) {
+        return createFormDataMultiPart(header, null);
+    }
+    
     private FormDataMultiPart createFormDataMultiPart(Object header, Object payload) {
         FormDataMultiPart multiPart = new FormDataMultiPart();
         if (header != null) {

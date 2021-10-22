@@ -115,7 +115,6 @@ public final class IdsMultipartApiServiceExtension implements ServiceExtension {
             throw new EdcException(String.join(", ", allErrorsDistinct));
         }
 
-
         var baseConnectorFactorySettings = baseConnectorFactorySettingsFactoryResult.getBaseConnectorFactorySettings();
         if (baseConnectorFactorySettings == null) {
             throw new EdcException("BaseConnectorFactorySettingsFactoryResult empty");
@@ -143,7 +142,7 @@ public final class IdsMultipartApiServiceExtension implements ServiceExtension {
         if (multipartControllerSettings == null) {
             throw new EdcException("RejectionMessageFactorySettingsFactoryResult empty");
         }
-        var multipartController = new MultipartController(multipartControllerSettings, monitor, identityService, Collections.singletonList(descriptionRequestHandler));
+        var multipartController = new MultipartController(multipartControllerSettings, identityService, Collections.singletonList(descriptionRequestHandler));
 
         webService.registerController(multipartController);
     }
