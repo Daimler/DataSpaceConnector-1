@@ -71,9 +71,9 @@ public class ResourceFactory {
         return resourceBuilder.build();
     }
 
-    public Resource createResource(final Asset asset) {
+    public Resource createResource(Asset asset) {
         Representation representation = getRepresentation(asset);
-        final ResourceBuilder resourceBuilder = new ResourceBuilder();
+        ResourceBuilder resourceBuilder = new ResourceBuilder();
         resourceBuilder._representation_(new ArrayList<>(Collections.singletonList(representation)));
         return resourceBuilder.build();
     }

@@ -16,6 +16,7 @@ package org.eclipse.dataspaceconnector.ids.api.multipart.factory;
 
 import de.fraunhofer.iais.eis.Artifact;
 import de.fraunhofer.iais.eis.Representation;
+import de.fraunhofer.iais.eis.RepresentationBuilder;
 import org.easymock.EasyMock;
 import org.eclipse.dataspaceconnector.ids.spi.IdsId;
 import org.eclipse.dataspaceconnector.ids.spi.types.domain.IdsAsset;
@@ -45,23 +46,16 @@ public class ResourceFactoryTest {
         contractOffer = EasyMock.createMock(ContractOffer.class);
         idsContractOffer = EasyMock.createMock(de.fraunhofer.iais.eis.ContractOffer.class);
         contractOfferFactory = EasyMock.createMock(ContractOfferFactory.class);
-
-        EasyMock.expect(offeredAsset.getAsset()).andReturn(asset);
-        EasyMock.expect(contractOffer.getAssets()).andReturn(Collections.singletonList(offeredAsset)).anyTimes();
-
-        EasyMock.expect(contractOfferFactory.createContractOffer(contractOffer))
-                .andReturn(idsContractOffer);
-
-        EasyMock.replay(offeredAsset, idsContractOffer, contractOffer, contractOfferFactory);
-    }
-
-    @AfterEach
-    public void teardown() {
-        EasyMock.verify(offeredAsset, idsContractOffer, contractOffer, contractOfferFactory);
     }
 
     @Test
-    public void testResourceCreatedAsExpected() {
+    public void testResourceCreatedFromContractOffer() {
+        // mock
+        EasyMock.expect(offeredAsset.getAsset()).andReturn(asset);
+        EasyMock.expect(contractOffer.getAssets()).andReturn(Collections.singletonList(offeredAsset)).anyTimes();
+        EasyMock.expect(contractOfferFactory.createContractOffer(contractOffer))
+                .andReturn(idsContractOffer);
+        EasyMock.replay(offeredAsset, idsContractOffer, contractOffer, contractOfferFactory);
 
         // prepare
         ResourceFactory resourceFactory = new ResourceFactory();
@@ -86,5 +80,44 @@ public class ResourceFactoryTest {
         Assertions.assertEquals(TestDataFactory.IDS_ASSET_FILE_NAME, artifact.getFileName());
         Assertions.assertEquals(IdsId.artifact(asset.getId()).toUri(), artifact.getId());
         Assertions.assertEquals(TestDataFactory.IDS_ASSET_BYTE_SIZE, artifact.getByteSize().intValue());
+
+        // verify function calls
+        EasyMock.verify(offeredAsset, idsContractOffer, contractOffer, contractOfferFactory);
+    }
+
+    @Test
+    public void testResourceCreatedFromAsset() {
+        // prepare
+        ResourceFactory resourceFactory = new ResourceFactory();
+
+        // invoke
+        de.fraunhofer.iais.eis.Resource resource = resourceFactory.createResource(asset);
+
+        //verify resource
+        Assertions.assertEquals(1, resource.getRepresentation().size());
+    }
+
+    @Test
+    public void testGetRepresentation() {
+        // prepare
+        ResourceFactory resourceFactory = new ResourceFactory();
+
+        // invoke
+        Representation representation = resourceFactory.getRepresentation(asset);
+
+        // verify representation
+        Assertions.assertNotNull(representation);
+    }
+
+    @Test
+    public void testGetArtifact() {
+        // prepare
+        ResourceFactory resourceFactory = new ResourceFactory();
+
+        // invoke
+        Artifact artifact = resourceFactory.getArtifact(asset);
+
+        // verify artifact
+        Assertions.assertNotNull(artifact);
     }
 }
