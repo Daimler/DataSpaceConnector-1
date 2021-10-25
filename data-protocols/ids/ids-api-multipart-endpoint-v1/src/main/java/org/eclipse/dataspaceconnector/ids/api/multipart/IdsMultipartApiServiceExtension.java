@@ -16,25 +16,12 @@ package org.eclipse.dataspaceconnector.ids.api.multipart;
 
 import org.eclipse.dataspaceconnector.ids.api.multipart.controller.MultipartController;
 import org.eclipse.dataspaceconnector.ids.api.multipart.controller.MultipartControllerSettingsFactory;
-import org.eclipse.dataspaceconnector.ids.api.multipart.factory.BaseConnectorFactory;
-import org.eclipse.dataspaceconnector.ids.api.multipart.factory.BaseConnectorFactorySettingsFactory;
-import org.eclipse.dataspaceconnector.ids.api.multipart.factory.DescriptionResponseMessageFactory;
-import org.eclipse.dataspaceconnector.ids.api.multipart.factory.DescriptionResponseMessageFactorySettingsFactory;
-import org.eclipse.dataspaceconnector.ids.api.multipart.factory.ResourceCatalogFactory;
+import org.eclipse.dataspaceconnector.ids.api.multipart.factory.*;
 import org.eclipse.dataspaceconnector.ids.api.multipart.handler.DescriptionHandler;
 import org.eclipse.dataspaceconnector.ids.api.multipart.handler.DescriptionHandlerSettingsFactory;
-import org.eclipse.dataspaceconnector.ids.api.multipart.handler.description.ConnectorDescriptionRequestHandler;
-import org.eclipse.dataspaceconnector.ids.api.multipart.handler.description.ConnectorDescriptionRequestHandlerSettingsFactory;
-import org.eclipse.dataspaceconnector.ids.api.multipart.request.MultipartRequestHandlerResolver;
-import org.eclipse.dataspaceconnector.ids.api.multipart.request.handler.RejectionMultipartRequestHandler;
-import org.eclipse.dataspaceconnector.ids.api.multipart.request.handler.description.*;
-import org.eclipse.dataspaceconnector.ids.api.multipart.service.ArtifactService;
-import org.eclipse.dataspaceconnector.ids.api.multipart.service.ConnectorDescriptionServiceImpl;
-import org.eclipse.dataspaceconnector.ids.api.multipart.service.DataCatalogService;
-import org.eclipse.dataspaceconnector.ids.api.multipart.service.RepresentationService;
-import org.eclipse.dataspaceconnector.ids.api.multipart.service.ResourceService;
+import org.eclipse.dataspaceconnector.ids.api.multipart.handler.description.*;
+import org.eclipse.dataspaceconnector.ids.api.multipart.service.*;
 import org.eclipse.dataspaceconnector.ids.core.configuration.SettingResolver;
-import org.eclipse.dataspaceconnector.ids.spi.IdsId;
 import org.eclipse.dataspaceconnector.ids.spi.version.ConnectorVersionProvider;
 import org.eclipse.dataspaceconnector.spi.EdcException;
 import org.eclipse.dataspaceconnector.spi.asset.AssetIndex;
@@ -105,6 +92,14 @@ public final class IdsMultipartApiServiceExtension implements ServiceExtension {
         var settingResolver = new SettingResolver(serviceExtensionContext);
         var multipartControllerSettingsFactory = new MultipartControllerSettingsFactory(settingResolver);
         var multipartControllerSettingsFactoryResult = multipartControllerSettingsFactory.createRejectionMessageFactorySettings();
+        var artifactDescriptionRequestHandlerSettingsFactory = new ArtifactDescriptionRequestHandlerSettingsFactory(settingResolver);
+        var artifactDescriptionRequestHandlerSettingsFactoryResult = artifactDescriptionRequestHandlerSettingsFactory.createArtifactDescriptionRequestHandlerSettings();
+        var representationDescriptionRequestHandlerSettingsFactory = new RepresentationDescriptionRequestHandlerSettingsFactory(settingResolver);
+        var representationDescriptionRequestHandlerSettingsFactoryResult = representationDescriptionRequestHandlerSettingsFactory.createRepresentationDescriptionRequestHandlerSettings();
+        var resourceDescriptionRequestHandlerSettingsFactory = new ResourceDescriptionRequestHandlerSettingsFactory(settingResolver);
+        var resourceDescriptionRequestHandlerSettingsFactoryResult = resourceDescriptionRequestHandlerSettingsFactory.createResourceDescriptionRequestHandlerSettings();
+        var dataCatalogDescriptionRequestHandlerSettingsFactory = new DataCatalogDescriptionRequestHandlerSettingsFactory(settingResolver);
+        var dataCatalogDescriptionRequestHandlerSettingsFactoryResult = dataCatalogDescriptionRequestHandlerSettingsFactory.createDataCatalogDescriptionRequestHandlerSettings();
         var descriptionHandlerSettingsFactory = new DescriptionHandlerSettingsFactory(settingResolver);
         var descriptionHandlerSettingsFactoryResult = descriptionHandlerSettingsFactory.createDescriptionHandlerSettings();
         var baseConnectorFactorySettingsFactory = new BaseConnectorFactorySettingsFactory(settingResolver);
@@ -117,6 +112,10 @@ public final class IdsMultipartApiServiceExtension implements ServiceExtension {
         var allErrorsDistinct = new HashSet<String>();
         allErrorsDistinct.addAll(multipartControllerSettingsFactoryResult.getErrors());
         allErrorsDistinct.addAll(descriptionHandlerSettingsFactoryResult.getErrors());
+        allErrorsDistinct.addAll(artifactDescriptionRequestHandlerSettingsFactoryResult.getErrors());
+        allErrorsDistinct.addAll(representationDescriptionRequestHandlerSettingsFactoryResult.getErrors());
+        allErrorsDistinct.addAll(resourceDescriptionRequestHandlerSettingsFactoryResult.getErrors());
+        allErrorsDistinct.addAll(dataCatalogDescriptionRequestHandlerSettingsFactoryResult.getErrors());
         allErrorsDistinct.addAll(baseConnectorFactorySettingsFactoryResult.getErrors());
         allErrorsDistinct.addAll(descriptionResponseMessageFactorySettingsFactoryResult.getErrors());
         allErrorsDistinct.addAll(connectorDescriptionRequestHandlerSettingsFactoryResult.getErrors());
@@ -145,7 +144,30 @@ public final class IdsMultipartApiServiceExtension implements ServiceExtension {
 
         var descriptionHandlerSettings = descriptionHandlerSettingsFactoryResult.getDescriptionHandlerSettings();
         var connectorDescriptionRequestHandler = new ConnectorDescriptionRequestHandler(descriptionResponseMessageFactory, connectorDescriptionService, connectorDescriptionRequestHandlerSettings);
-        var descriptionRequestHandler = new DescriptionHandler(descriptionHandlerSettings, connectorDescriptionRequestHandler);
+
+        AssetIndex assetIndex = serviceExtensionContext.getService(AssetIndex.class);
+        var artifactService = new ArtifactServiceImpl(monitor, assetIndex);
+        var artifactDescriptionHandlerSettings = artifactDescriptionRequestHandlerSettingsFactoryResult.getArtifactDescriptionRequestHandlerSettings();
+        var artifactDescriptionRequestHandler = new ArtifactDescriptionRequestHandler(artifactDescriptionHandlerSettings, artifactService, descriptionResponseMessageFactory);
+
+        var dataCatalogService = new DataCatalogServiceImpl(monitor, assetIndex);
+        var dataCatalogDescriptionHandlerSettings = dataCatalogDescriptionRequestHandlerSettingsFactoryResult.getDataCatalogDescriptionRequestHandlerSettings();
+        var dataCatalogDescriptionRequestHandler = new DataCatalogDescriptionRequestHandler(dataCatalogDescriptionHandlerSettings, dataCatalogService, descriptionResponseMessageFactory);
+
+        var representationService = new RepresentationServiceImpl(monitor, assetIndex);
+        var representationDescriptionHandlerSettings = representationDescriptionRequestHandlerSettingsFactoryResult.getRepresentationDescriptionRequestHandlerSettings();
+        var representationDescriptionRequestHandler = new RepresentationDescriptionRequestHandler(representationDescriptionHandlerSettings, representationService, descriptionResponseMessageFactory);
+
+        var resourceService = new ResourceServiceImpl(monitor, assetIndex);
+        var resourceDescriptionHandlerSettings = resourceDescriptionRequestHandlerSettingsFactoryResult.getResourceDescriptionRequestHandlerSettings();
+        var resourceDescriptionRequestHandler = new ResourceDescriptionRequestHandler(resourceDescriptionHandlerSettings, resourceService, descriptionResponseMessageFactory);
+
+        var descriptionRequestHandler = new DescriptionHandler(descriptionHandlerSettings,
+                artifactDescriptionRequestHandler,
+                dataCatalogDescriptionRequestHandler,
+                representationDescriptionRequestHandler,
+                resourceDescriptionRequestHandler,
+                connectorDescriptionRequestHandler);
 
         var multipartControllerSettings = multipartControllerSettingsFactoryResult.getRejectionMessageFactorySettings();
         if (multipartControllerSettings == null) {
@@ -155,36 +177,5 @@ public final class IdsMultipartApiServiceExtension implements ServiceExtension {
 
         webService.registerController(multipartController);
     }
-
-    private void r(ServiceExtensionContext serviceExtensionContext){
-        AssetIndex assetIndex = serviceExtensionContext.getService(AssetIndex.class);
-
-        DescriptionRequestMessageHandlerRegistry descriptionRequestMessageHandlerRegistry = new DescriptionRequestMessageHandlerRegistry();
-        ConnectorDescriptionRequestHandler connectorDescriptionRequestMessageHandler = new ConnectorDescriptionRequestHandler(messageFactory, selfDescriptionService, configurationProvider);
-        descriptionRequestMessageHandlerRegistry.add(IdsId.Type.CONNECTOR, connectorDescriptionRequestMessageHandler);
-
-        DataCatalogService dataCatalogService = new DataCatalogService(monitor, assetIndex);
-        DataCatalogDescriptionRequestHandler dataCatalogDescriptionRequestHandler = new DataCatalogDescriptionRequestHandler(messageFactory, dataCatalogService);
-        descriptionRequestMessageHandlerRegistry.add(IdsId.Type.CATALOG, dataCatalogDescriptionRequestHandler);
-
-        ArtifactService artifactService = new ArtifactService(monitor, assetIndex);
-        ArtifactDescriptionRequestHandler artifactDescriptionRequestHandler = new ArtifactDescriptionRequestHandler(messageFactory, artifactService);
-        descriptionRequestMessageHandlerRegistry.add(IdsId.Type.ARTIFACT, artifactDescriptionRequestHandler);
-
-        RepresentationService representationService = new RepresentationService(monitor, assetIndex);
-        RepresentationDescriptionRequestHandler representationDescriptionRequestHandler = new RepresentationDescriptionRequestHandler(messageFactory, representationService);
-        descriptionRequestMessageHandlerRegistry.add(IdsId.Type.REPRESENTATION, representationDescriptionRequestHandler);
-
-        ResourceService resourceService = new ResourceService(monitor, assetIndex);
-        ResourceDescriptionRequestHandler resourceDescriptionRequestHandler = new ResourceDescriptionRequestHandler(messageFactory, resourceService);
-        descriptionRequestMessageHandlerRegistry.add(IdsId.Type.RESOURCE, resourceDescriptionRequestHandler);
-
-        RejectionMultipartRequestHandler rejectionMultipartRequestHandler = new RejectionMultipartRequestHandler(messageFactory);
-        DescriptionRequestHandler descriptionRequestHandler = new DescriptionRequestHandler(descriptionRequestMessageHandlerRegistry, rejectionMultipartRequestHandler);
-        MultipartRequestHandlerResolver multipartRequestHandlerResolver = new MultipartRequestHandlerResolver(
-                descriptionRequestHandler
-        );
-    }
-
 
 }

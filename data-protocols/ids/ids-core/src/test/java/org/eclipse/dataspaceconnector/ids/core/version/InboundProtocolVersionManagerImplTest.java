@@ -2,9 +2,6 @@ package org.eclipse.dataspaceconnector.ids.core.version;
 
 import org.assertj.core.api.Assertions;
 import org.easymock.EasyMock;
-import org.eclipse.dataspaceconnector.ids.spi.version.IdsProtocolVersion;
-import org.eclipse.dataspaceconnector.ids.spi.version.InboundProtocolVersionManager;
-import org.eclipse.dataspaceconnector.ids.spi.version.ProtocolVersionProvider;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

@@ -14,9 +14,6 @@
 
 package org.eclipse.dataspaceconnector.ids.core.version;
 
-import org.eclipse.dataspaceconnector.ids.spi.version.IdsProtocolVersion;
-import org.eclipse.dataspaceconnector.ids.spi.version.InboundProtocolVersionManager;
-import org.eclipse.dataspaceconnector.ids.spi.version.ProtocolVersionProvider;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.LinkedList;

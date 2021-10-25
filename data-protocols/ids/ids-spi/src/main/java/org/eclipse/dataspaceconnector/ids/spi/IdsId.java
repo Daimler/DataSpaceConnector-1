@@ -52,10 +52,6 @@ public class IdsId {
         return new IdsId(Type.RESOURCE, value);
     }
 
-    public static IdsId resourceCatalog(String value) {
-        return new IdsId(Type.RESOURCE_CATALOG, value);
-    }
-
     public static IdsId artifact(String value) {
         return new IdsId(Type.ARTIFACT, value);
     }
@@ -106,7 +102,6 @@ public class IdsId {
         ARTIFACT("artifact"),
         REPRESENTATION("representation"),
         RESOURCE("resource"),
-        RESOURCE_CATALOG("resource_catalog"),
         MEDIA_TYPE("mediatype"),
         PARTICIPANT("participant"),
         MESSAGE("message");

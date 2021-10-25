@@ -16,7 +16,8 @@ package org.eclipse.dataspaceconnector.ids.api.multipart.handler;
 
 import de.fraunhofer.iais.eis.DescriptionRequestMessage;
 import de.fraunhofer.iais.eis.Message;
-import org.eclipse.dataspaceconnector.ids.api.multipart.handler.description.ConnectorDescriptionRequestHandler;
+import de.fraunhofer.iais.eis.Resource;
+import org.eclipse.dataspaceconnector.ids.api.multipart.handler.description.*;
 import org.eclipse.dataspaceconnector.ids.api.multipart.message.MultipartRequest;
 import org.eclipse.dataspaceconnector.ids.api.multipart.message.MultipartResponse;
 import org.eclipse.dataspaceconnector.ids.spi.IdsId;
@@ -25,15 +26,28 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Objects;
 
 import static org.eclipse.dataspaceconnector.ids.api.multipart.util.RejectionMessageUtil.messageTypeNotSupported;
+import static org.eclipse.dataspaceconnector.ids.spi.IdsId.Type.*;
 
 public class DescriptionHandler implements Handler {
     private final DescriptionHandlerSettings descriptionHandlerSettings;
+    private final ArtifactDescriptionRequestHandler artifactDescriptionRequestHandler;
+    private final DataCatalogDescriptionRequestHandler dataCatalogDescriptionRequestHandler;
+    private final RepresentationDescriptionRequestHandler representationDescriptionRequestHandler;
+    private final ResourceDescriptionRequestHandler resourceDescriptionRequestHandler;
     private final ConnectorDescriptionRequestHandler connectorDescriptionRequestHandler;
 
     public DescriptionHandler(
             DescriptionHandlerSettings descriptionHandlerSettings,
+            ArtifactDescriptionRequestHandler artifactDescriptionRequestHandler,
+            DataCatalogDescriptionRequestHandler dataCatalogDescriptionRequestHandler,
+            RepresentationDescriptionRequestHandler representationDescriptionRequestHandler,
+            ResourceDescriptionRequestHandler resourceDescriptionRequestHandler,
             ConnectorDescriptionRequestHandler connectorDescriptionRequestHandler) {
         this.descriptionHandlerSettings = descriptionHandlerSettings;
+        this.artifactDescriptionRequestHandler = artifactDescriptionRequestHandler;
+        this.dataCatalogDescriptionRequestHandler = dataCatalogDescriptionRequestHandler;
+        this.representationDescriptionRequestHandler = representationDescriptionRequestHandler;
+        this.resourceDescriptionRequestHandler = resourceDescriptionRequestHandler;
         this.connectorDescriptionRequestHandler = connectorDescriptionRequestHandler;
     }
 
@@ -50,6 +64,8 @@ public class DescriptionHandler implements Handler {
 
         var descriptionRequestMessage = (DescriptionRequestMessage) multipartRequest.getHeader();
 
+        var payload = multipartRequest.getPayload();
+
         var requestedElement = descriptionRequestMessage.getRequestedElement();
         IdsId.Type type = null;
         if (requestedElement != null) {
@@ -57,10 +73,16 @@ public class DescriptionHandler implements Handler {
         }
 
         if (type == null || type == IdsId.Type.CONNECTOR) {
-            return connectorDescriptionRequestHandler.handle(descriptionRequestMessage, multipartRequest.getPayload());
+            return connectorDescriptionRequestHandler.handle(descriptionRequestMessage, payload);
         }
 
-        return createErrorMultipartResponse(descriptionRequestMessage);
+        switch (type){
+            case ARTIFACT: return artifactDescriptionRequestHandler.handle(descriptionRequestMessage, payload);
+            case CATALOG: return dataCatalogDescriptionRequestHandler.handle(descriptionRequestMessage, payload);
+            case REPRESENTATION: return representationDescriptionRequestHandler.handle(descriptionRequestMessage, payload);
+            case RESOURCE: return resourceDescriptionRequestHandler.handle(descriptionRequestMessage, payload);
+            default: return createErrorMultipartResponse(descriptionRequestMessage);
+        }
     }
 
     private MultipartResponse createErrorMultipartResponse(Message message) {

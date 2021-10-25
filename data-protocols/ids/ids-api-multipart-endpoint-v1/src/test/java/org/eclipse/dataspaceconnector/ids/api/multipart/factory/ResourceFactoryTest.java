@@ -16,13 +16,11 @@ package org.eclipse.dataspaceconnector.ids.api.multipart.factory;
 
 import de.fraunhofer.iais.eis.Artifact;
 import de.fraunhofer.iais.eis.Representation;
-import de.fraunhofer.iais.eis.RepresentationBuilder;
 import org.easymock.EasyMock;
 import org.eclipse.dataspaceconnector.ids.spi.IdsId;
-import org.eclipse.dataspaceconnector.ids.spi.types.domain.IdsAsset;
+import org.eclipse.dataspaceconnector.spi.types.domain.asset.Asset;
 import org.eclipse.dataspaceconnector.spi.types.domain.contract.ContractOffer;
 import org.eclipse.dataspaceconnector.spi.types.domain.contract.OfferedAsset;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,7 +29,7 @@ import java.util.Collections;
 
 public class ResourceFactoryTest {
 
-    private IdsAsset asset;
+    private Asset asset;
 
     // mocks
     private OfferedAsset offeredAsset;
@@ -41,7 +39,7 @@ public class ResourceFactoryTest {
 
     @BeforeEach
     void setup() {
-        asset = TestDataFactory.createIdsAsset();
+        asset = TestDataFactory.createAsset();
         offeredAsset = EasyMock.createMock(OfferedAsset.class);
         contractOffer = EasyMock.createMock(ContractOffer.class);
         idsContractOffer = EasyMock.createMock(de.fraunhofer.iais.eis.ContractOffer.class);

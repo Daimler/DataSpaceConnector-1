@@ -19,8 +19,6 @@ import de.fraunhofer.iais.eis.Message;
 import org.easymock.EasyMock;
 import org.eclipse.dataspaceconnector.ids.spi.IdsId;
 import org.eclipse.dataspaceconnector.ids.spi.configuration.ConfigurationProvider;
-import org.eclipse.dataspaceconnector.ids.spi.version.IdsOutboundProtocolVersionProvider;
-import org.eclipse.dataspaceconnector.ids.spi.version.IdsProtocolVersion;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;

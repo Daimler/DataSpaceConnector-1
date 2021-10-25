@@ -75,6 +75,14 @@ public final class RejectionMessageUtil {
     }
 
     @NotNull
+    public static RejectionMessage badParameters(
+            @Nullable Message correlationMessage, @Nullable URI connectorId) {
+        return createRejectionMessageBuilder(correlationMessage, connectorId)
+                ._rejectionReason_(RejectionReason.BAD_PARAMETERS)
+                .build();
+    }
+
+    @NotNull
     private static RejectionMessageBuilder createRejectionMessageBuilder(
             @Nullable Message correlationMessage, @Nullable URI connectorId) {
         IdsId messageId = IdsId.message(UUID.randomUUID().toString());
