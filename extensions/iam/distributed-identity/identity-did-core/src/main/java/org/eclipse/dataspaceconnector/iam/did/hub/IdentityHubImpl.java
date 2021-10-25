@@ -20,7 +20,6 @@ import org.eclipse.dataspaceconnector.iam.did.hub.jwe.GenericJweWriter;
 import org.eclipse.dataspaceconnector.iam.did.hub.jwe.WriteRequestReader;
 import org.eclipse.dataspaceconnector.iam.did.spi.hub.IdentityHub;
 import org.eclipse.dataspaceconnector.iam.did.spi.hub.IdentityHubStore;
-import org.eclipse.dataspaceconnector.iam.did.spi.hub.keys.PrivateKeyWrapper;
 import org.eclipse.dataspaceconnector.iam.did.spi.hub.message.Commit;
 import org.eclipse.dataspaceconnector.iam.did.spi.hub.message.CommitQueryRequest;
 import org.eclipse.dataspaceconnector.iam.did.spi.hub.message.CommitQueryResponse;
@@ -28,6 +27,7 @@ import org.eclipse.dataspaceconnector.iam.did.spi.hub.message.ErrorResponse;
 import org.eclipse.dataspaceconnector.iam.did.spi.hub.message.ObjectQueryRequest;
 import org.eclipse.dataspaceconnector.iam.did.spi.hub.message.ObjectQueryResponse;
 import org.eclipse.dataspaceconnector.iam.did.spi.hub.message.WriteResponse;
+import org.eclipse.dataspaceconnector.iam.did.spi.key.PrivateKeyWrapper;
 import org.eclipse.dataspaceconnector.iam.did.spi.resolution.DidPublicKeyResolver;
 import org.eclipse.dataspaceconnector.spi.EdcException;
 
@@ -90,15 +90,15 @@ public class IdentityHubImpl implements IdentityHub {
      * writes a response JWE using the public key of the ISS sender
      */
     private String writeResponse(Object response, String iss) {
-        var recipientPublicKey = publicKeyResolver.resolvePublicKey(iss);
-        if (recipientPublicKey == null) {
+        var result = publicKeyResolver.resolvePublicKey(iss);
+        if (result.invalid()) {
             try {
-                return objectMapper.writeValueAsString(new ErrorResponse("500", "Unable to resolve recipient public key"));
+                return objectMapper.writeValueAsString(new ErrorResponse("500", "Unable to resolve recipient public key: " + result.getInvalidMessage()));
             } catch (JsonProcessingException e) {
                 throw new EdcException(e);
             }
         }
 
-        return new GenericJweWriter().objectMapper(objectMapper).privateKey(privateKey.get()).publicKey(recipientPublicKey).payload(response).buildJwe();
+        return new GenericJweWriter().objectMapper(objectMapper).privateKey(privateKey.get()).publicKey(result.getWrapper()).payload(response).buildJwe();
     }
 }

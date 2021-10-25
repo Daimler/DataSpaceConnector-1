@@ -17,6 +17,7 @@ package org.eclipse.dataspaceconnector.spi.types.domain.asset;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -26,10 +27,19 @@ import java.util.Map;
  */
 @JsonDeserialize(builder = Asset.Builder.class)
 public class Asset {
-    protected String id;
-    protected String name;
-    protected String version;
-    protected Map<String, Object> properties;
+    private final String id;
+    private final String name;
+    private final String version;
+    private final String contentType;
+    private final Map<String, Object> properties;
+
+    private Asset(@NotNull String id, @NotNull String name, @NotNull String version, @NotNull String contentType, @NotNull Map<String, Object> properties) {
+        this.id = id;
+        this.name = name;
+        this.version = version;
+        this.contentType = contentType;
+        this.properties = properties;
+    }
 
     public String getId() {
         return id;
@@ -43,16 +53,21 @@ public class Asset {
         return version;
     }
 
+    public String getContentType() {
+        return contentType;
+    }
+
     public Map<String, Object> getProperties() {
         return properties;
     }
 
     @JsonPOJOBuilder(withPrefix = "")
-    public static class Builder {
-        protected String id;
-        protected String title;
-        protected String version;
-        protected Map<String, Object> properties = new HashMap<>();
+    public static final class Builder {
+        private String id;
+        private String name;
+        private String version;
+        private String contentType;
+        private Map<String, Object> properties;
 
         protected Builder() {
         }
@@ -68,12 +83,17 @@ public class Asset {
         }
 
         public Builder name(String title) {
-            this.title = title;
+            this.name = title;
             return this;
         }
 
         public Builder version(String version) {
             this.version = version;
+            return this;
+        }
+
+        public Builder contentType(String contentType) {
+            this.contentType = contentType;
             return this;
         }
 
@@ -88,12 +108,7 @@ public class Asset {
         }
 
         public Asset build() {
-            Asset asset = new Asset();
-            asset.id = id;
-            asset.name = title;
-            asset.version = version;
-            asset.properties = properties;
-            return asset;
+            return new Asset(id, name, version, contentType, properties);
         }
     }
 }

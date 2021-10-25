@@ -22,41 +22,33 @@ import de.fraunhofer.iais.eis.ResourceCatalog;
 import de.fraunhofer.iais.eis.SecurityProfile;
 import de.fraunhofer.iais.eis.util.TypedLiteral;
 import de.fraunhofer.iais.eis.util.Util;
-import org.eclipse.dataspaceconnector.ids.spi.configuration.ConfigurationProvider;
 import org.eclipse.dataspaceconnector.ids.spi.version.ConnectorVersionProvider;
-import org.eclipse.dataspaceconnector.ids.spi.version.IdsProtocolVersion;
-import org.eclipse.dataspaceconnector.ids.spi.version.InboundProtocolVersionManager;
+import org.eclipse.dataspaceconnector.ids.spi.version.IdsProtocol;
+import org.jetbrains.annotations.NotNull;
 
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
+import java.util.Collections;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
+@Deprecated // This functionality will be moved to a transformer class
 public class BaseConnectorFactory {
 
-    private final ConfigurationProvider configurationProvider;
-    private final InboundProtocolVersionManager inboundProtocolVersionManager;
+    private final BaseConnectorFactorySettings baseConnectorFactorySettings;
     private final ConnectorVersionProvider connectorVersionProvider;
 
     public BaseConnectorFactory(
-            ConfigurationProvider configurationProvider,
-            InboundProtocolVersionManager inboundProtocolVersionManager,
-            ConnectorVersionProvider connectorVersionProvider) {
-        Objects.requireNonNull(configurationProvider);
-        Objects.requireNonNull(inboundProtocolVersionManager);
-        Objects.requireNonNull(connectorVersionProvider);
-
-        this.configurationProvider = configurationProvider;
-        this.inboundProtocolVersionManager = inboundProtocolVersionManager;
-        this.connectorVersionProvider = connectorVersionProvider;
+            @NotNull BaseConnectorFactorySettings baseConnectorFactorySettings,
+            @NotNull ConnectorVersionProvider connectorVersionProvider) {
+        this.baseConnectorFactorySettings = Objects.requireNonNull(baseConnectorFactorySettings);
+        this.connectorVersionProvider = Objects.requireNonNull(connectorVersionProvider);
     }
 
     public BaseConnector createBaseConnector(
             ResourceCatalog... resourceCatalog) {
 
-        URI connectorId = configurationProvider.resolveId();
+        URI connectorId = baseConnectorFactorySettings.getId();
         BaseConnectorBuilder builder;
         if (connectorId != null) {
             builder = new BaseConnectorBuilder(connectorId);
@@ -65,9 +57,9 @@ public class BaseConnectorFactory {
         }
 
         builder._resourceCatalog_(new ArrayList<>(Arrays.asList(resourceCatalog)));
-        builder._inboundModelVersion_(new ArrayList<>(resolveInboundModelVersion()));
-        // TODO There should be a process how the security profile is defined/found
+        builder._inboundModelVersion_(new ArrayList<>(Collections.singletonList(IdsProtocol.INFORMATION_MODEL_VERSION)));
 
+        // TODO There should be a process how the security profile is defined/found
         SecurityProfile securityProfile = resolveSecurityProfile();
         if (securityProfile != null) {
             builder._securityProfile_(securityProfile);
@@ -78,27 +70,27 @@ public class BaseConnectorFactory {
             builder._hasDefaultEndpoint_(connectorEndpoint);
         }
 
-        String dataSpaceConnectorVersion = resolveDataSpaceConnectorVersion();
+        String dataSpaceConnectorVersion = connectorVersionProvider.getVersion();
         if (dataSpaceConnectorVersion != null) {
             builder._version_(dataSpaceConnectorVersion);
         }
 
-        URI maintainer = resolveMaintainer();
+        URI maintainer = baseConnectorFactorySettings.getMaintainer();
         if (maintainer != null) {
             builder._maintainer_(maintainer);
         }
 
-        URI curator = resolveCurator();
+        URI curator = baseConnectorFactorySettings.getCurator();
         if (curator != null) {
             builder._curator_(curator);
         }
 
-        String title = resolveTitle();
+        String title = baseConnectorFactorySettings.getTitle();
         if (title != null) {
             builder._title_(Util.asList(new TypedLiteral(title)));
         }
 
-        String description = resolveDescription();
+        String description = baseConnectorFactorySettings.getDescription();
         if (description != null) {
             builder._description_(Util.asList(new TypedLiteral(description)));
         }
@@ -107,7 +99,7 @@ public class BaseConnectorFactory {
     }
 
     private SecurityProfile resolveSecurityProfile() {
-        org.eclipse.dataspaceconnector.ids.spi.types.SecurityProfile configuredProfile = configurationProvider.resolveSecurityProfile();
+        org.eclipse.dataspaceconnector.ids.spi.types.SecurityProfile configuredProfile = baseConnectorFactorySettings.getSecurityProfile();
 
         if (configuredProfile == null) {
             return null;
@@ -122,12 +114,9 @@ public class BaseConnectorFactory {
         return null;
     }
 
-    private URI resolveCurator() {
-        return configurationProvider.resolveCurator();
-    }
 
     private ConnectorEndpoint resolveConnectorEndpoint() {
-        URI endpointUri = configurationProvider.resolveConnectorEndpoint();
+        URI endpointUri = baseConnectorFactorySettings.getConnectorEndpoint();
         ConnectorEndpoint connectorEndpoint = null;
         if (endpointUri != null) {
             connectorEndpoint = createConnectorEndpoint(endpointUri);
@@ -139,29 +128,5 @@ public class BaseConnectorFactory {
         ConnectorEndpointBuilder endpoint = new ConnectorEndpointBuilder();
         endpoint._accessURL_(uri);
         return endpoint.build();
-    }
-
-    private URI resolveMaintainer() {
-        return configurationProvider.resolveMaintainer();
-    }
-
-    private String resolveDescription() {
-        return configurationProvider.resolveDescription();
-    }
-
-    private String resolveTitle() {
-        return configurationProvider.resolveTitle();
-    }
-
-    private List<String> resolveInboundModelVersion() {
-        return inboundProtocolVersionManager.getInboundProtocolVersions()
-                .stream()
-                .map(IdsProtocolVersion::getValue)
-                .distinct()
-                .collect(Collectors.toList());
-    }
-
-    private String resolveDataSpaceConnectorVersion() {
-        return connectorVersionProvider.getVersion();
     }
 }

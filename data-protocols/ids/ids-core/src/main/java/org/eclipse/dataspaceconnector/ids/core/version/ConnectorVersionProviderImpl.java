@@ -17,6 +17,7 @@ package org.eclipse.dataspaceconnector.ids.core.version;
 import org.eclipse.dataspaceconnector.ids.spi.version.ConnectorVersionProvider;
 import org.eclipse.dataspaceconnector.spi.system.ServiceExtension;
 
+// TODO move to edc-core
 public class ConnectorVersionProviderImpl implements ConnectorVersionProvider {
 
     @Override

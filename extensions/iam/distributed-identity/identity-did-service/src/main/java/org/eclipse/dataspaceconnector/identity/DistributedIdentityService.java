@@ -1,39 +1,51 @@
+/*
+ *  Copyright (c) 2021 Microsoft Corporation
+ *
+ *  This program and the accompanying materials are made available under the
+ *  terms of the Apache License, Version 2.0 which is available at
+ *  https://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  SPDX-License-Identifier: Apache-2.0
+ *
+ *  Contributors:
+ *       Microsoft Corporation - initial API and implementation
+ *
+ */
 package org.eclipse.dataspaceconnector.identity;
 
 import com.nimbusds.jwt.SignedJWT;
+import org.eclipse.dataspaceconnector.iam.did.crypto.credentials.VerifiableCredentialFactory;
+import org.eclipse.dataspaceconnector.iam.did.crypto.key.KeyConverter;
 import org.eclipse.dataspaceconnector.iam.did.spi.credentials.CredentialsVerifier;
-import org.eclipse.dataspaceconnector.iam.did.spi.hub.keys.PublicKeyWrapper;
-import org.eclipse.dataspaceconnector.iam.did.spi.resolution.DidConstants;
-import org.eclipse.dataspaceconnector.iam.did.spi.resolution.DidDocument;
-import org.eclipse.dataspaceconnector.iam.did.spi.resolution.DidResolver;
-import org.eclipse.dataspaceconnector.iam.did.spi.resolution.JwkPublicKey;
-import org.eclipse.dataspaceconnector.iam.did.spi.resolution.Service;
-import org.eclipse.dataspaceconnector.iam.did.spi.resolution.VerificationMethod;
-import org.eclipse.dataspaceconnector.ion.crypto.KeyConverter;
+import org.eclipse.dataspaceconnector.iam.did.spi.document.DidConstants;
+import org.eclipse.dataspaceconnector.iam.did.spi.document.DidDocument;
+import org.eclipse.dataspaceconnector.iam.did.spi.document.JwkPublicKey;
+import org.eclipse.dataspaceconnector.iam.did.spi.document.Service;
+import org.eclipse.dataspaceconnector.iam.did.spi.document.VerificationMethod;
+import org.eclipse.dataspaceconnector.iam.did.spi.key.PublicKeyWrapper;
+import org.eclipse.dataspaceconnector.iam.did.spi.resolution.DidResolverRegistry;
 import org.eclipse.dataspaceconnector.spi.iam.ClaimToken;
 import org.eclipse.dataspaceconnector.spi.iam.IdentityService;
 import org.eclipse.dataspaceconnector.spi.iam.TokenResult;
 import org.eclipse.dataspaceconnector.spi.iam.VerificationResult;
 import org.eclipse.dataspaceconnector.spi.monitor.Monitor;
-import org.eclipse.dataspaceconnector.verifiablecredential.VerifiableCredentialFactory;
-import org.eclipse.dataspaceconnector.verifiablecredential.spi.VerifiableCredentialProvider;
 import org.jetbrains.annotations.NotNull;
 
 import java.text.ParseException;
 import java.util.Date;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Supplier;
 
 public class DistributedIdentityService implements IdentityService {
-
-    private final VerifiableCredentialProvider verifiableCredentialProvider;
-    private final DidResolver didResolver;
+    private final Supplier<SignedJWT> verifiableCredentialProvider;
+    private final DidResolverRegistry resolverRegistry;
     private final CredentialsVerifier credentialsVerifier;
     private final Monitor monitor;
 
-    public DistributedIdentityService(VerifiableCredentialProvider vcProvider, DidResolver didResolver, CredentialsVerifier credentialsVerifier, Monitor monitor) {
+    public DistributedIdentityService(Supplier<SignedJWT> vcProvider, DidResolverRegistry resolverRegistry, CredentialsVerifier credentialsVerifier, Monitor monitor) {
         verifiableCredentialProvider = vcProvider;
-        this.didResolver = didResolver;
+        this.resolverRegistry = resolverRegistry;
         this.credentialsVerifier = credentialsVerifier;
         this.monitor = monitor;
     }
@@ -55,11 +67,14 @@ public class DistributedIdentityService implements IdentityService {
             monitor.debug("Starting verification...");
 
             monitor.debug("Resolving other party's DID Document");
-            var did = didResolver.resolve(jwt.getJWTClaimsSet().getIssuer());
+            var didResult = resolverRegistry.resolve(jwt.getJWTClaimsSet().getIssuer());
+            if (didResult.invalid()) {
+                return new VerificationResult("Unable to resolve DID: " + didResult.getInvalidMessage());
+            }
             monitor.debug("Extracting public key");
 
             // this will return the _first_ public key entry
-            Optional<VerificationMethod> publicKey = getPublicKey(did);
+            Optional<VerificationMethod> publicKey = getPublicKey(didResult.getDidDocument());
             if (publicKey.isEmpty()) {
                 return new VerificationResult("Public Key not found in DID Document!");
             }
@@ -73,7 +88,7 @@ public class DistributedIdentityService implements IdentityService {
                 return new VerificationResult("Token could not be verified!");
             }
             monitor.debug("verification successful! Fetching data from IdentityHub");
-            String hubUrl = getHubUrl(did);
+            String hubUrl = getHubUrl(didResult.getDidDocument());
             var credentialsResult = credentialsVerifier.verifyCredentials(hubUrl, publicKeyWrapper);
 
             monitor.debug("Building ClaimToken");

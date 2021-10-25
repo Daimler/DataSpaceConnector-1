@@ -14,6 +14,7 @@
 
 package org.eclipse.dataspaceconnector.ids.spi.version;
 
+// TODO move to edc-spi
 public interface ConnectorVersionProvider {
 
     String getVersion();

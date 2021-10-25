@@ -19,6 +19,7 @@ import java.net.URI;
 /**
  * ID / URI generator for IDS resources.
  */
+@Deprecated // This functionality will be moved to a transformer class
 public class IdsId {
     private static final String SCHEME = "urn";
     private static final String DELIMITER = ":";
@@ -51,12 +52,16 @@ public class IdsId {
         return new IdsId(Type.RESOURCE, value);
     }
 
+    public static IdsId resourceCatalog(String value) {
+        return new IdsId(Type.RESOURCE_CATALOG, value);
+    }
+
     public static IdsId artifact(String value) {
         return new IdsId(Type.ARTIFACT, value);
     }
 
     public static IdsId fromUri(URI uri) {
-        return parse(uri.toString());
+        return parse(uri.getScheme() + DELIMITER + uri.getSchemeSpecificPart());
     }
 
     public static IdsId parse(String urn) {
@@ -101,6 +106,7 @@ public class IdsId {
         ARTIFACT("artifact"),
         REPRESENTATION("representation"),
         RESOURCE("resource"),
+        RESOURCE_CATALOG("resource_catalog"),
         MEDIA_TYPE("mediatype"),
         PARTICIPANT("participant"),
         MESSAGE("message");

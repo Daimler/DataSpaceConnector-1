@@ -15,7 +15,6 @@
 package org.eclipse.dataspaceconnector.ids.api.multipart.factory;
 
 import de.fraunhofer.iais.eis.Resource;
-import de.fraunhofer.iais.eis.ResourceCatalog;
 import org.easymock.EasyMock;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,7 +22,6 @@ import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 
 public class ResourceCatalogFactoryTest {
 
@@ -41,11 +39,11 @@ public class ResourceCatalogFactoryTest {
 
     @Test
     void addsResourcesToCatalog() {
-        Resource expected = EasyMock.mock(Resource.class);
-        List<Resource> expectedResources = new ArrayList<>(Collections.singletonList(expected));
+        var expected = EasyMock.mock(Resource.class);
+        var expectedResources = new ArrayList<Resource>(Collections.singletonList((Resource) expected));
 
-        ResourceCatalog catalog = resourceCatalogFactory.createResourceCatalogBuilder(expectedResources);
-        ArrayList<? extends Resource> resources = catalog.getOfferedResource();
+        var catalog = resourceCatalogFactory.createResourceCatalogBuilder(expectedResources);
+        var resources = catalog.getOfferedResource();
 
         Assertions.assertNotNull(resources);
         Assertions.assertEquals(1, resources.size());
