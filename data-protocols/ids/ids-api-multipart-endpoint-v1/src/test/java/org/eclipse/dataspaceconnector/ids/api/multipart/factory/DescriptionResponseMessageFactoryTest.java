@@ -32,7 +32,7 @@ public class DescriptionResponseMessageFactoryTest {
 
     private static class Fixtures {
         public static final URI ID = URI.create("https://example.com/id");
-        private static final URI MESSAGE_ID = URI.create("https://example.com/message");
+        private static final URI MESSAGE_ID = URI.create("urn:message:12345");
         private static final URI MESSAGE_SENDER_AGENT = URI.create("https://example.com/sender/agent");
         private static final URI MESSAGE_ISSUER = URI.create("https://example.com/issuer");
     }
@@ -58,16 +58,13 @@ public class DescriptionResponseMessageFactoryTest {
         // prepare
         TransformResult<URI> result = new TransformResult<>(Fixtures.MESSAGE_ID);
 
-        EasyMock.expect(transformerRegistry.transform(EasyMock.anyObject(IdsId.class), EasyMock.eq(URI.class))).andReturn(result);
         EasyMock.expect(descriptionResponseMessageFactorySettings.getId()).andReturn(Fixtures.ID).anyTimes();
+        EasyMock.expect(transformerRegistry.transform(EasyMock.anyObject(IdsId.class), EasyMock.eq(URI.class))).andReturn(result);
         EasyMock.expect(message.getId()).andReturn(Fixtures.MESSAGE_ID).anyTimes();
         EasyMock.expect(message.getSenderAgent()).andReturn(Fixtures.MESSAGE_SENDER_AGENT).anyTimes();
         EasyMock.expect(message.getIssuerConnector()).andReturn(Fixtures.MESSAGE_ISSUER).anyTimes();
 
-        EasyMock.replay(descriptionResponseMessageFactorySettings, message);
-
-        EasyMock.expect(transformerRegistry.transform(EasyMock.anyObject(), EasyMock.eq(URI.class)))
-                .andReturn(new TransformResult<>(Fixtures.ID));
+        EasyMock.replay(descriptionResponseMessageFactorySettings, transformerRegistry, message);
 
         // invoke
         var response = descriptionResponseMessageFactory.createDescriptionResponseMessage(message);

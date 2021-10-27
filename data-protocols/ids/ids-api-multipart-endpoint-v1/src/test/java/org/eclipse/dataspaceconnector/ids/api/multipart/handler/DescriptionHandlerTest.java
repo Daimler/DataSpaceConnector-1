@@ -26,13 +26,15 @@ import org.eclipse.dataspaceconnector.ids.api.multipart.handler.description.Repr
 import org.eclipse.dataspaceconnector.ids.api.multipart.handler.description.ResourceDescriptionRequestHandler;
 import org.eclipse.dataspaceconnector.ids.api.multipart.message.MultipartRequest;
 import org.eclipse.dataspaceconnector.ids.api.multipart.message.MultipartResponse;
-import org.eclipse.dataspaceconnector.ids.spi.IdsId;
+import org.eclipse.dataspaceconnector.ids.spi.IdsType;
+import org.eclipse.dataspaceconnector.ids.spi.transform.TransformResult;
 import org.eclipse.dataspaceconnector.ids.spi.transform.TransformerRegistry;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.net.URI;
+import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -150,18 +152,27 @@ class DescriptionHandlerTest {
     }
 
     @Test
-    void testHandleRequestOfTypeDescriptionRequestMessageWithUnknownRequestedElementSchemaThrows() {
+    void testHandleRequestOfTypeDescriptionRequestMessageWithUnknownRequestedElementErrorResponse() {
         // prepare
         DescriptionRequestMessage requestHeader = EasyMock.mock(DescriptionRequestMessage.class);
 
         EasyMock.expect(requestHeader.getRequestedElement()).andReturn(URI.create("urn:test:abc"));
+        EasyMock.expect(requestHeader.getId()).andReturn(null);
+        EasyMock.expect(requestHeader.getSenderAgent()).andReturn(null);
+        EasyMock.expect(requestHeader.getIssuerConnector()).andReturn(null);
 
         MultipartRequest multipartRequest = MultipartRequest.Builder.newInstance()
                 .header(requestHeader)
                 .build();
 
+        EasyMock.expect(transformerRegistry.transform(EasyMock.anyObject(URI.class), EasyMock.eq(IdsType.class)))
+                .andReturn(new TransformResult<>(Collections.singletonList("unknown type")));
+
+        EasyMock.expect(descriptionHandlerSettings.getId()).andReturn(null);
+
         // record
-        EasyMock.replay(descriptionHandlerSettings,
+        EasyMock.replay(
+                descriptionHandlerSettings,
                 transformerRegistry,
                 artifactDescriptionRequestHandler,
                 dataCatalogDescriptionRequestHandler,
@@ -171,7 +182,10 @@ class DescriptionHandlerTest {
                 requestHeader);
 
         // invoke
-        assertThrows(IllegalArgumentException.class, () -> descriptionHandler.handleRequest(multipartRequest));
+        var result = descriptionHandler.handleRequest(multipartRequest);
+
+        assertThat(result).isNotNull();
+        assertThat(result).extracting(MultipartResponse::getHeader).isInstanceOf(RejectionMessage.class);
     }
 
 
@@ -191,10 +205,12 @@ class DescriptionHandlerTest {
 
         EasyMock.expect(descriptionHandlerSettings.getId()).andReturn(null);
 
-        EasyMock.expect(transformerRegistry.transform(EasyMock.anyObject(), EasyMock.eq(IdsId.class)))
-                .andReturn(null);
+        EasyMock.expect(transformerRegistry.transform(EasyMock.anyObject(URI.class), EasyMock.eq(IdsType.class)))
+                .andReturn(new TransformResult<>(IdsType.PARTICIPANT));
+
         // record
-        EasyMock.replay(descriptionHandlerSettings,
+        EasyMock.replay(
+                descriptionHandlerSettings,
                 transformerRegistry,
                 artifactDescriptionRequestHandler,
                 dataCatalogDescriptionRequestHandler,

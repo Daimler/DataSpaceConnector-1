@@ -29,6 +29,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
+import static org.eclipse.dataspaceconnector.ids.api.multipart.util.RejectionMessageUtil.badParameters;
 import static org.eclipse.dataspaceconnector.ids.api.multipart.util.RejectionMessageUtil.messageTypeNotSupported;
 
 public class DescriptionHandler implements Handler {
@@ -76,10 +77,12 @@ public class DescriptionHandler implements Handler {
         IdsType type = null;
         if (requestedElement != null) {
             var result = transformerRegistry.transform(requestedElement, IdsType.class);
-            if (!result.hasProblems()) {
-                type = result.getOutput();
+            if (result.hasProblems()) {
+                // TODO: log problems
+                return createBadParametersErrorMultipartResponse(descriptionRequestMessage);
             }
-            // TODO: log problems
+
+            type = result.getOutput();
         }
 
         if (type == null || type == IdsType.CONNECTOR) {
@@ -98,6 +101,12 @@ public class DescriptionHandler implements Handler {
             default:
                 return createErrorMultipartResponse(descriptionRequestMessage);
         }
+    }
+
+    private MultipartResponse createBadParametersErrorMultipartResponse(Message message) {
+        return MultipartResponse.Builder.newInstance()
+                .header(badParameters(message, descriptionHandlerSettings.getId()))
+                .build();
     }
 
     private MultipartResponse createErrorMultipartResponse(Message message) {
