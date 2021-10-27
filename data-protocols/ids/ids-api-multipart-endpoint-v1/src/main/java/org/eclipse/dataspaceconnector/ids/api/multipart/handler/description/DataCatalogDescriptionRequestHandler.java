@@ -23,6 +23,7 @@ import org.eclipse.dataspaceconnector.ids.api.multipart.message.MultipartRespons
 import org.eclipse.dataspaceconnector.ids.api.multipart.service.DataCatalogService;
 import org.eclipse.dataspaceconnector.ids.spi.IdsId;
 import org.eclipse.dataspaceconnector.ids.spi.IdsType;
+import org.eclipse.dataspaceconnector.ids.spi.transform.TransformerRegistry;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -35,14 +36,17 @@ import static org.eclipse.dataspaceconnector.ids.api.multipart.util.RejectionMes
 public class DataCatalogDescriptionRequestHandler implements DescriptionRequestHandler {
     private final DataCatalogDescriptionRequestHandlerSettings dataCatalogDescriptionRequestHandlerSettings;
     private final DataCatalogService dataCatalogService;
+    private final TransformerRegistry transformerRegistry;
     private final DescriptionResponseMessageFactory descriptionResponseMessageFactory;
 
     public DataCatalogDescriptionRequestHandler(
             DataCatalogDescriptionRequestHandlerSettings dataCatalogDescriptionRequestHandlerSettings,
             DataCatalogService dataCatalogService,
+            TransformerRegistry transformerRegistry,
             DescriptionResponseMessageFactory descriptionResponseMessageFactory) {
         this.dataCatalogDescriptionRequestHandlerSettings = dataCatalogDescriptionRequestHandlerSettings;
         this.dataCatalogService = dataCatalogService;
+        this.transformerRegistry = transformerRegistry;
         this.descriptionResponseMessageFactory = descriptionResponseMessageFactory;
     }
 
@@ -55,8 +59,14 @@ public class DataCatalogDescriptionRequestHandler implements DescriptionRequestH
             return createBadParametersErrorMultipartResponse(descriptionRequestMessage);
         }
 
-        IdsId idsId = IdsId.fromUri(uri);
-        if (idsId.getType() != IdsType.CATALOG) {
+        var result = transformerRegistry.transform(uri, IdsId.class);
+        if (result.hasProblems()) {
+            // TODO log problems
+            return createBadParametersErrorMultipartResponse(descriptionRequestMessage);
+        }
+
+        IdsId idsId = result.getOutput();
+        if (Objects.requireNonNull(idsId).getType() != IdsType.CATALOG) {
             return createBadParametersErrorMultipartResponse(descriptionRequestMessage);
         }
 

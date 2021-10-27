@@ -16,11 +16,28 @@ package org.eclipse.dataspaceconnector.ids.api.multipart;
 
 import org.eclipse.dataspaceconnector.ids.api.multipart.controller.MultipartController;
 import org.eclipse.dataspaceconnector.ids.api.multipart.controller.MultipartControllerSettingsFactory;
-import org.eclipse.dataspaceconnector.ids.api.multipart.factory.*;
+import org.eclipse.dataspaceconnector.ids.api.multipart.factory.BaseConnectorFactory;
+import org.eclipse.dataspaceconnector.ids.api.multipart.factory.BaseConnectorFactorySettingsFactory;
+import org.eclipse.dataspaceconnector.ids.api.multipart.factory.DescriptionResponseMessageFactory;
+import org.eclipse.dataspaceconnector.ids.api.multipart.factory.DescriptionResponseMessageFactorySettingsFactory;
+import org.eclipse.dataspaceconnector.ids.api.multipart.factory.ResourceCatalogFactory;
 import org.eclipse.dataspaceconnector.ids.api.multipart.handler.DescriptionHandler;
 import org.eclipse.dataspaceconnector.ids.api.multipart.handler.DescriptionHandlerSettingsFactory;
-import org.eclipse.dataspaceconnector.ids.api.multipart.handler.description.*;
-import org.eclipse.dataspaceconnector.ids.api.multipart.service.*;
+import org.eclipse.dataspaceconnector.ids.api.multipart.handler.description.ArtifactDescriptionRequestHandler;
+import org.eclipse.dataspaceconnector.ids.api.multipart.handler.description.ArtifactDescriptionRequestHandlerSettingsFactory;
+import org.eclipse.dataspaceconnector.ids.api.multipart.handler.description.ConnectorDescriptionRequestHandler;
+import org.eclipse.dataspaceconnector.ids.api.multipart.handler.description.ConnectorDescriptionRequestHandlerSettingsFactory;
+import org.eclipse.dataspaceconnector.ids.api.multipart.handler.description.DataCatalogDescriptionRequestHandler;
+import org.eclipse.dataspaceconnector.ids.api.multipart.handler.description.DataCatalogDescriptionRequestHandlerSettingsFactory;
+import org.eclipse.dataspaceconnector.ids.api.multipart.handler.description.RepresentationDescriptionRequestHandler;
+import org.eclipse.dataspaceconnector.ids.api.multipart.handler.description.RepresentationDescriptionRequestHandlerSettingsFactory;
+import org.eclipse.dataspaceconnector.ids.api.multipart.handler.description.ResourceDescriptionRequestHandler;
+import org.eclipse.dataspaceconnector.ids.api.multipart.handler.description.ResourceDescriptionRequestHandlerSettingsFactory;
+import org.eclipse.dataspaceconnector.ids.api.multipart.service.ArtifactServiceImpl;
+import org.eclipse.dataspaceconnector.ids.api.multipart.service.ConnectorDescriptionServiceImpl;
+import org.eclipse.dataspaceconnector.ids.api.multipart.service.DataCatalogServiceImpl;
+import org.eclipse.dataspaceconnector.ids.api.multipart.service.RepresentationServiceImpl;
+import org.eclipse.dataspaceconnector.ids.api.multipart.service.ResourceServiceImpl;
 import org.eclipse.dataspaceconnector.ids.core.configuration.SettingResolver;
 import org.eclipse.dataspaceconnector.ids.spi.transform.TransformerRegistry;
 import org.eclipse.dataspaceconnector.ids.spi.version.ConnectorVersionProvider;
@@ -152,19 +169,19 @@ public final class IdsMultipartApiServiceExtension implements ServiceExtension {
         AssetIndex assetIndex = serviceExtensionContext.getService(AssetIndex.class);
         var artifactService = new ArtifactServiceImpl(monitor, assetIndex);
         var artifactDescriptionHandlerSettings = artifactDescriptionRequestHandlerSettingsFactoryResult.getArtifactDescriptionRequestHandlerSettings();
-        var artifactDescriptionRequestHandler = new ArtifactDescriptionRequestHandler(artifactDescriptionHandlerSettings, artifactService, descriptionResponseMessageFactory);
+        var artifactDescriptionRequestHandler = new ArtifactDescriptionRequestHandler(artifactDescriptionHandlerSettings, artifactService, transformerRegistry, descriptionResponseMessageFactory);
 
         var dataCatalogService = new DataCatalogServiceImpl(monitor, assetIndex);
         var dataCatalogDescriptionHandlerSettings = dataCatalogDescriptionRequestHandlerSettingsFactoryResult.getDataCatalogDescriptionRequestHandlerSettings();
-        var dataCatalogDescriptionRequestHandler = new DataCatalogDescriptionRequestHandler(dataCatalogDescriptionHandlerSettings, dataCatalogService, descriptionResponseMessageFactory);
+        var dataCatalogDescriptionRequestHandler = new DataCatalogDescriptionRequestHandler(dataCatalogDescriptionHandlerSettings, dataCatalogService, transformerRegistry, descriptionResponseMessageFactory);
 
         var representationService = new RepresentationServiceImpl(monitor, assetIndex);
         var representationDescriptionHandlerSettings = representationDescriptionRequestHandlerSettingsFactoryResult.getRepresentationDescriptionRequestHandlerSettings();
-        var representationDescriptionRequestHandler = new RepresentationDescriptionRequestHandler(representationDescriptionHandlerSettings, representationService, descriptionResponseMessageFactory);
+        var representationDescriptionRequestHandler = new RepresentationDescriptionRequestHandler(representationDescriptionHandlerSettings, representationService, transformerRegistry, descriptionResponseMessageFactory);
 
         var resourceService = new ResourceServiceImpl(monitor, assetIndex);
         var resourceDescriptionHandlerSettings = resourceDescriptionRequestHandlerSettingsFactoryResult.getResourceDescriptionRequestHandlerSettings();
-        var resourceDescriptionRequestHandler = new ResourceDescriptionRequestHandler(resourceDescriptionHandlerSettings, resourceService, descriptionResponseMessageFactory);
+        var resourceDescriptionRequestHandler = new ResourceDescriptionRequestHandler(resourceDescriptionHandlerSettings, resourceService, transformerRegistry, descriptionResponseMessageFactory);
 
         var descriptionRequestHandler = new DescriptionHandler(descriptionHandlerSettings,
                 transformerRegistry,

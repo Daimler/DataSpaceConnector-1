@@ -23,6 +23,7 @@ import org.eclipse.dataspaceconnector.ids.api.multipart.message.MultipartRespons
 import org.eclipse.dataspaceconnector.ids.api.multipart.service.ArtifactService;
 import org.eclipse.dataspaceconnector.ids.spi.IdsId;
 import org.eclipse.dataspaceconnector.ids.spi.IdsType;
+import org.eclipse.dataspaceconnector.ids.spi.transform.TransformerRegistry;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -35,14 +36,17 @@ import static org.eclipse.dataspaceconnector.ids.api.multipart.util.RejectionMes
 public class ArtifactDescriptionRequestHandler implements DescriptionRequestHandler {
     private final ArtifactDescriptionRequestHandlerSettings artifactDescriptionRequestHandlerSettings;
     private final ArtifactService artifactService;
+    private final TransformerRegistry transformerRegistry;
     private final DescriptionResponseMessageFactory descriptionResponseMessageFactory;
 
     public ArtifactDescriptionRequestHandler(
             ArtifactDescriptionRequestHandlerSettings artifactDescriptionRequestHandlerSettings,
             ArtifactService artifactService,
+            TransformerRegistry transformerRegistry,
             DescriptionResponseMessageFactory descriptionResponseMessageFactory) {
         this.artifactDescriptionRequestHandlerSettings = artifactDescriptionRequestHandlerSettings;
         this.artifactService = artifactService;
+        this.transformerRegistry = transformerRegistry;
         this.descriptionResponseMessageFactory = descriptionResponseMessageFactory;
     }
 
@@ -55,8 +59,14 @@ public class ArtifactDescriptionRequestHandler implements DescriptionRequestHand
             return createBadParametersErrorMultipartResponse(descriptionRequestMessage);
         }
 
-        IdsId idsId = IdsId.fromUri(uri);
-        if (idsId.getType() != IdsType.ARTIFACT) {
+        var result = transformerRegistry.transform(uri, IdsId.class);
+        if (result.hasProblems()) {
+            // TODO log problems
+            return createBadParametersErrorMultipartResponse(descriptionRequestMessage);
+        }
+
+        IdsId idsId = result.getOutput();
+        if (Objects.requireNonNull(idsId).getType() != IdsType.ARTIFACT) {
             return createBadParametersErrorMultipartResponse(descriptionRequestMessage);
         }
 

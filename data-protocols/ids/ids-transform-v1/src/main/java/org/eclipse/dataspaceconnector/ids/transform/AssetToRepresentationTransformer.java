@@ -14,7 +14,11 @@
 
 package org.eclipse.dataspaceconnector.ids.transform;
 
-import de.fraunhofer.iais.eis.*;
+import de.fraunhofer.iais.eis.Artifact;
+import de.fraunhofer.iais.eis.CustomMediaTypeBuilder;
+import de.fraunhofer.iais.eis.MediaType;
+import de.fraunhofer.iais.eis.Representation;
+import de.fraunhofer.iais.eis.RepresentationBuilder;
 import org.eclipse.dataspaceconnector.ids.spi.transform.IdsTypeTransformer;
 import org.eclipse.dataspaceconnector.ids.spi.transform.TransformerContext;
 import org.eclipse.dataspaceconnector.spi.types.domain.asset.Asset;
@@ -63,6 +67,7 @@ public class AssetToRepresentationTransformer implements IdsTypeTransformer<Asse
         }
 
         representationBuilder._instance_(new ArrayList<>(Collections.singletonList(artifact)));
+
         return representationBuilder.build();
     }
 

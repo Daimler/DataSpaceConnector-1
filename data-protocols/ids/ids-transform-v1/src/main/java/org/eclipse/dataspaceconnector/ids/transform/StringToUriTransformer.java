@@ -25,11 +25,13 @@ public class StringToUriTransformer implements IdsTypeTransformer<String, URI> {
         if (object == null) {
             return null;
         }
+
         try {
             return new URI(object);
         } catch (URISyntaxException e) {
             context.reportProblem(String.format("Error transforming String to URI: %s", e.getMessage()));
         }
+
         return null;
     }
 }

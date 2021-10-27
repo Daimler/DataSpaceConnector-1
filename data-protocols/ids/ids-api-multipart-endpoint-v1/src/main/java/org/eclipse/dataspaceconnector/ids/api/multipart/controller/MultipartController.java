@@ -33,10 +33,14 @@ import org.glassfish.jersey.media.multipart.FormDataParam;
 
 import java.util.List;
 
-import static org.eclipse.dataspaceconnector.ids.api.multipart.util.RejectionMessageUtil.*;
+import static org.eclipse.dataspaceconnector.ids.api.multipart.util.RejectionMessageUtil.malformedMessage;
+import static org.eclipse.dataspaceconnector.ids.api.multipart.util.RejectionMessageUtil.messageTypeNotSupported;
+import static org.eclipse.dataspaceconnector.ids.api.multipart.util.RejectionMessageUtil.notAuthenticated;
+import static org.eclipse.dataspaceconnector.ids.api.multipart.util.RejectionMessageUtil.notAuthorized;
+import static org.eclipse.dataspaceconnector.ids.api.multipart.util.RejectionMessageUtil.notFound;
 
-@Consumes({MediaType.MULTIPART_FORM_DATA})
-@Produces({MediaType.MULTIPART_FORM_DATA})
+@Consumes({ MediaType.MULTIPART_FORM_DATA })
+@Produces({ MediaType.MULTIPART_FORM_DATA })
 @Path(MultipartController.PATH)
 public class MultipartController {
     public static final String PATH = "/ids/multipart";

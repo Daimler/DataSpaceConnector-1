@@ -20,6 +20,7 @@ import de.fraunhofer.iais.eis.RejectionMessageBuilder;
 import de.fraunhofer.iais.eis.RejectionReason;
 import org.eclipse.dataspaceconnector.ids.core.util.CalendarUtil;
 import org.eclipse.dataspaceconnector.ids.spi.IdsId;
+import org.eclipse.dataspaceconnector.ids.spi.IdsType;
 import org.eclipse.dataspaceconnector.ids.spi.version.IdsProtocol;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -85,9 +86,13 @@ public final class RejectionMessageUtil {
     @NotNull
     private static RejectionMessageBuilder createRejectionMessageBuilder(
             @Nullable Message correlationMessage, @Nullable URI connectorId) {
-        IdsId messageId = IdsId.message(UUID.randomUUID().toString());
+        IdsId messageId = IdsId.Builder.newInstance()
+                .value(UUID.randomUUID().toString())
+                .type(IdsType.MESSAGE)
+                .build();
 
-        RejectionMessageBuilder builder = new RejectionMessageBuilder(messageId.toUri());
+        // TODO use messageId
+        RejectionMessageBuilder builder = new RejectionMessageBuilder();
 
         builder._contentVersion_(IdsProtocol.INFORMATION_MODEL_VERSION);
         builder._modelVersion_(IdsProtocol.INFORMATION_MODEL_VERSION);

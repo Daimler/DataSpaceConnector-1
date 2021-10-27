@@ -14,8 +14,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 class AssetToArtifactTransformerTest {
     private static final String ASSET_ID = "test_id";
     private static final URI ASSET_ID_URI = URI.create("urn:asset:1");
@@ -38,6 +36,8 @@ class AssetToArtifactTransformerTest {
 
     @Test
     void testThrowsNullPointerExceptionForAll() {
+        EasyMock.replay(asset, context);
+
         Assertions.assertThrows(NullPointerException.class, () -> {
             assetToArtifactTransformer.transform(null, null);
         });
@@ -45,7 +45,7 @@ class AssetToArtifactTransformerTest {
 
     @Test
     void testThrowsNullPointerExceptionForContext() {
-        EasyMock.replay(asset);
+        EasyMock.replay(asset, context);
 
         Assertions.assertThrows(NullPointerException.class, () -> {
             assetToArtifactTransformer.transform(asset, null);
@@ -54,6 +54,8 @@ class AssetToArtifactTransformerTest {
 
     @Test
     void testReturnsNull() {
+        EasyMock.replay(asset, context);
+
         var result = assetToArtifactTransformer.transform(null, context);
 
         Assertions.assertNull(result);
@@ -65,7 +67,10 @@ class AssetToArtifactTransformerTest {
         EasyMock.expect(asset.getId()).andReturn(ASSET_ID);
         EasyMock.expect(asset.getProperties()).andReturn(Collections.emptyMap());
 
-        EasyMock.expect(context.transform(EasyMock.anyObject(String.class),EasyMock.eq(URI.class))).andReturn(ASSET_ID_URI);
+        EasyMock.expect(context.transform(EasyMock.anyObject(String.class), EasyMock.eq(URI.class))).andReturn(ASSET_ID_URI);
+
+        context.reportProblem(EasyMock.anyString());
+        EasyMock.expectLastCall().atLeastOnce();
 
         // record
         EasyMock.replay(asset, context);
@@ -82,13 +87,15 @@ class AssetToArtifactTransformerTest {
     void testSuccessfulMap() {
         // prepare
         EasyMock.expect(asset.getId()).andReturn(ASSET_ID);
-        Map<String, Object> properties = new HashMap<>(){{
-            put(AssetToArtifactTransformer.KEY_ASSET_FILE_NAME, ASSET_FILENAME);
-            put(AssetToArtifactTransformer.KEY_ASSET_BYTE_SIZE, ASSET_BYTESIZE);
-        }};
+        Map<String, Object> properties = new HashMap<>() {
+            {
+                put(AssetToArtifactTransformer.KEY_ASSET_FILE_NAME, ASSET_FILENAME);
+                put(AssetToArtifactTransformer.KEY_ASSET_BYTE_SIZE, ASSET_BYTESIZE);
+            }
+        };
         EasyMock.expect(asset.getProperties()).andReturn(properties);
 
-        EasyMock.expect(context.transform(EasyMock.anyObject(String.class),EasyMock.eq(URI.class))).andReturn(ASSET_ID_URI);
+        EasyMock.expect(context.transform(EasyMock.anyObject(String.class), EasyMock.eq(URI.class))).andReturn(ASSET_ID_URI);
 
         // record
         EasyMock.replay(asset, context);

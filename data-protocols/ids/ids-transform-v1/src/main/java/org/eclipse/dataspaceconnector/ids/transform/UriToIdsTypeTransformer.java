@@ -26,6 +26,7 @@ public class UriToIdsTypeTransformer implements IdsTypeTransformer<URI, IdsType>
         if (object == null) {
             return null;
         }
+
         var id = context.transform(object, IdsId.class);
         if (id == null) {
             context.reportProblem("URI cannot be mapped to IdsId");

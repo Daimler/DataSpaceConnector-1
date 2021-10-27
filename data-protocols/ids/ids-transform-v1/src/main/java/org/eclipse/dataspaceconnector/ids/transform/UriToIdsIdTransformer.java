@@ -26,11 +26,13 @@ public class UriToIdsIdTransformer implements IdsTypeTransformer<URI, IdsId> {
         if (object == null) {
             return null;
         }
+
         try {
             return IdsIdParser.parse(object.getScheme() + IdsIdParser.DELIMITER + object.getSchemeSpecificPart());
         } catch (IllegalArgumentException e) {
             context.reportProblem(String.format("Could not transform URI to IdsId: %s", e.getMessage()));
         }
+
         return null;
     }
 }

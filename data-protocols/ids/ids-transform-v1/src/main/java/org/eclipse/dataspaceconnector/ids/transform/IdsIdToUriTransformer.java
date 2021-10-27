@@ -9,7 +9,7 @@ import org.jetbrains.annotations.Nullable;
 import java.net.URI;
 import java.util.Objects;
 
-public class IdToUriTransformer implements IdsTypeTransformer<IdsId, URI> {
+public class IdsIdToUriTransformer implements IdsTypeTransformer<IdsId, URI> {
     @Override
     public Class<IdsId> getInputType() {
         return IdsId.class;
@@ -26,11 +26,13 @@ public class IdToUriTransformer implements IdsTypeTransformer<IdsId, URI> {
         if (object == null) {
             return null;
         }
+
         try {
             return URI.create(String.join(IdsIdParser.DELIMITER, IdsIdParser.SCHEME, object.getType().getValue(), object.getValue()));
         } catch (IllegalArgumentException e) {
             context.reportProblem(String.format("Could not transform IdsId to URI: %s", e.getMessage()));
         }
+
         return null;
     }
 }

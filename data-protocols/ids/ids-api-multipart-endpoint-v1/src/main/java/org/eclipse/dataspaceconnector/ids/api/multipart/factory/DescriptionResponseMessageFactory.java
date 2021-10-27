@@ -20,6 +20,7 @@ import de.fraunhofer.iais.eis.Message;
 import org.eclipse.dataspaceconnector.ids.core.util.CalendarUtil;
 import org.eclipse.dataspaceconnector.ids.spi.IdsId;
 import org.eclipse.dataspaceconnector.ids.spi.IdsType;
+import org.eclipse.dataspaceconnector.ids.spi.transform.TransformResult;
 import org.eclipse.dataspaceconnector.ids.spi.transform.TransformerRegistry;
 import org.eclipse.dataspaceconnector.ids.spi.version.IdsProtocol;
 import org.jetbrains.annotations.NotNull;
@@ -40,7 +41,7 @@ public class DescriptionResponseMessageFactory {
     private final DescriptionResponseMessageFactorySettings descriptionResponseMessageFactorySettings;
     private final TransformerRegistry transformerRegistry;
 
-    public DescriptionResponseMessageFactory(@NotNull DescriptionResponseMessageFactorySettings descriptionResponseMessageFactorySettings, TransformerRegistry transformerRegistry) {
+    public DescriptionResponseMessageFactory(@NotNull DescriptionResponseMessageFactorySettings descriptionResponseMessageFactorySettings, @NotNull TransformerRegistry transformerRegistry) {
         this.descriptionResponseMessageFactorySettings = Objects.requireNonNull(descriptionResponseMessageFactorySettings);
         this.transformerRegistry = Objects.requireNonNull(transformerRegistry);
     }
@@ -50,10 +51,14 @@ public class DescriptionResponseMessageFactory {
 
         IdsId messageId = IdsId.Builder.newInstance().type(IdsType.MESSAGE).value(UUID.randomUUID().toString()).build();
 
-        // TODO: handle transformer problems
-        URI uri = transformerRegistry.transform(messageId, URI.class).getOutput();
-
-        DescriptionResponseMessageBuilder builder = new DescriptionResponseMessageBuilder(uri);
+        DescriptionResponseMessageBuilder builder;
+        TransformResult<URI> transformResult = transformerRegistry.transform(messageId, URI.class);
+        if (transformResult.hasProblems()) {
+            // TODO: handle transformer problems
+            builder = new DescriptionResponseMessageBuilder();
+        } else {
+            builder = new DescriptionResponseMessageBuilder(transformResult.getOutput());
+        }
 
         builder._contentVersion_(IdsProtocol.INFORMATION_MODEL_VERSION);
         builder._modelVersion_(IdsProtocol.INFORMATION_MODEL_VERSION);

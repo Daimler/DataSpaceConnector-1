@@ -1,6 +1,7 @@
 package org.eclipse.dataspaceconnector.ids;
 
 import org.eclipse.dataspaceconnector.ids.spi.IdsId;
+import org.eclipse.dataspaceconnector.ids.spi.IdsIdParser;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -11,7 +12,7 @@ import org.junit.jupiter.params.provider.ArgumentsSource;
 import java.util.Arrays;
 import java.util.stream.Stream;
 
-class IdsIdTest {
+class IdsIdParserTest {
     private static final String[] ILLEGAL_IDS = {
             null,
             "urn:test:12345asdasd",
@@ -32,14 +33,14 @@ class IdsIdTest {
     @ParameterizedTest(name = "{index} {0} is 30 days long")
     @ArgumentsSource(LegalIdsArgumentsProvider.class)
     void parseLegal(String string) {
-        IdsId result = IdsId.parse(string);
+        IdsId result = IdsIdParser.parse(string);
         Assertions.assertNotNull(result);
     }
 
     @ParameterizedTest
     @ArgumentsSource(IllegalIdsArgumentsProvider.class)
     void parseIllegal(String string) {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> IdsId.parse(string));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> IdsIdParser.parse(string));
     }
 
     static class IllegalIdsArgumentsProvider implements ArgumentsProvider {

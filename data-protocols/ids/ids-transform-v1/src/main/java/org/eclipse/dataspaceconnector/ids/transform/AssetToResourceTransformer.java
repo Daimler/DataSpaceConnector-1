@@ -52,6 +52,7 @@ public class AssetToResourceTransformer implements IdsTypeTransformer<Asset, Res
 
         ResourceBuilder resourceBuilder = new ResourceBuilder();
         resourceBuilder._representation_(new ArrayList<>(Collections.singletonList(result)));
+
         return resourceBuilder.build();
     }
 }

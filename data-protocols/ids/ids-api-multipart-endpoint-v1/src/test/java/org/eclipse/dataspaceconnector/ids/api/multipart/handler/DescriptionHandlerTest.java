@@ -19,7 +19,11 @@ import de.fraunhofer.iais.eis.Message;
 import de.fraunhofer.iais.eis.RejectionMessage;
 import de.fraunhofer.iais.eis.RejectionReason;
 import org.easymock.EasyMock;
-import org.eclipse.dataspaceconnector.ids.api.multipart.handler.description.*;
+import org.eclipse.dataspaceconnector.ids.api.multipart.handler.description.ArtifactDescriptionRequestHandler;
+import org.eclipse.dataspaceconnector.ids.api.multipart.handler.description.ConnectorDescriptionRequestHandler;
+import org.eclipse.dataspaceconnector.ids.api.multipart.handler.description.DataCatalogDescriptionRequestHandler;
+import org.eclipse.dataspaceconnector.ids.api.multipart.handler.description.RepresentationDescriptionRequestHandler;
+import org.eclipse.dataspaceconnector.ids.api.multipart.handler.description.ResourceDescriptionRequestHandler;
 import org.eclipse.dataspaceconnector.ids.api.multipart.message.MultipartRequest;
 import org.eclipse.dataspaceconnector.ids.api.multipart.message.MultipartResponse;
 import org.eclipse.dataspaceconnector.ids.spi.IdsId;
@@ -32,6 +36,7 @@ import java.net.URI;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+
 // FIXME
 class DescriptionHandlerTest {
 
@@ -53,7 +58,7 @@ class DescriptionHandlerTest {
         transformerRegistry = EasyMock.mock(TransformerRegistry.class);
         artifactDescriptionRequestHandler = EasyMock.mock(ArtifactDescriptionRequestHandler.class);
         dataCatalogDescriptionRequestHandler = EasyMock.mock(DataCatalogDescriptionRequestHandler.class);
-        representationDescriptionRequestHandler = EasyMock.mock(ResourceDescriptionRequestHandler.class);
+        representationDescriptionRequestHandler = EasyMock.mock(RepresentationDescriptionRequestHandler.class);
         resourceDescriptionRequestHandler = EasyMock.mock(ResourceDescriptionRequestHandler.class);
         connectorDescriptionRequestHandler = EasyMock.mock(ConnectorDescriptionRequestHandler.class);
 
@@ -68,7 +73,14 @@ class DescriptionHandlerTest {
 
     @Test
     void testCanHandleNullThrowsNullPointerException() {
-        EasyMock.replay(descriptionHandlerSettings, connectorDescriptionRequestHandler);
+        EasyMock.replay(
+                descriptionHandlerSettings,
+                transformerRegistry,
+                artifactDescriptionRequestHandler,
+                dataCatalogDescriptionRequestHandler,
+                representationDescriptionRequestHandler,
+                resourceDescriptionRequestHandler,
+                connectorDescriptionRequestHandler);
 
         assertThrows(NullPointerException.class, () -> {
             descriptionHandler.canHandle(null);
@@ -79,7 +91,15 @@ class DescriptionHandlerTest {
     void testCanHandleMultipartHeaderOfTypeDescriptionRequestMessageReturnsTrue() {
         DescriptionRequestMessage message = EasyMock.mock(DescriptionRequestMessage.class);
 
-        EasyMock.replay(descriptionHandlerSettings, connectorDescriptionRequestHandler, message);
+        EasyMock.replay(
+                descriptionHandlerSettings,
+                transformerRegistry,
+                artifactDescriptionRequestHandler,
+                dataCatalogDescriptionRequestHandler,
+                representationDescriptionRequestHandler,
+                resourceDescriptionRequestHandler,
+                connectorDescriptionRequestHandler,
+                message);
 
         MultipartRequest multipartRequest = MultipartRequest.Builder.newInstance()
                 .header(message)
@@ -110,7 +130,16 @@ class DescriptionHandlerTest {
         EasyMock.expect(connectorDescriptionRequestHandler.handle(requestHeader, multipartRequest.getPayload())).andReturn(response);
 
         // record
-        EasyMock.replay(descriptionHandlerSettings, connectorDescriptionRequestHandler, requestHeader, responseHeader);
+        EasyMock.replay(
+                descriptionHandlerSettings,
+                transformerRegistry,
+                artifactDescriptionRequestHandler,
+                dataCatalogDescriptionRequestHandler,
+                representationDescriptionRequestHandler,
+                resourceDescriptionRequestHandler,
+                connectorDescriptionRequestHandler,
+                requestHeader,
+                responseHeader);
 
         // invoke
         var result = descriptionHandler.handleRequest(multipartRequest);
@@ -132,12 +161,17 @@ class DescriptionHandlerTest {
                 .build();
 
         // record
-        EasyMock.replay(descriptionHandlerSettings, connectorDescriptionRequestHandler, requestHeader);
+        EasyMock.replay(descriptionHandlerSettings,
+                transformerRegistry,
+                artifactDescriptionRequestHandler,
+                dataCatalogDescriptionRequestHandler,
+                representationDescriptionRequestHandler,
+                resourceDescriptionRequestHandler,
+                connectorDescriptionRequestHandler,
+                requestHeader);
 
         // invoke
-        assertThrows(IllegalArgumentException.class, () -> {
-            descriptionHandler.handleRequest(multipartRequest);
-        });
+        assertThrows(IllegalArgumentException.class, () -> descriptionHandler.handleRequest(multipartRequest));
     }
 
 
@@ -157,8 +191,17 @@ class DescriptionHandlerTest {
 
         EasyMock.expect(descriptionHandlerSettings.getId()).andReturn(null);
 
+        EasyMock.expect(transformerRegistry.transform(EasyMock.anyObject(), EasyMock.eq(IdsId.class)))
+                .andReturn(null);
         // record
-        EasyMock.replay(descriptionHandlerSettings, connectorDescriptionRequestHandler, requestHeader);
+        EasyMock.replay(descriptionHandlerSettings,
+                transformerRegistry,
+                artifactDescriptionRequestHandler,
+                dataCatalogDescriptionRequestHandler,
+                representationDescriptionRequestHandler,
+                resourceDescriptionRequestHandler,
+                connectorDescriptionRequestHandler,
+                requestHeader);
 
         // invoke
         var result = descriptionHandler.handleRequest(multipartRequest);
@@ -172,6 +215,14 @@ class DescriptionHandlerTest {
 
     @AfterEach
     void tearDown() {
-        EasyMock.verify(descriptionHandlerSettings, transformerRegistry, connectorDescriptionRequestHandler);
+        EasyMock.verify(
+                descriptionHandlerSettings,
+                transformerRegistry,
+                artifactDescriptionRequestHandler,
+                dataCatalogDescriptionRequestHandler,
+                representationDescriptionRequestHandler,
+                resourceDescriptionRequestHandler,
+                connectorDescriptionRequestHandler
+        );
     }
 }

@@ -21,7 +21,6 @@ import java.util.Objects;
 /**
  * ID / URI generator for IDS resources.
  */
-@Deprecated // This functionality will be moved to a transformer class
 public class IdsId {
     private final IdsType type;
     private final String value;
@@ -29,10 +28,6 @@ public class IdsId {
     private IdsId(@NotNull IdsType type, @NotNull String value) {
         this.type = Objects.requireNonNull(type);
         this.value = Objects.requireNonNull(value);
-    }
-
-    public static IdsId message(String value) {
-        return new IdsId(IdsType.MESSAGE, value);
     }
 
     public static IdsId participant(String value) {
@@ -74,14 +69,17 @@ public class IdsId {
         public static Builder newInstance() {
             return new Builder();
         }
+
         public Builder type(IdsType idsType) {
             this.type = idsType;
             return this;
         }
+
         public Builder value(String value) {
             this.value = value;
             return this;
         }
+
         public IdsId build() {
             return new IdsId(type, value);
         }

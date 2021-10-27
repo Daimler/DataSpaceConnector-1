@@ -37,6 +37,9 @@ public class DescriptionResponseMessageFactoryTest {
         private static final URI MESSAGE_ISSUER = URI.create("https://example.com/issuer");
     }
 
+    // subject
+    private DescriptionResponseMessageFactory descriptionResponseMessageFactory;
+
     // mocks
     private DescriptionResponseMessageFactorySettings descriptionResponseMessageFactorySettings;
     private TransformerRegistry transformerRegistry;
@@ -47,6 +50,12 @@ public class DescriptionResponseMessageFactoryTest {
         descriptionResponseMessageFactorySettings = EasyMock.createMock(DescriptionResponseMessageFactorySettings.class);
         transformerRegistry = EasyMock.createMock(TransformerRegistry.class);
         message = EasyMock.createMock(Message.class);
+        descriptionResponseMessageFactory = new DescriptionResponseMessageFactory(descriptionResponseMessageFactorySettings, transformerRegistry);
+    }
+
+    @Test
+    public void testMessageFactoryReturnsAsExpected() {
+        // prepare
         TransformResult<URI> result = new TransformResult<>(Fixtures.MESSAGE_ID);
 
         EasyMock.expect(transformerRegistry.transform(EasyMock.anyObject(IdsId.class), EasyMock.eq(URI.class))).andReturn(result);
@@ -56,17 +65,9 @@ public class DescriptionResponseMessageFactoryTest {
         EasyMock.expect(message.getIssuerConnector()).andReturn(Fixtures.MESSAGE_ISSUER).anyTimes();
 
         EasyMock.replay(descriptionResponseMessageFactorySettings, message);
-    }
 
-    @AfterEach
-    public void teardown() {
-        EasyMock.verify(descriptionResponseMessageFactorySettings);
-    }
-
-    @Test
-    public void testMessageFactoryReturnsAsExpected() {
-        // prepare
-        var descriptionResponseMessageFactory = new DescriptionResponseMessageFactory(descriptionResponseMessageFactorySettings, transformerRegistry);
+        EasyMock.expect(transformerRegistry.transform(EasyMock.anyObject(), EasyMock.eq(URI.class)))
+                .andReturn(new TransformResult<>(Fixtures.ID));
 
         // invoke
         var response = descriptionResponseMessageFactory.createDescriptionResponseMessage(message);
@@ -78,5 +79,10 @@ public class DescriptionResponseMessageFactoryTest {
         Assertions.assertEquals(Fixtures.MESSAGE_ID, response.getCorrelationMessage());
         Assertions.assertEquals(Fixtures.MESSAGE_SENDER_AGENT, response.getRecipientAgent().get(0));
         Assertions.assertEquals(Fixtures.MESSAGE_ISSUER, response.getRecipientConnector().get(0));
+    }
+
+    @AfterEach
+    public void teardown() {
+        EasyMock.verify(descriptionResponseMessageFactorySettings);
     }
 }

@@ -1,7 +1,5 @@
 package org.eclipse.dataspaceconnector.ids.spi;
 
-import java.net.URI;
-
 public class IdsIdParser {
     public static final String SCHEME = "urn";
     public static final String DELIMITER = ":";
