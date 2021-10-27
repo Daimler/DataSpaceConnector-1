@@ -19,10 +19,11 @@ import de.fraunhofer.iais.eis.Message;
 import de.fraunhofer.iais.eis.RejectionMessage;
 import de.fraunhofer.iais.eis.RejectionReason;
 import org.easymock.EasyMock;
-import org.eclipse.dataspaceconnector.ids.api.multipart.handler.description.ConnectorDescriptionRequestHandler;
+import org.eclipse.dataspaceconnector.ids.api.multipart.handler.description.*;
 import org.eclipse.dataspaceconnector.ids.api.multipart.message.MultipartRequest;
 import org.eclipse.dataspaceconnector.ids.api.multipart.message.MultipartResponse;
 import org.eclipse.dataspaceconnector.ids.spi.IdsId;
+import org.eclipse.dataspaceconnector.ids.spi.transform.TransformerRegistry;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,7 +32,7 @@ import java.net.URI;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-
+// FIXME
 class DescriptionHandlerTest {
 
     // subject
@@ -39,14 +40,30 @@ class DescriptionHandlerTest {
 
     //mocks
     private DescriptionHandlerSettings descriptionHandlerSettings;
+    private TransformerRegistry transformerRegistry;
+    private ArtifactDescriptionRequestHandler artifactDescriptionRequestHandler;
+    private DataCatalogDescriptionRequestHandler dataCatalogDescriptionRequestHandler;
+    private RepresentationDescriptionRequestHandler representationDescriptionRequestHandler;
+    private ResourceDescriptionRequestHandler resourceDescriptionRequestHandler;
     private ConnectorDescriptionRequestHandler connectorDescriptionRequestHandler;
 
     @BeforeEach
     void setUp() {
         descriptionHandlerSettings = EasyMock.mock(DescriptionHandlerSettings.class);
+        transformerRegistry = EasyMock.mock(TransformerRegistry.class);
+        artifactDescriptionRequestHandler = EasyMock.mock(ArtifactDescriptionRequestHandler.class);
+        dataCatalogDescriptionRequestHandler = EasyMock.mock(DataCatalogDescriptionRequestHandler.class);
+        representationDescriptionRequestHandler = EasyMock.mock(ResourceDescriptionRequestHandler.class);
+        resourceDescriptionRequestHandler = EasyMock.mock(ResourceDescriptionRequestHandler.class);
         connectorDescriptionRequestHandler = EasyMock.mock(ConnectorDescriptionRequestHandler.class);
 
-        descriptionHandler = new DescriptionHandler(descriptionHandlerSettings, connectorDescriptionRequestHandler);
+        descriptionHandler = new DescriptionHandler(descriptionHandlerSettings,
+                transformerRegistry,
+                artifactDescriptionRequestHandler,
+                dataCatalogDescriptionRequestHandler,
+                representationDescriptionRequestHandler,
+                resourceDescriptionRequestHandler,
+                connectorDescriptionRequestHandler);
     }
 
     @Test
@@ -129,7 +146,7 @@ class DescriptionHandlerTest {
         // prepare
         DescriptionRequestMessage requestHeader = EasyMock.mock(DescriptionRequestMessage.class);
 
-        EasyMock.expect(requestHeader.getRequestedElement()).andReturn(IdsId.participant("test").toUri());
+        EasyMock.expect(requestHeader.getRequestedElement()).andReturn(URI.create("urn:abc:1"));
         EasyMock.expect(requestHeader.getId()).andReturn(null);
         EasyMock.expect(requestHeader.getSenderAgent()).andReturn(null);
         EasyMock.expect(requestHeader.getIssuerConnector()).andReturn(null);
@@ -155,6 +172,6 @@ class DescriptionHandlerTest {
 
     @AfterEach
     void tearDown() {
-        EasyMock.verify(descriptionHandlerSettings, connectorDescriptionRequestHandler);
+        EasyMock.verify(descriptionHandlerSettings, transformerRegistry, connectorDescriptionRequestHandler);
     }
 }

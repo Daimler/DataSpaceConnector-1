@@ -20,6 +20,8 @@ import org.eclipse.dataspaceconnector.ids.spi.transform.TransformerContext;
 import org.eclipse.dataspaceconnector.spi.types.domain.asset.Asset;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Objects;
+
 public class ResourceToAssetTransformer implements IdsTypeTransformer<Resource, Asset> {
     @Override
     public Class<Resource> getInputType() {
@@ -33,6 +35,7 @@ public class ResourceToAssetTransformer implements IdsTypeTransformer<Resource, 
 
     @Override
     public @Nullable Asset transform(Resource object, TransformerContext context) {
+        Objects.requireNonNull(context);
         return null;
     }
 }

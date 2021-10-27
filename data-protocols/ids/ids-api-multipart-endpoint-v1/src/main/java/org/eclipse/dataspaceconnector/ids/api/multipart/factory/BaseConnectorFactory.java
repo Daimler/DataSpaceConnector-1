@@ -14,12 +14,7 @@
 
 package org.eclipse.dataspaceconnector.ids.api.multipart.factory;
 
-import de.fraunhofer.iais.eis.BaseConnector;
-import de.fraunhofer.iais.eis.BaseConnectorBuilder;
-import de.fraunhofer.iais.eis.ConnectorEndpoint;
-import de.fraunhofer.iais.eis.ConnectorEndpointBuilder;
-import de.fraunhofer.iais.eis.ResourceCatalog;
-import de.fraunhofer.iais.eis.SecurityProfile;
+import de.fraunhofer.iais.eis.*;
 import de.fraunhofer.iais.eis.util.TypedLiteral;
 import de.fraunhofer.iais.eis.util.Util;
 import org.eclipse.dataspaceconnector.ids.spi.version.ConnectorVersionProvider;

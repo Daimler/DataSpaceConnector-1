@@ -18,6 +18,8 @@ import org.eclipse.dataspaceconnector.ids.spi.transform.IdsTypeTransformer;
 import org.eclipse.dataspaceconnector.ids.spi.transform.TransformerContext;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Objects;
+
 public class ResourceToRepresentationTransformer implements IdsTypeTransformer {
     @Override
     public Class getInputType() {
@@ -32,6 +34,7 @@ public class ResourceToRepresentationTransformer implements IdsTypeTransformer {
     @Nullable
     @Override
     public Object transform(Object object, TransformerContext context) {
+        Objects.requireNonNull(context);
         return null;
     }
 }

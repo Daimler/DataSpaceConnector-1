@@ -15,18 +15,21 @@
 package org.eclipse.dataspaceconnector.ids.transform;
 
 import de.fraunhofer.iais.eis.*;
-import org.eclipse.dataspaceconnector.ids.spi.IdsId;
 import org.eclipse.dataspaceconnector.ids.spi.transform.IdsTypeTransformer;
 import org.eclipse.dataspaceconnector.ids.spi.transform.TransformerContext;
-import org.eclipse.dataspaceconnector.ids.spi.types.domain.IdsAsset;
 import org.eclipse.dataspaceconnector.spi.types.domain.asset.Asset;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Map;
+import java.util.Objects;
+import java.util.function.Consumer;
 
 public class AssetToRepresentationTransformer implements IdsTypeTransformer<Asset, Representation> {
+    public static final String KEY_ASSET_FILE_EXTENSION = "ids:fileExtension";
 
     @Override
     public Class<Asset> getInputType() {
@@ -40,21 +43,48 @@ public class AssetToRepresentationTransformer implements IdsTypeTransformer<Asse
 
     @Override
     public @Nullable Representation transform(Asset object, TransformerContext context) {
-        Artifact result = context.transform(object, Artifact.class);
-
-        RepresentationBuilder representationBuilder = new RepresentationBuilder(IdsId.representation(object.getId()).toUri());
-
-        IdsAsset idsAsset = IdsAsset.Builder.newInstance(object).build();
-        String fileExtension = idsAsset.getFileExtension();
-        if (fileExtension != null) {
-            representationBuilder._mediaType_(createMediaType(fileExtension));
+        Objects.requireNonNull(context);
+        if (object == null) {
+            return null;
         }
 
-        representationBuilder._instance_(new ArrayList<>(Collections.singletonList(result)));
+        Artifact artifact = context.transform(object, Artifact.class);
+        URI uri = context.transform(object.getId(), URI.class);
+
+        RepresentationBuilder representationBuilder = new RepresentationBuilder(uri);
+
+        var properties = object.getProperties();
+        if (properties == null) {
+            context.reportProblem("Asset properties null");
+        } else {
+            extractProperty(context, properties, KEY_ASSET_FILE_EXTENSION, String.class, (value) -> {
+                representationBuilder._mediaType_(createMediaType(value));
+            });
+        }
+
+        representationBuilder._instance_(new ArrayList<>(Collections.singletonList(artifact)));
         return representationBuilder.build();
     }
 
     private static MediaType createMediaType(@NotNull String fileExtension) {
         return new CustomMediaTypeBuilder()._filenameExtension_(fileExtension).build();
+    }
+
+    private <T> void extractProperty(TransformerContext context, Map<String, Object> properties, String propertyKey, Class<T> targetType, Consumer<T> consumer) {
+        var propertyValue = properties.get(propertyKey);
+        if (propertyValue == null) {
+            context.reportProblem(String.format("Asset property %s is null", propertyKey));
+        } else {
+            if (targetType.isAssignableFrom(propertyValue.getClass())) {
+                consumer.accept(targetType.cast(propertyValue));
+            } else {
+                T convertedPropertyValue;
+                if ((convertedPropertyValue = context.transform(propertyValue, targetType)) != null) {
+                    consumer.accept(convertedPropertyValue);
+                } else {
+                    context.reportProblem(String.format("Asset property %s not convertible to %s", propertyKey, targetType.getSimpleName()));
+                }
+            }
+        }
     }
 }

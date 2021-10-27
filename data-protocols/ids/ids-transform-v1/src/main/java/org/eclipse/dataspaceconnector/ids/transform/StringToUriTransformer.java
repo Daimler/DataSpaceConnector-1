@@ -6,6 +6,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Objects;
 
 public class StringToUriTransformer implements IdsTypeTransformer<String, URI> {
     @Override
@@ -20,10 +21,14 @@ public class StringToUriTransformer implements IdsTypeTransformer<String, URI> {
 
     @Override
     public @Nullable URI transform(String object, TransformerContext context) {
+        Objects.requireNonNull(context);
+        if (object == null) {
+            return null;
+        }
         try {
             return new URI(object);
         } catch (URISyntaxException e) {
-            context.reportProblem(String.format("Error transforming String to URI: %s",e.getMessage()));
+            context.reportProblem(String.format("Error transforming String to URI: %s", e.getMessage()));
         }
         return null;
     }

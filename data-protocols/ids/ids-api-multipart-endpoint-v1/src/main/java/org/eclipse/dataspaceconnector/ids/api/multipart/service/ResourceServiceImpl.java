@@ -14,9 +14,7 @@
 
 package org.eclipse.dataspaceconnector.ids.api.multipart.service;
 
-import de.fraunhofer.iais.eis.Artifact;
 import de.fraunhofer.iais.eis.Resource;
-import org.eclipse.dataspaceconnector.ids.api.multipart.factory.ResourceFactory;
 import org.eclipse.dataspaceconnector.ids.core.transform.TransformerRegistryImpl;
 import org.eclipse.dataspaceconnector.ids.spi.transform.TransformerRegistry;
 import org.eclipse.dataspaceconnector.spi.asset.AssetIndex;
@@ -44,8 +42,6 @@ public class ResourceServiceImpl implements ResourceService {
      */
     @Override
     public Resource createResource(@NotNull String id) {
-        ResourceFactory resourceFactory = new ResourceFactory();
-
         Asset asset = assetIndex.findById(id);
         if (asset == null) {
             return null;

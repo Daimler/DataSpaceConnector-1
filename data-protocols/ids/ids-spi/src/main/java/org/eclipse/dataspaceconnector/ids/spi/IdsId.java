@@ -14,10 +14,8 @@
 
 package org.eclipse.dataspaceconnector.ids.spi;
 
-import org.eclipse.dataspaceconnector.ids.spi.transform.IdsTypeTransformer;
 import org.jetbrains.annotations.NotNull;
 
-import java.net.URI;
 import java.util.Objects;
 
 /**

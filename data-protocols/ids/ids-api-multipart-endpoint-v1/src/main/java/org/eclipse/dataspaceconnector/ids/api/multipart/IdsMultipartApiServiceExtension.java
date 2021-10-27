@@ -167,6 +167,7 @@ public final class IdsMultipartApiServiceExtension implements ServiceExtension {
         var resourceDescriptionRequestHandler = new ResourceDescriptionRequestHandler(resourceDescriptionHandlerSettings, resourceService, descriptionResponseMessageFactory);
 
         var descriptionRequestHandler = new DescriptionHandler(descriptionHandlerSettings,
+                transformerRegistry,
                 artifactDescriptionRequestHandler,
                 dataCatalogDescriptionRequestHandler,
                 representationDescriptionRequestHandler,

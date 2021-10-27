@@ -24,20 +24,31 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Objects;
 
 public class AssetToResourceTransformer implements IdsTypeTransformer<Asset, Resource> {
 
-    public AssetToResourceTransformer() {}
+    public AssetToResourceTransformer() {
+    }
 
     @Override
-    public Class<Asset> getInputType() { return Asset.class;}
+    public Class<Asset> getInputType() {
+        return Asset.class;
+    }
 
     @Override
-    public Class<Resource> getOutputType() { return Resource.class; }
+    public Class<Resource> getOutputType() {
+        return Resource.class;
+    }
 
     @Override
     public @Nullable Resource transform(Asset object, TransformerContext context) {
-        Representation result = context.transform(object,Representation.class);
+        Objects.requireNonNull(context);
+        if (object == null) {
+            return null;
+        }
+
+        Representation result = context.transform(object, Representation.class);
 
         ResourceBuilder resourceBuilder = new ResourceBuilder();
         resourceBuilder._representation_(new ArrayList<>(Collections.singletonList(result)));

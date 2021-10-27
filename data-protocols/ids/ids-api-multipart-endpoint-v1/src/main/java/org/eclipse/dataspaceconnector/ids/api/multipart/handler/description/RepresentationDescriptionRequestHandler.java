@@ -14,10 +14,10 @@
 
 package org.eclipse.dataspaceconnector.ids.api.multipart.handler.description;
 
-import de.fraunhofer.iais.eis.Representation;
 import de.fraunhofer.iais.eis.DescriptionRequestMessage;
 import de.fraunhofer.iais.eis.DescriptionResponseMessage;
 import de.fraunhofer.iais.eis.Message;
+import de.fraunhofer.iais.eis.Representation;
 import org.eclipse.dataspaceconnector.ids.api.multipart.factory.DescriptionResponseMessageFactory;
 import org.eclipse.dataspaceconnector.ids.api.multipart.message.MultipartResponse;
 import org.eclipse.dataspaceconnector.ids.api.multipart.service.RepresentationService;

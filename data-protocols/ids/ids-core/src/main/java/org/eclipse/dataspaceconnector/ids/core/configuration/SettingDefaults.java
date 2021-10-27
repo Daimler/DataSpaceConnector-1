@@ -5,7 +5,7 @@ import org.eclipse.dataspaceconnector.ids.spi.IdsId;
 import java.net.URI;
 
 public final class SettingDefaults {
-    public static final String ID = IdsId.connector("edc").toUri().toString();
+    public static final String ID = "urn:connector:edc";
     public static final String TITLE = "Eclipse Dataspace Connector";
     public static final String DESCRIPTION = "Eclipse Dataspace Connector";
     public static final String MAINTAINER = "https://example.com";

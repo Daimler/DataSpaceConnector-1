@@ -20,6 +20,8 @@ import org.eclipse.dataspaceconnector.ids.spi.transform.TransformerContext;
 import org.eclipse.dataspaceconnector.spi.types.domain.asset.Asset;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Objects;
+
 public class ArtifactToAssetTransformer implements IdsTypeTransformer<Artifact, Asset> {
     @Override
     public Class<Artifact> getInputType() {
@@ -32,5 +34,8 @@ public class ArtifactToAssetTransformer implements IdsTypeTransformer<Artifact, 
     }
 
     @Override
-    public @Nullable Asset transform(Artifact object, TransformerContext context) {return null;}
+    public @Nullable Asset transform(Artifact object, TransformerContext context) {
+        Objects.requireNonNull(context);
+        return null;
+    }
 }

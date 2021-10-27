@@ -9,27 +9,27 @@ import org.jetbrains.annotations.Nullable;
 import java.net.URI;
 import java.util.Objects;
 
-public class UriToIdsIdTransformer implements IdsTypeTransformer<URI, IdsId> {
+public class IdToUriTransformer implements IdsTypeTransformer<IdsId, URI> {
     @Override
-    public Class<URI> getInputType() {
-        return URI.class;
-    }
-
-    @Override
-    public Class<IdsId> getOutputType() {
+    public Class<IdsId> getInputType() {
         return IdsId.class;
     }
 
     @Override
-    public @Nullable IdsId transform(URI object, TransformerContext context) {
+    public Class<URI> getOutputType() {
+        return URI.class;
+    }
+
+    @Override
+    public @Nullable URI transform(IdsId object, TransformerContext context) {
         Objects.requireNonNull(context);
         if (object == null) {
             return null;
         }
         try {
-            return IdsIdParser.parse(object.getScheme() + IdsIdParser.DELIMITER + object.getSchemeSpecificPart());
+            return URI.create(String.join(IdsIdParser.DELIMITER, IdsIdParser.SCHEME, object.getType().getValue(), object.getValue()));
         } catch (IllegalArgumentException e) {
-            context.reportProblem(String.format("Could not transform URI to IdsId: %s", e.getMessage()));
+            context.reportProblem(String.format("Could not transform IdsId to URI: %s", e.getMessage()));
         }
         return null;
     }

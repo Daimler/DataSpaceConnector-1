@@ -17,7 +17,6 @@ package org.eclipse.dataspaceconnector.ids.api.multipart.factory;
 import de.fraunhofer.iais.eis.Resource;
 import de.fraunhofer.iais.eis.ResourceCatalog;
 import de.fraunhofer.iais.eis.ResourceCatalogBuilder;
-import org.eclipse.dataspaceconnector.ids.spi.IdsId;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -36,7 +35,8 @@ public class ResourceCatalogFactory {
     @NotNull
     public ResourceCatalog createResourceCatalogBuilder(@Nullable List<Resource> resources) {
 
-        var resourceCatalogBuilder = new ResourceCatalogBuilder(IdsId.catalog(CONSTANT_RESOURCE_CATALOG_ID).toUri());
+        // TODO: get catalog ids from somewhere
+        var resourceCatalogBuilder = new ResourceCatalogBuilder();
 
         if (resources != null) {
             resourceCatalogBuilder._offeredResource_(new ArrayList<>(resources));

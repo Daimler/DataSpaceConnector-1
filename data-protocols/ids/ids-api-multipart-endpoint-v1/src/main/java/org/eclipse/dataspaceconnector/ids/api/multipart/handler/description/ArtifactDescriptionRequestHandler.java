@@ -26,11 +26,11 @@ import org.eclipse.dataspaceconnector.ids.spi.IdsType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-
 import java.net.URI;
 import java.util.Objects;
 
-import static org.eclipse.dataspaceconnector.ids.api.multipart.util.RejectionMessageUtil.*;
+import static org.eclipse.dataspaceconnector.ids.api.multipart.util.RejectionMessageUtil.badParameters;
+import static org.eclipse.dataspaceconnector.ids.api.multipart.util.RejectionMessageUtil.notFound;
 
 public class ArtifactDescriptionRequestHandler implements DescriptionRequestHandler {
     private final ArtifactDescriptionRequestHandlerSettings artifactDescriptionRequestHandlerSettings;

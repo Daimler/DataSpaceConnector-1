@@ -16,19 +16,20 @@ package org.eclipse.dataspaceconnector.ids.transform;
 
 import de.fraunhofer.iais.eis.Artifact;
 import de.fraunhofer.iais.eis.ArtifactBuilder;
-import org.eclipse.dataspaceconnector.ids.spi.IdsId;
-import org.eclipse.dataspaceconnector.ids.spi.IdsType;
 import org.eclipse.dataspaceconnector.ids.spi.transform.IdsTypeTransformer;
 import org.eclipse.dataspaceconnector.ids.spi.transform.TransformerContext;
 import org.eclipse.dataspaceconnector.spi.types.domain.asset.Asset;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.math.BigInteger;
+import java.net.URI;
+import java.util.Map;
+import java.util.Objects;
+import java.util.function.Consumer;
 
 public class AssetToArtifactTransformer implements IdsTypeTransformer<Asset, Artifact> {
-    private static final String KEY_ASSET_FILE_NAME = "ids:fileName";
-    private static final String KEY_ASSET_BYTE_SIZE = "ids:byteSize";
+    public static final String KEY_ASSET_FILE_NAME = "ids:fileName";
+    public static final String KEY_ASSET_BYTE_SIZE = "ids:byteSize";
 
     @Override
     public Class<Asset> getInputType() {
@@ -41,21 +42,43 @@ public class AssetToArtifactTransformer implements IdsTypeTransformer<Asset, Art
     }
 
     @Override
-    public @Nullable Artifact transform(@NotNull Asset object, TransformerContext context) {
-
-        Artifact artifact = IdsId.Builder.newInstance().type(IdsType.ARTIFACT).value(object.get).build();
-        ArtifactBuilder artifactBuilder = new ArtifactBuilder(IdsId.artifact(object.getId()).toUri());
-
-        String fileName = (String) object.getProperties().get(KEY_ASSET_FILE_NAME);
-        if (fileName != null) {
-            artifactBuilder._fileName_(fileName);
+    public @Nullable Artifact transform(Asset object, TransformerContext context) {
+        Objects.requireNonNull(context);
+        if (object == null) {
+            return null;
         }
 
-        Integer byteSize = (Integer) object.getProperties().get(KEY_ASSET_BYTE_SIZE);
-        if (byteSize != null) {
-            artifactBuilder._byteSize_(BigInteger.valueOf(byteSize));
+        URI uri = context.transform(object.getId(), URI.class);
+
+        ArtifactBuilder artifactBuilder = new ArtifactBuilder(uri);
+
+        var properties = object.getProperties();
+        if (properties == null) {
+            context.reportProblem("Asset properties null");
+            return artifactBuilder.build();
         }
+
+        extractProperty(context, properties, KEY_ASSET_FILE_NAME, String.class, artifactBuilder::_fileName_);
+        extractProperty(context, properties, KEY_ASSET_BYTE_SIZE, BigInteger.class, artifactBuilder::_byteSize_);
 
         return artifactBuilder.build();
+    }
+
+    private <T> void extractProperty(TransformerContext context, Map<String, Object> properties, String propertyKey, Class<T> targetType, Consumer<T> consumer) {
+        var propertyValue = properties.get(propertyKey);
+        if (propertyValue == null) {
+            context.reportProblem(String.format("Asset property %s is null", propertyKey));
+        } else {
+            if (targetType.isAssignableFrom(propertyValue.getClass())) {
+                consumer.accept(targetType.cast(propertyValue));
+            } else {
+                T convertedPropertyValue;
+                if ((convertedPropertyValue = context.transform(propertyValue, targetType)) != null) {
+                    consumer.accept(convertedPropertyValue);
+                } else {
+                    context.reportProblem(String.format("Asset property %s not convertible to %s", propertyKey, targetType.getSimpleName()));
+                }
+            }
+        }
     }
 }

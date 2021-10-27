@@ -19,8 +19,8 @@ import de.fraunhofer.iais.eis.Message;
 import org.eclipse.dataspaceconnector.ids.api.multipart.handler.description.*;
 import org.eclipse.dataspaceconnector.ids.api.multipart.message.MultipartRequest;
 import org.eclipse.dataspaceconnector.ids.api.multipart.message.MultipartResponse;
-import org.eclipse.dataspaceconnector.ids.spi.IdsId;
 import org.eclipse.dataspaceconnector.ids.spi.IdsType;
+import org.eclipse.dataspaceconnector.ids.spi.transform.TransformerRegistry;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
@@ -29,6 +29,7 @@ import static org.eclipse.dataspaceconnector.ids.api.multipart.util.RejectionMes
 
 public class DescriptionHandler implements Handler {
     private final DescriptionHandlerSettings descriptionHandlerSettings;
+    private final TransformerRegistry transformerRegistry;
     private final ArtifactDescriptionRequestHandler artifactDescriptionRequestHandler;
     private final DataCatalogDescriptionRequestHandler dataCatalogDescriptionRequestHandler;
     private final RepresentationDescriptionRequestHandler representationDescriptionRequestHandler;
@@ -37,12 +38,14 @@ public class DescriptionHandler implements Handler {
 
     public DescriptionHandler(
             DescriptionHandlerSettings descriptionHandlerSettings,
+            TransformerRegistry transformerRegistry,
             ArtifactDescriptionRequestHandler artifactDescriptionRequestHandler,
             DataCatalogDescriptionRequestHandler dataCatalogDescriptionRequestHandler,
             RepresentationDescriptionRequestHandler representationDescriptionRequestHandler,
             ResourceDescriptionRequestHandler resourceDescriptionRequestHandler,
             ConnectorDescriptionRequestHandler connectorDescriptionRequestHandler) {
         this.descriptionHandlerSettings = descriptionHandlerSettings;
+        this.transformerRegistry = transformerRegistry;
         this.artifactDescriptionRequestHandler = artifactDescriptionRequestHandler;
         this.dataCatalogDescriptionRequestHandler = dataCatalogDescriptionRequestHandler;
         this.representationDescriptionRequestHandler = representationDescriptionRequestHandler;
@@ -68,19 +71,28 @@ public class DescriptionHandler implements Handler {
         var requestedElement = descriptionRequestMessage.getRequestedElement();
         IdsType type = null;
         if (requestedElement != null) {
-            type = IdsId.fromUri(requestedElement).getType();
+            var result = transformerRegistry.transform(requestedElement, IdsType.class);
+            if (!result.hasProblems()) {
+                type = result.getOutput();
+            }
+            // TODO: log problems
         }
 
         if (type == null || type == IdsType.CONNECTOR) {
             return connectorDescriptionRequestHandler.handle(descriptionRequestMessage, payload);
         }
 
-        switch (type){
-            case ARTIFACT: return artifactDescriptionRequestHandler.handle(descriptionRequestMessage, payload);
-            case CATALOG: return dataCatalogDescriptionRequestHandler.handle(descriptionRequestMessage, payload);
-            case REPRESENTATION: return representationDescriptionRequestHandler.handle(descriptionRequestMessage, payload);
-            case RESOURCE: return resourceDescriptionRequestHandler.handle(descriptionRequestMessage, payload);
-            default: return createErrorMultipartResponse(descriptionRequestMessage);
+        switch (type) {
+            case ARTIFACT:
+                return artifactDescriptionRequestHandler.handle(descriptionRequestMessage, payload);
+            case CATALOG:
+                return dataCatalogDescriptionRequestHandler.handle(descriptionRequestMessage, payload);
+            case REPRESENTATION:
+                return representationDescriptionRequestHandler.handle(descriptionRequestMessage, payload);
+            case RESOURCE:
+                return resourceDescriptionRequestHandler.handle(descriptionRequestMessage, payload);
+            default:
+                return createErrorMultipartResponse(descriptionRequestMessage);
         }
     }
 

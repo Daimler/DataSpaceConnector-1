@@ -14,11 +14,9 @@
 
 package org.eclipse.dataspaceconnector.ids.api.multipart.service;
 
-import de.fraunhofer.iais.eis.Artifact;
 import de.fraunhofer.iais.eis.Catalog;
 import de.fraunhofer.iais.eis.Resource;
 import org.eclipse.dataspaceconnector.ids.api.multipart.factory.ResourceCatalogFactory;
-import org.eclipse.dataspaceconnector.ids.api.multipart.factory.ResourceFactory;
 import org.eclipse.dataspaceconnector.ids.core.transform.TransformerRegistryImpl;
 import org.eclipse.dataspaceconnector.ids.spi.transform.TransformerRegistry;
 import org.eclipse.dataspaceconnector.spi.asset.AssetIndex;

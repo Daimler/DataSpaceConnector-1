@@ -19,6 +19,7 @@ import org.eclipse.dataspaceconnector.spi.monitor.Monitor;
 import org.eclipse.dataspaceconnector.spi.system.ServiceExtension;
 import org.eclipse.dataspaceconnector.spi.system.ServiceExtensionContext;
 
+import java.util.Arrays;
 import java.util.Set;
 
 public class IdsTransformServiceExtension implements ServiceExtension {
@@ -56,25 +57,21 @@ public class IdsTransformServiceExtension implements ServiceExtension {
     private void registerTransformers(ServiceExtensionContext serviceExtensionContext) {
         var registry = serviceExtensionContext.getService(TransformerRegistry.class);
 
-        AssetToResourceTransformer assetToResourceTransformer = new AssetToResourceTransformer();
-        registry.register(assetToResourceTransformer);
-        ResourceToAssetTransformer resourceToAssetTransformer = new ResourceToAssetTransformer();
-        registry.register(resourceToAssetTransformer);
-
-        ResourceToRepresentationTransformer resourceToRepresentationTransformer = new ResourceToRepresentationTransformer();
-        registry.register(resourceToRepresentationTransformer);
-        RepresentationToResourceTransformer representationToResourceTransformer = new RepresentationToResourceTransformer();
-        registry.register(representationToResourceTransformer);
-
-        AssetToArtifactTransformer assetToArtifactTransformer = new AssetToArtifactTransformer();
-        registry.register(assetToArtifactTransformer);
-        ArtifactToAssetTransformer artifactToAssetTransformer = new ArtifactToAssetTransformer();
-        registry.register(artifactToAssetTransformer);
-
-        AssetToRepresentationTransformer assetToRepresentationTransformer = new AssetToRepresentationTransformer();
-        registry.register(assetToRepresentationTransformer);
-        RepresentationToAssetTransformer representationToAssetTransformer = new RepresentationToAssetTransformer();
-        registry.register(representationToAssetTransformer);
+        Arrays.asList(
+                new ArtifactToAssetTransformer(),
+                new AssetToArtifactTransformer(),
+                new AssetToRepresentationTransformer(),
+                new AssetToResourceTransformer(),
+                new IdToUriTransformer(),
+                new IntegerToBigIntegerTransformer(),
+                new RepresentationToAssetTransformer(),
+                new RepresentationToResourceTransformer(),
+                new ResourceToAssetTransformer(),
+                new ResourceToRepresentationTransformer(),
+                new StringToUriTransformer(),
+                new UriToIdsIdTransformer(),
+                new UriToIdsTypeTransformer()
+        ).forEach(registry::register);
     }
 
     @Override
