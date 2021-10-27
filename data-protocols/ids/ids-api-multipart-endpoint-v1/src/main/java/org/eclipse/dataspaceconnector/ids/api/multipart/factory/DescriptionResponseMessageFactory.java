@@ -19,6 +19,8 @@ import de.fraunhofer.iais.eis.DescriptionResponseMessageBuilder;
 import de.fraunhofer.iais.eis.Message;
 import org.eclipse.dataspaceconnector.ids.core.util.CalendarUtil;
 import org.eclipse.dataspaceconnector.ids.spi.IdsId;
+import org.eclipse.dataspaceconnector.ids.spi.IdsType;
+import org.eclipse.dataspaceconnector.ids.spi.transform.TransformerRegistry;
 import org.eclipse.dataspaceconnector.ids.spi.version.IdsProtocol;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -36,17 +38,22 @@ import java.util.UUID;
 public class DescriptionResponseMessageFactory {
 
     private final DescriptionResponseMessageFactorySettings descriptionResponseMessageFactorySettings;
+    private final TransformerRegistry transformerRegistry;
 
-    public DescriptionResponseMessageFactory(@NotNull DescriptionResponseMessageFactorySettings descriptionResponseMessageFactorySettings) {
+    public DescriptionResponseMessageFactory(@NotNull DescriptionResponseMessageFactorySettings descriptionResponseMessageFactorySettings, TransformerRegistry transformerRegistry) {
         this.descriptionResponseMessageFactorySettings = Objects.requireNonNull(descriptionResponseMessageFactorySettings);
+        this.transformerRegistry = Objects.requireNonNull(transformerRegistry);
     }
 
     public DescriptionResponseMessage createDescriptionResponseMessage(
             @Nullable Message correlationMessage) {
 
-        IdsId messageId = IdsId.message(UUID.randomUUID().toString());
+        IdsId messageId = IdsId.Builder.newInstance().type(IdsType.MESSAGE).value(UUID.randomUUID().toString()).build();
 
-        DescriptionResponseMessageBuilder builder = new DescriptionResponseMessageBuilder(messageId.toUri());
+        // TODO: handle transformer problems
+        URI uri = transformerRegistry.transform(messageId, URI.class).getOutput();
+
+        DescriptionResponseMessageBuilder builder = new DescriptionResponseMessageBuilder(uri);
 
         builder._contentVersion_(IdsProtocol.INFORMATION_MODEL_VERSION);
         builder._modelVersion_(IdsProtocol.INFORMATION_MODEL_VERSION);

@@ -22,6 +22,7 @@ import org.eclipse.dataspaceconnector.ids.api.multipart.factory.DescriptionRespo
 import org.eclipse.dataspaceconnector.ids.api.multipart.message.MultipartResponse;
 import org.eclipse.dataspaceconnector.ids.api.multipart.service.ArtifactService;
 import org.eclipse.dataspaceconnector.ids.spi.IdsId;
+import org.eclipse.dataspaceconnector.ids.spi.IdsType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -55,7 +56,7 @@ public class ArtifactDescriptionRequestHandler implements DescriptionRequestHand
         }
 
         IdsId idsId = IdsId.fromUri(uri);
-        if (idsId.getType() != IdsId.Type.ARTIFACT) {
+        if (idsId.getType() != IdsType.ARTIFACT) {
             return createBadParametersErrorMultipartResponse(descriptionRequestMessage);
         }
 

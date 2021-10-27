@@ -82,40 +82,4 @@ public class ResourceFactoryTest {
         // verify function calls
         EasyMock.verify(offeredAsset, idsContractOffer, contractOffer, contractOfferFactory);
     }
-
-    @Test
-    public void testResourceCreatedFromAsset() {
-        // prepare
-        ResourceFactory resourceFactory = new ResourceFactory();
-
-        // invoke
-        de.fraunhofer.iais.eis.Resource resource = resourceFactory.createResource(asset);
-
-        //verify resource
-        Assertions.assertEquals(1, resource.getRepresentation().size());
-    }
-
-    @Test
-    public void testGetRepresentation() {
-        // prepare
-        ResourceFactory resourceFactory = new ResourceFactory();
-
-        // invoke
-        Representation representation = resourceFactory.getRepresentation(asset);
-
-        // verify representation
-        Assertions.assertNotNull(representation);
-    }
-
-    @Test
-    public void testGetArtifact() {
-        // prepare
-        ResourceFactory resourceFactory = new ResourceFactory();
-
-        // invoke
-        Artifact artifact = resourceFactory.getArtifact(asset);
-
-        // verify artifact
-        Assertions.assertNotNull(artifact);
-    }
 }

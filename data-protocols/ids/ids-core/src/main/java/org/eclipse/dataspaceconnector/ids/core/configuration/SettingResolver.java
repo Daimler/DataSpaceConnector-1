@@ -1,6 +1,7 @@
 package org.eclipse.dataspaceconnector.ids.core.configuration;
 
 import org.eclipse.dataspaceconnector.ids.spi.IdsId;
+import org.eclipse.dataspaceconnector.ids.spi.IdsType;
 import org.eclipse.dataspaceconnector.ids.spi.types.SecurityProfile;
 import org.eclipse.dataspaceconnector.spi.monitor.Monitor;
 import org.eclipse.dataspaceconnector.spi.system.ServiceExtensionContext;
@@ -32,7 +33,7 @@ public class SettingResolver {
         var id = resolveUriAndWarnIfDefaultUsed(SettingKeys.EDC_IDS_ID, SettingDefaults.ID);
 
         try {
-            var isConnectorId = IdsId.fromUri(id).getType() == IdsId.Type.CONNECTOR;
+            var isConnectorId = IdsId.fromUri(id).getType() == IdsType.CONNECTOR;
             if (!isConnectorId) {
                 throw new IllegalSettingException(String.format(REASON_ILLEGAL_ID, SettingDefaults.ID));
             }

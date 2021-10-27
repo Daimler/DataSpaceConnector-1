@@ -18,6 +18,7 @@ import de.fraunhofer.iais.eis.DescriptionResponseMessage;
 import de.fraunhofer.iais.eis.Message;
 import org.easymock.EasyMock;
 import org.eclipse.dataspaceconnector.ids.spi.IdsId;
+import org.eclipse.dataspaceconnector.ids.spi.IdsType;
 import org.eclipse.dataspaceconnector.ids.spi.configuration.ConfigurationProvider;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -82,7 +83,7 @@ public class MessageFactoryTest {
 
         // verify
         var responseType = IdsId.parse(response.getId().toString()).getType();
-        Assertions.assertEquals(IdsId.Type.MESSAGE, responseType);
+        Assertions.assertEquals(IdsType.MESSAGE, responseType);
         Assertions.assertEquals(Fixtures.ID, response.getIssuerConnector());
         Assertions.assertEquals(Fixtures.OUTBOUND_PROTOCOL_VERSION.getValue(), response.getContentVersion());
         Assertions.assertEquals(Fixtures.OUTBOUND_PROTOCOL_VERSION.getValue(), response.getModelVersion());

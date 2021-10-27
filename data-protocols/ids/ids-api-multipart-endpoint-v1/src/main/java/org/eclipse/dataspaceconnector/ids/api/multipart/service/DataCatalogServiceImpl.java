@@ -14,10 +14,13 @@
 
 package org.eclipse.dataspaceconnector.ids.api.multipart.service;
 
+import de.fraunhofer.iais.eis.Artifact;
 import de.fraunhofer.iais.eis.Catalog;
 import de.fraunhofer.iais.eis.Resource;
 import org.eclipse.dataspaceconnector.ids.api.multipart.factory.ResourceCatalogFactory;
 import org.eclipse.dataspaceconnector.ids.api.multipart.factory.ResourceFactory;
+import org.eclipse.dataspaceconnector.ids.core.transform.TransformerRegistryImpl;
+import org.eclipse.dataspaceconnector.ids.spi.transform.TransformerRegistry;
 import org.eclipse.dataspaceconnector.spi.asset.AssetIndex;
 import org.eclipse.dataspaceconnector.spi.asset.AssetSelectorExpression;
 import org.eclipse.dataspaceconnector.spi.monitor.Monitor;
@@ -47,14 +50,13 @@ public class DataCatalogServiceImpl implements DataCatalogService {
      */
     @Override
     public Catalog createDataCatalog() {
-        // factories
-        ResourceFactory resourceFactory = new ResourceFactory();
         ResourceCatalogFactory resourceCatalogFactory = new ResourceCatalogFactory();
-
         Stream<Asset> assetStream = assetIndex.queryAssets(AssetSelectorExpression.Builder.newInstance().build());
-        List<Resource> resources = assetStream.map(resourceFactory::createResource).collect(Collectors.toList());
 
-        // connector description
+        TransformerRegistry transformerRegistry = new TransformerRegistryImpl();
+        List<Resource> resources = assetStream.map((item) -> transformerRegistry.transform(item, Resource.class).getOutput())
+                .collect(Collectors.toList());
+
         return resourceCatalogFactory.createResourceCatalogBuilder(resources);
     }
 }

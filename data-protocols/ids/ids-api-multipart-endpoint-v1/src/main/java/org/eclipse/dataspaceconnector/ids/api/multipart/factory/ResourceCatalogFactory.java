@@ -36,7 +36,7 @@ public class ResourceCatalogFactory {
     @NotNull
     public ResourceCatalog createResourceCatalogBuilder(@Nullable List<Resource> resources) {
 
-        var resourceCatalogBuilder = new ResourceCatalogBuilder(IdsId.resourceCatalog(CONSTANT_RESOURCE_CATALOG_ID).toUri());
+        var resourceCatalogBuilder = new ResourceCatalogBuilder(IdsId.catalog(CONSTANT_RESOURCE_CATALOG_ID).toUri());
 
         if (resources != null) {
             resourceCatalogBuilder._offeredResource_(new ArrayList<>(resources));

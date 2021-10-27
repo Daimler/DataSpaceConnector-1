@@ -22,6 +22,7 @@ import org.eclipse.dataspaceconnector.ids.api.multipart.handler.DescriptionHandl
 import org.eclipse.dataspaceconnector.ids.api.multipart.handler.description.*;
 import org.eclipse.dataspaceconnector.ids.api.multipart.service.*;
 import org.eclipse.dataspaceconnector.ids.core.configuration.SettingResolver;
+import org.eclipse.dataspaceconnector.ids.spi.transform.TransformerRegistry;
 import org.eclipse.dataspaceconnector.ids.spi.version.ConnectorVersionProvider;
 import org.eclipse.dataspaceconnector.spi.EdcException;
 import org.eclipse.dataspaceconnector.spi.asset.AssetIndex;
@@ -43,7 +44,8 @@ public final class IdsMultipartApiServiceExtension implements ServiceExtension {
 
     private static final String[] REQUIRES = {
             IdentityService.FEATURE,
-            "edc:ids:core"
+            "edc:ids:core",
+            "edc:ids:transform:v1"
     };
 
     private static final String[] PROVIDES = {
@@ -87,6 +89,7 @@ public final class IdsMultipartApiServiceExtension implements ServiceExtension {
 
         var identityService = serviceExtensionContext.getService(IdentityService.class);
         var connectorVersionProvider = serviceExtensionContext.getService(ConnectorVersionProvider.class);
+        var transformerRegistry = serviceExtensionContext.getService(TransformerRegistry.class);
 
         // First create all objects that may return errors and ensure success
         var settingResolver = new SettingResolver(serviceExtensionContext);
@@ -136,7 +139,8 @@ public final class IdsMultipartApiServiceExtension implements ServiceExtension {
         if (descriptionResponseMessageFactorySettings == null) {
             throw new EdcException("DescriptionResponseMessageFactorySettingsFactoryResult empty");
         }
-        var descriptionResponseMessageFactory = new DescriptionResponseMessageFactory(descriptionResponseMessageFactorySettings);
+
+        var descriptionResponseMessageFactory = new DescriptionResponseMessageFactory(descriptionResponseMessageFactorySettings, transformerRegistry);
         var connectorDescriptionRequestHandlerSettings = connectorDescriptionRequestHandlerSettingsFactoryResult.getConnectorDescriptionRequestHandlerSettings();
         if (connectorDescriptionRequestHandlerSettings == null) {
             throw new EdcException("ConnectorDescriptionRequestHandlerSettingsFactoryResult empty");

@@ -14,11 +14,15 @@
 
 package org.eclipse.dataspaceconnector.ids.api.multipart.service;
 
+import de.fraunhofer.iais.eis.Artifact;
 import de.fraunhofer.iais.eis.Resource;
 import org.eclipse.dataspaceconnector.ids.api.multipart.factory.ResourceFactory;
+import org.eclipse.dataspaceconnector.ids.core.transform.TransformerRegistryImpl;
+import org.eclipse.dataspaceconnector.ids.spi.transform.TransformerRegistry;
 import org.eclipse.dataspaceconnector.spi.asset.AssetIndex;
 import org.eclipse.dataspaceconnector.spi.monitor.Monitor;
 import org.eclipse.dataspaceconnector.spi.types.domain.asset.Asset;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * The IDS service is able to create IDS compliant descriptions of resources.
@@ -39,13 +43,15 @@ public class ResourceServiceImpl implements ResourceService {
      * @return connector description
      */
     @Override
-    public Resource createResource(String id) {
+    public Resource createResource(@NotNull String id) {
         ResourceFactory resourceFactory = new ResourceFactory();
 
         Asset asset = assetIndex.findById(id);
         if (asset == null) {
             return null;
         }
-        return resourceFactory.createResource(asset);
+
+        TransformerRegistry transformerRegistry = new TransformerRegistryImpl();
+        return transformerRegistry.transform(asset, Resource.class).getOutput();
     }
 }

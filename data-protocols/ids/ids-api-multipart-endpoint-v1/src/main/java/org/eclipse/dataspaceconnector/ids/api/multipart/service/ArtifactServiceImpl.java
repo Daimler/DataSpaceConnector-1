@@ -15,10 +15,12 @@
 package org.eclipse.dataspaceconnector.ids.api.multipart.service;
 
 import de.fraunhofer.iais.eis.Artifact;
-import org.eclipse.dataspaceconnector.ids.api.multipart.factory.ResourceFactory;
+import org.eclipse.dataspaceconnector.ids.core.transform.TransformerRegistryImpl;
+import org.eclipse.dataspaceconnector.ids.spi.transform.TransformerRegistry;
 import org.eclipse.dataspaceconnector.spi.asset.AssetIndex;
 import org.eclipse.dataspaceconnector.spi.monitor.Monitor;
 import org.eclipse.dataspaceconnector.spi.types.domain.asset.Asset;
+import org.jetbrains.annotations.NotNull;
 
 
 /**
@@ -40,13 +42,12 @@ public class ArtifactServiceImpl implements ArtifactService {
      * @return connector description
      */
     @Override
-    public Artifact createArtifact(String id) {
-        ResourceFactory resourceFactory = new ResourceFactory();
-
+    public Artifact createArtifact(@NotNull String id) {
         Asset asset = assetIndex.findById(id);
         if (asset == null) {
             return null;
         }
-        return resourceFactory.getArtifact(asset);
+        TransformerRegistry transformerRegistry = new TransformerRegistryImpl();
+        return transformerRegistry.transform(asset, Artifact.class).getOutput();
     }
 }

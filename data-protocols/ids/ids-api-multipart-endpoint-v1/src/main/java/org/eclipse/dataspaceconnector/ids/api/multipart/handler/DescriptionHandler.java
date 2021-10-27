@@ -16,17 +16,16 @@ package org.eclipse.dataspaceconnector.ids.api.multipart.handler;
 
 import de.fraunhofer.iais.eis.DescriptionRequestMessage;
 import de.fraunhofer.iais.eis.Message;
-import de.fraunhofer.iais.eis.Resource;
 import org.eclipse.dataspaceconnector.ids.api.multipart.handler.description.*;
 import org.eclipse.dataspaceconnector.ids.api.multipart.message.MultipartRequest;
 import org.eclipse.dataspaceconnector.ids.api.multipart.message.MultipartResponse;
 import org.eclipse.dataspaceconnector.ids.spi.IdsId;
+import org.eclipse.dataspaceconnector.ids.spi.IdsType;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
 import static org.eclipse.dataspaceconnector.ids.api.multipart.util.RejectionMessageUtil.messageTypeNotSupported;
-import static org.eclipse.dataspaceconnector.ids.spi.IdsId.Type.*;
 
 public class DescriptionHandler implements Handler {
     private final DescriptionHandlerSettings descriptionHandlerSettings;
@@ -67,12 +66,12 @@ public class DescriptionHandler implements Handler {
         var payload = multipartRequest.getPayload();
 
         var requestedElement = descriptionRequestMessage.getRequestedElement();
-        IdsId.Type type = null;
+        IdsType type = null;
         if (requestedElement != null) {
             type = IdsId.fromUri(requestedElement).getType();
         }
 
-        if (type == null || type == IdsId.Type.CONNECTOR) {
+        if (type == null || type == IdsType.CONNECTOR) {
             return connectorDescriptionRequestHandler.handle(descriptionRequestMessage, payload);
         }
 
