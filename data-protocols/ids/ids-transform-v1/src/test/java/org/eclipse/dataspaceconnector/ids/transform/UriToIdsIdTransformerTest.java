@@ -63,7 +63,7 @@ public class UriToIdsIdTransformerTest {
 
         // record
         EasyMock.replay(context);
-        
+
         // invoke
         var result = uriToIdsIdTransformer.transform(URI, context);
 
