@@ -39,7 +39,6 @@ import java.util.Collections;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-// FIXME
 class DescriptionHandlerTest {
 
     // subject

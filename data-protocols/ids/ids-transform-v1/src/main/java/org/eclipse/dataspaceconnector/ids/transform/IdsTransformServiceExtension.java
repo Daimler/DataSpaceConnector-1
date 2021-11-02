@@ -63,6 +63,7 @@ public class IdsTransformServiceExtension implements ServiceExtension {
                 new AssetToResourceTransformer(),
                 new IdsIdToUriTransformer(),
                 new IntegerToBigIntegerTransformer(),
+                new StringToMediaTypeTransformer(),
                 new StringToUriTransformer(),
                 new UriToIdsIdTransformer(),
                 new UriToIdsTypeTransformer()

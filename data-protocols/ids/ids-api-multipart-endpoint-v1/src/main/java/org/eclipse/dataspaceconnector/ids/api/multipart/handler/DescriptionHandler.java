@@ -25,6 +25,8 @@ import org.eclipse.dataspaceconnector.ids.api.multipart.message.MultipartRequest
 import org.eclipse.dataspaceconnector.ids.api.multipart.message.MultipartResponse;
 import org.eclipse.dataspaceconnector.ids.spi.IdsType;
 import org.eclipse.dataspaceconnector.ids.spi.transform.TransformerRegistry;
+import org.eclipse.dataspaceconnector.spi.EdcException;
+import org.eclipse.dataspaceconnector.spi.monitor.Monitor;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
@@ -33,6 +35,7 @@ import static org.eclipse.dataspaceconnector.ids.api.multipart.util.RejectionMes
 import static org.eclipse.dataspaceconnector.ids.api.multipart.util.RejectionMessageUtil.messageTypeNotSupported;
 
 public class DescriptionHandler implements Handler {
+    private final Monitor monitor;
     private final DescriptionHandlerSettings descriptionHandlerSettings;
     private final TransformerRegistry transformerRegistry;
     private final ArtifactDescriptionRequestHandler artifactDescriptionRequestHandler;
@@ -42,6 +45,7 @@ public class DescriptionHandler implements Handler {
     private final ConnectorDescriptionRequestHandler connectorDescriptionRequestHandler;
 
     public DescriptionHandler(
+            Monitor monitor,
             DescriptionHandlerSettings descriptionHandlerSettings,
             TransformerRegistry transformerRegistry,
             ArtifactDescriptionRequestHandler artifactDescriptionRequestHandler,
@@ -49,6 +53,7 @@ public class DescriptionHandler implements Handler {
             RepresentationDescriptionRequestHandler representationDescriptionRequestHandler,
             ResourceDescriptionRequestHandler resourceDescriptionRequestHandler,
             ConnectorDescriptionRequestHandler connectorDescriptionRequestHandler) {
+        this.monitor = monitor;
         this.descriptionHandlerSettings = descriptionHandlerSettings;
         this.transformerRegistry = transformerRegistry;
         this.artifactDescriptionRequestHandler = artifactDescriptionRequestHandler;
@@ -69,6 +74,16 @@ public class DescriptionHandler implements Handler {
     public MultipartResponse handleRequest(@NotNull MultipartRequest multipartRequest) {
         Objects.requireNonNull(multipartRequest);
 
+        try {
+            return handleRequestInternal(multipartRequest);
+        } catch (EdcException exception) {
+            monitor.severe(String.format("Could not handle multipart request: %s", exception.getMessage()), exception);
+        }
+
+        return createErrorMultipartResponse(multipartRequest.getHeader());
+    }
+
+    public MultipartResponse handleRequestInternal(@NotNull MultipartRequest multipartRequest) {
         var descriptionRequestMessage = (DescriptionRequestMessage) multipartRequest.getHeader();
 
         var payload = multipartRequest.getPayload();
