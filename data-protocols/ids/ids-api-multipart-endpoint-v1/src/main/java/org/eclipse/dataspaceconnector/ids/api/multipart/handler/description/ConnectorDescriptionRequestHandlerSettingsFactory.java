@@ -34,7 +34,7 @@ public class ConnectorDescriptionRequestHandlerSettingsFactory {
     public ConnectorDescriptionRequestHandlerSettingsFactoryResult createConnectorDescriptionRequestHandlerSettings() {
         List<String> errors = new ArrayList<>();
 
-        URI id = null;
+        String id = null;
 
         try {
             id = settingResolver.resolveId();

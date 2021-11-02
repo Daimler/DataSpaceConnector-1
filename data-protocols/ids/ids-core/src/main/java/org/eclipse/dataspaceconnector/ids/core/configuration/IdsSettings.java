@@ -36,5 +36,8 @@ public final class IdsSettings {
     public static final String EDC_IDS_ENDPOINT = "edc.ids.endpoint";
 
     @EdcSetting
+    public static final String EDC_IDS_CATALOG_ID = "edc.ids.catalog.id";
+
+    @EdcSetting
     public static final String EDC_IDS_SECURITY_PROFILE = "edc.ids.security.profile";
 }

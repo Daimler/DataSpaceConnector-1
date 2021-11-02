@@ -18,7 +18,7 @@ import org.eclipse.dataspaceconnector.spi.EdcSetting;
 
 public final class SettingKeys {
     @EdcSetting
-    public static final String EDC_IDS_ID = "edc.ids.id";
+    public static final String EDC_IDS_ID = "edc.ids.id"; // alsdkjhabnbsdsd, urn:connector:alsdkjhabnbsdsd, urn:connector:urn:connector:alsdkjhabnbsdsd
 
     @EdcSetting
     public static final String EDC_IDS_TITLE = "edc.ids.title";
@@ -37,4 +37,7 @@ public final class SettingKeys {
 
     @EdcSetting
     public static final String EDC_IDS_SECURITY_PROFILE = "edc.ids.security.profile";
+
+    @EdcSetting
+    public static final String EDC_IDS_CATALOG_ID = "edc.ids.catalog.id";
 }

@@ -21,11 +21,18 @@ import org.eclipse.dataspaceconnector.ids.core.message.DataRequestMessageSender;
 import org.eclipse.dataspaceconnector.ids.core.message.IdsRemoteMessageDispatcher;
 import org.eclipse.dataspaceconnector.ids.core.message.QueryMessageSender;
 import org.eclipse.dataspaceconnector.ids.core.policy.IdsPolicyServiceImpl;
+import org.eclipse.dataspaceconnector.ids.core.service.ConnectorServiceImpl;
+import org.eclipse.dataspaceconnector.ids.core.service.ConnectorServiceSettings;
+import org.eclipse.dataspaceconnector.ids.core.service.DataCatalogServiceImpl;
+import org.eclipse.dataspaceconnector.ids.core.service.DataCatalogServiceSettings;
 import org.eclipse.dataspaceconnector.ids.core.version.ConnectorVersionProviderImpl;
 import org.eclipse.dataspaceconnector.ids.spi.daps.DapsService;
 import org.eclipse.dataspaceconnector.ids.spi.descriptor.IdsDescriptorService;
 import org.eclipse.dataspaceconnector.ids.spi.policy.IdsPolicyService;
+import org.eclipse.dataspaceconnector.ids.spi.service.ConnectorService;
+import org.eclipse.dataspaceconnector.ids.spi.service.DataCatalogService;
 import org.eclipse.dataspaceconnector.ids.spi.version.ConnectorVersionProvider;
+import org.eclipse.dataspaceconnector.spi.asset.AssetIndex;
 import org.eclipse.dataspaceconnector.spi.iam.IdentityService;
 import org.eclipse.dataspaceconnector.spi.message.RemoteMessageDispatcherRegistry;
 import org.eclipse.dataspaceconnector.spi.monitor.Monitor;
@@ -64,10 +71,30 @@ public class IdsCoreServiceExtension implements ServiceExtension {
     public void initialize(ServiceExtensionContext serviceExtensionContext) {
         monitor = serviceExtensionContext.getMonitor();
 
-        registerConnectorVersionProvider(serviceExtensionContext);
+        AssetIndex assetIndex = serviceExtensionContext.getService(AssetIndex.class);
+
+        ConnectorVersionProvider connectorVersionProvider = registerConnectorVersionProvider(
+                serviceExtensionContext);
+
+        DataCatalogService dataCatalogService = registerDataCatalogService(
+                serviceExtensionContext, assetIndex);
+
+        ConnectorService connectorService = registerConnectorService(
+                serviceExtensionContext, connectorVersionProvider, dataCatalogService);
+
         registerOther(serviceExtensionContext);
 
         monitor.info("Initialized IDS Core extension");
+    }
+
+    @Override
+    public void start() {
+        monitor.info("Started IDS Core extension");
+    }
+
+    @Override
+    public void shutdown() {
+        monitor.info("Shutdown IDS Core extension");
     }
 
     private void registerOther(ServiceExtensionContext context) {
@@ -83,21 +110,6 @@ public class IdsCoreServiceExtension implements ServiceExtension {
         context.registerService(IdsPolicyService.class, policyService);
 
         assembleIdsDispatcher(connectorId, context, identityService);
-    }
-
-    @Override
-    public void start() {
-        monitor.info("Started IDS Core extension");
-    }
-
-    @Override
-    public void shutdown() {
-        monitor.info("Shutdown IDS Core extension");
-    }
-
-    private void registerConnectorVersionProvider(ServiceExtensionContext serviceExtensionContext) {
-        ConnectorVersionProvider connectorVersionProvider = new ConnectorVersionProviderImpl();
-        serviceExtensionContext.registerService(ConnectorVersionProvider.class, connectorVersionProvider);
     }
 
     /**
@@ -121,4 +133,46 @@ public class IdsCoreServiceExtension implements ServiceExtension {
         registry.register(dispatcher);
     }
 
+    private DataCatalogService registerDataCatalogService(
+            ServiceExtensionContext serviceExtensionContext,
+            AssetIndex assetIndex) {
+
+        DataCatalogServiceSettings dataCatalogServiceSettings = null; // TODO
+
+        DataCatalogService dataCatalogService = new DataCatalogServiceImpl(
+                monitor,
+                dataCatalogServiceSettings,
+                assetIndex
+        );
+
+        serviceExtensionContext.registerService(DataCatalogService.class, dataCatalogService);
+
+        return dataCatalogService;
+    }
+
+    private ConnectorService registerConnectorService(
+            ServiceExtensionContext serviceExtensionContext,
+            ConnectorVersionProvider connectorVersionProvider,
+            DataCatalogService dataCatalogService) {
+        ConnectorServiceSettings connectorServiceSettings = null; // TODO
+
+        ConnectorService connectorService = new ConnectorServiceImpl(
+                monitor,
+                connectorServiceSettings,
+                connectorVersionProvider,
+                dataCatalogService
+        );
+
+        serviceExtensionContext.registerService(ConnectorService.class, connectorService);
+
+        return connectorService;
+    }
+
+    private ConnectorVersionProvider registerConnectorVersionProvider(ServiceExtensionContext serviceExtensionContext) {
+        ConnectorVersionProvider connectorVersionProvider = new ConnectorVersionProviderImpl();
+
+        serviceExtensionContext.registerService(ConnectorVersionProvider.class, connectorVersionProvider);
+
+        return connectorVersionProvider;
+    }
 }

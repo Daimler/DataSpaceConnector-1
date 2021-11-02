@@ -18,29 +18,38 @@ import de.fraunhofer.iais.eis.Connector;
 import de.fraunhofer.iais.eis.DescriptionRequestMessage;
 import de.fraunhofer.iais.eis.DescriptionResponseMessage;
 import de.fraunhofer.iais.eis.Message;
-import org.eclipse.dataspaceconnector.ids.api.multipart.factory.DescriptionResponseMessageFactory;
 import org.eclipse.dataspaceconnector.ids.api.multipart.message.MultipartResponse;
-import org.eclipse.dataspaceconnector.ids.api.multipart.service.ConnectorDescriptionService;
+import org.eclipse.dataspaceconnector.ids.spi.IdsIdParser;
+import org.eclipse.dataspaceconnector.ids.spi.IdsType;
+import org.eclipse.dataspaceconnector.ids.spi.service.ConnectorService;
+import org.eclipse.dataspaceconnector.ids.spi.transform.TransformResult;
+import org.eclipse.dataspaceconnector.ids.spi.transform.TransformerRegistry;
+import org.eclipse.dataspaceconnector.spi.monitor.Monitor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.net.URI;
 import java.util.Objects;
 
+import static org.eclipse.dataspaceconnector.ids.api.multipart.util.RejectionMessageUtil.badParameters;
 import static org.eclipse.dataspaceconnector.ids.api.multipart.util.RejectionMessageUtil.messageTypeNotSupported;
 
-public class ConnectorDescriptionRequestHandler implements DescriptionRequestHandler {
-    private final DescriptionResponseMessageFactory descriptionResponseMessageFactory;
-    private final ConnectorDescriptionService connectorDescriptionService;
+public class ConnectorDescriptionRequestHandler extends AbstractDescriptionRequestHandler implements DescriptionRequestHandler {
+    private final Monitor monitor;
     private final ConnectorDescriptionRequestHandlerSettings connectorDescriptionRequestHandlerSettings;
+    private final ConnectorService connectorService;
+    private final TransformerRegistry transformerRegistry;
 
     public ConnectorDescriptionRequestHandler(
-            @NotNull DescriptionResponseMessageFactory descriptionResponseMessageFactory,
-            @NotNull ConnectorDescriptionService connectorDescriptionService,
-            @NotNull ConnectorDescriptionRequestHandlerSettings connectorDescriptionRequestHandlerSettings) {
-        this.descriptionResponseMessageFactory = Objects.requireNonNull(descriptionResponseMessageFactory);
-        this.connectorDescriptionService = Objects.requireNonNull(connectorDescriptionService);
+            @NotNull Monitor monitor,
+            @NotNull ConnectorDescriptionRequestHandlerSettings connectorDescriptionRequestHandlerSettings,
+            @NotNull ConnectorService connectorService,
+            @NotNull TransformerRegistry transformerRegistry) {
+        super(connectorDescriptionRequestHandlerSettings.getId(), transformerRegistry);
+        this.monitor = monitor;
+        this.connectorService = Objects.requireNonNull(connectorService);
         this.connectorDescriptionRequestHandlerSettings = Objects.requireNonNull(connectorDescriptionRequestHandlerSettings);
+        this.transformerRegistry = transformerRegistry;
     }
 
     @Override
@@ -51,10 +60,15 @@ public class ConnectorDescriptionRequestHandler implements DescriptionRequestHan
             return createErrorMultipartResponse(descriptionRequestMessage);
         }
 
-        DescriptionResponseMessage descriptionResponseMessage = descriptionResponseMessageFactory
-                .createDescriptionResponseMessage(descriptionRequestMessage);
+        DescriptionResponseMessage descriptionResponseMessage = createDescriptionResponseMessage(descriptionRequestMessage);
 
-        Connector connector = connectorDescriptionService.createSelfDescription();
+        TransformResult<Connector> transformResult = transformerRegistry.transform(connectorService.getConnector(), Connector.class);
+        if (transformResult.hasProblems()) {
+            // TODO log
+            return createBadParametersErrorMultipartResponse(descriptionRequestMessage);
+        }
+
+        Connector connector = transformResult.getOutput();
 
         return MultipartResponse.Builder.newInstance()
                 .header(descriptionResponseMessage)
@@ -64,18 +78,29 @@ public class ConnectorDescriptionRequestHandler implements DescriptionRequestHan
 
     private boolean isRequestingCurrentConnectorsDescription(DescriptionRequestMessage descriptionRequestMessage) {
         URI requestedConnectorId = descriptionRequestMessage.getRequestedElement();
-        URI connectorId = connectorDescriptionRequestHandlerSettings.getId();
 
         if (requestedConnectorId == null) {
             return true;
         }
 
-        return requestedConnectorId.equals(connectorId);
+        URI connectorIdUri = URI.create(String.join(
+                IdsIdParser.DELIMITER,
+                IdsIdParser.SCHEME,
+                IdsType.CONNECTOR.getValue(),
+                connectorDescriptionRequestHandlerSettings.getId()));
+
+        return requestedConnectorId.equals(connectorIdUri);
     }
 
     private MultipartResponse createErrorMultipartResponse(Message message) {
         return MultipartResponse.Builder.newInstance()
                 .header(messageTypeNotSupported(message, connectorDescriptionRequestHandlerSettings.getId()))
+                .build();
+    }
+
+    private MultipartResponse createBadParametersErrorMultipartResponse(Message message) {
+        return MultipartResponse.Builder.newInstance()
+                .header(badParameters(message, connectorDescriptionRequestHandlerSettings.getId()))
                 .build();
     }
 }

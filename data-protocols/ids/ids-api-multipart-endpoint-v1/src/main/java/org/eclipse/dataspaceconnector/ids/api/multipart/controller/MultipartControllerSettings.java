@@ -19,19 +19,19 @@ import org.jetbrains.annotations.Nullable;
 import java.net.URI;
 
 public class MultipartControllerSettings {
-    private final URI id;
+    private final String id;
 
-    private MultipartControllerSettings(@Nullable URI id) {
+    private MultipartControllerSettings(@Nullable String id) {
         this.id = id;
     }
 
     @Nullable
-    public URI getId() {
+    public String getId() {
         return id;
     }
 
     public static class Builder {
-        private URI id;
+        private String id;
 
         public static Builder newInstance() {
             return new Builder();
@@ -40,7 +40,7 @@ public class MultipartControllerSettings {
         private Builder() {
         }
 
-        public Builder id(@Nullable URI id) {
+        public Builder id(@Nullable String id) {
             this.id = id;
             return this;
         }

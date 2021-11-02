@@ -12,13 +12,14 @@
  *
  */
 
-package org.eclipse.dataspaceconnector.ids.api.multipart.factory;
+package org.eclipse.dataspaceconnector.ids.api.multipart.handler.description;
 
 import de.fraunhofer.iais.eis.DescriptionResponseMessage;
 import de.fraunhofer.iais.eis.DescriptionResponseMessageBuilder;
 import de.fraunhofer.iais.eis.Message;
 import org.eclipse.dataspaceconnector.ids.core.util.CalendarUtil;
 import org.eclipse.dataspaceconnector.ids.spi.IdsId;
+import org.eclipse.dataspaceconnector.ids.spi.IdsIdParser;
 import org.eclipse.dataspaceconnector.ids.spi.IdsType;
 import org.eclipse.dataspaceconnector.ids.spi.transform.TransformResult;
 import org.eclipse.dataspaceconnector.ids.spi.transform.TransformerRegistry;
@@ -32,24 +33,22 @@ import java.util.Collections;
 import java.util.Objects;
 import java.util.UUID;
 
-
-// TODO Add security token to the messages
-// TODO Add authentication token to the messages
-@Deprecated // This functionality will be moved to a transformer class
-public class DescriptionResponseMessageFactory {
-
-    private final DescriptionResponseMessageFactorySettings descriptionResponseMessageFactorySettings;
+abstract class AbstractDescriptionRequestHandler {
+    private final String connectorId;
     private final TransformerRegistry transformerRegistry;
 
-    public DescriptionResponseMessageFactory(@NotNull DescriptionResponseMessageFactorySettings descriptionResponseMessageFactorySettings, @NotNull TransformerRegistry transformerRegistry) {
-        this.descriptionResponseMessageFactorySettings = Objects.requireNonNull(descriptionResponseMessageFactorySettings);
+    public AbstractDescriptionRequestHandler(@Nullable String connectorId, @NotNull TransformerRegistry transformerRegistry) {
+        this.connectorId = connectorId;
         this.transformerRegistry = Objects.requireNonNull(transformerRegistry);
     }
 
     public DescriptionResponseMessage createDescriptionResponseMessage(
             @Nullable Message correlationMessage) {
 
-        IdsId messageId = IdsId.Builder.newInstance().type(IdsType.MESSAGE).value(UUID.randomUUID().toString()).build();
+        IdsId messageId = IdsId.Builder.newInstance()
+                .type(IdsType.MESSAGE)
+                .value(UUID.randomUUID().toString())
+                .build();
 
         DescriptionResponseMessageBuilder builder;
         TransformResult<URI> transformResult = transformerRegistry.transform(messageId, URI.class);
@@ -64,10 +63,17 @@ public class DescriptionResponseMessageFactory {
         builder._contentVersion_(IdsProtocol.INFORMATION_MODEL_VERSION);
         builder._modelVersion_(IdsProtocol.INFORMATION_MODEL_VERSION);
 
-        URI connectorId = descriptionResponseMessageFactorySettings.getId();
         if (connectorId != null) {
-            builder._issuerConnector_(connectorId);
-            builder._senderAgent_(connectorId);
+            String connectorIdUrn = String.join(
+                    IdsIdParser.DELIMITER,
+                    IdsIdParser.SCHEME,
+                    IdsType.CONNECTOR.getValue(),
+                    connectorId);
+
+            URI connectorIdUri = URI.create(connectorIdUrn);
+
+            builder._issuerConnector_(connectorIdUri);
+            builder._senderAgent_(connectorIdUri);
         }
 
         builder._issued_(CalendarUtil.gregorianNow());

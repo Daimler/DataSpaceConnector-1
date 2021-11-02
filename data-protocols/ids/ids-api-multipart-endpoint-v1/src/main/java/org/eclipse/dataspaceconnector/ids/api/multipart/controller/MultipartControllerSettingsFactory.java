@@ -35,7 +35,7 @@ public class MultipartControllerSettingsFactory {
     public MultipartControllerSettingsFactoryResult createRejectionMessageFactorySettings() {
         List<String> errors = new ArrayList<>();
 
-        URI id = null;
+        String id = null;
 
         try {
             id = settingResolver.resolveId();

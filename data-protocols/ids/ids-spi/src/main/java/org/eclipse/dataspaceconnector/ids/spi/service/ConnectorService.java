@@ -12,16 +12,16 @@
  *
  */
 
-package org.eclipse.dataspaceconnector.ids.api.multipart.service;
+package org.eclipse.dataspaceconnector.ids.spi.service;
 
-import de.fraunhofer.iais.eis.Connector;
+import org.eclipse.dataspaceconnector.ids.spi.types.Connector;
 import org.jetbrains.annotations.NotNull;
 
 /**
  * The IDS service is able to create IDS compliant descriptions of resources.
  * These descriptions may be used to create a self-description or answer a Description Request Message.
  */
-public interface ConnectorDescriptionService {
+public interface ConnectorService {
 
     /**
      * Provides the connector object, which may be used by the IDS self-description of the connector.
@@ -29,5 +29,5 @@ public interface ConnectorDescriptionService {
      * @return connector description
      */
     @NotNull
-    Connector createSelfDescription();
+    Connector getConnector();
 }

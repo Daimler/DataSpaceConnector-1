@@ -8,12 +8,12 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 import java.util.Objects;
 
-@JsonDeserialize(builder = Catalog.Builder.class)
-public class Catalog {
+@JsonDeserialize(builder = DataCatalog.Builder.class)
+public class DataCatalog {
     private final String id;
     private final List<Asset> assets;
 
-    private Catalog(@NotNull String id, @NotNull List<Asset> assets) {
+    private DataCatalog(@NotNull String id, @NotNull List<Asset> assets) {
         this.id = Objects.requireNonNull(id);
         this.assets = Objects.requireNonNull(assets);
     }
@@ -45,8 +45,8 @@ public class Catalog {
             return this;
         }
 
-        public Catalog build() {
-            return new Catalog(id, assets);
+        public DataCatalog build() {
+            return new DataCatalog(id, assets);
         }
 
     }

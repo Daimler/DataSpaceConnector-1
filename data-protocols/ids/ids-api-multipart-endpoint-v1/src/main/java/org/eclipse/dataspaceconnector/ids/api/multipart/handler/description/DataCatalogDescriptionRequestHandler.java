@@ -14,16 +14,18 @@
 
 package org.eclipse.dataspaceconnector.ids.api.multipart.handler.description;
 
-import de.fraunhofer.iais.eis.Catalog;
 import de.fraunhofer.iais.eis.DescriptionRequestMessage;
 import de.fraunhofer.iais.eis.DescriptionResponseMessage;
 import de.fraunhofer.iais.eis.Message;
-import org.eclipse.dataspaceconnector.ids.api.multipart.factory.DescriptionResponseMessageFactory;
+import de.fraunhofer.iais.eis.ResourceCatalog;
 import org.eclipse.dataspaceconnector.ids.api.multipart.message.MultipartResponse;
-import org.eclipse.dataspaceconnector.ids.api.multipart.service.DataCatalogService;
 import org.eclipse.dataspaceconnector.ids.spi.IdsId;
 import org.eclipse.dataspaceconnector.ids.spi.IdsType;
+import org.eclipse.dataspaceconnector.ids.spi.service.DataCatalogService;
+import org.eclipse.dataspaceconnector.ids.spi.transform.TransformResult;
 import org.eclipse.dataspaceconnector.ids.spi.transform.TransformerRegistry;
+import org.eclipse.dataspaceconnector.ids.spi.types.DataCatalog;
+import org.eclipse.dataspaceconnector.spi.monitor.Monitor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -33,21 +35,22 @@ import java.util.Objects;
 import static org.eclipse.dataspaceconnector.ids.api.multipart.util.RejectionMessageUtil.badParameters;
 import static org.eclipse.dataspaceconnector.ids.api.multipart.util.RejectionMessageUtil.notFound;
 
-public class DataCatalogDescriptionRequestHandler implements DescriptionRequestHandler {
+public class DataCatalogDescriptionRequestHandler extends AbstractDescriptionRequestHandler implements DescriptionRequestHandler {
+    private final Monitor monitor;
     private final DataCatalogDescriptionRequestHandlerSettings dataCatalogDescriptionRequestHandlerSettings;
     private final DataCatalogService dataCatalogService;
     private final TransformerRegistry transformerRegistry;
-    private final DescriptionResponseMessageFactory descriptionResponseMessageFactory;
 
     public DataCatalogDescriptionRequestHandler(
-            DataCatalogDescriptionRequestHandlerSettings dataCatalogDescriptionRequestHandlerSettings,
-            DataCatalogService dataCatalogService,
-            TransformerRegistry transformerRegistry,
-            DescriptionResponseMessageFactory descriptionResponseMessageFactory) {
-        this.dataCatalogDescriptionRequestHandlerSettings = dataCatalogDescriptionRequestHandlerSettings;
-        this.dataCatalogService = dataCatalogService;
-        this.transformerRegistry = transformerRegistry;
-        this.descriptionResponseMessageFactory = descriptionResponseMessageFactory;
+            @NotNull Monitor monitor,
+            @NotNull DataCatalogDescriptionRequestHandlerSettings dataCatalogDescriptionRequestHandlerSettings,
+            @NotNull DataCatalogService dataCatalogService,
+            @NotNull TransformerRegistry transformerRegistry) {
+        super(dataCatalogDescriptionRequestHandlerSettings.getId(), transformerRegistry);
+        this.monitor = monitor;
+        this.dataCatalogDescriptionRequestHandlerSettings = Objects.requireNonNull(dataCatalogDescriptionRequestHandlerSettings);
+        this.dataCatalogService = Objects.requireNonNull(dataCatalogService);
+        this.transformerRegistry = Objects.requireNonNull(transformerRegistry);
     }
 
     @Override
@@ -70,17 +73,24 @@ public class DataCatalogDescriptionRequestHandler implements DescriptionRequestH
             return createBadParametersErrorMultipartResponse(descriptionRequestMessage);
         }
 
-        Catalog dataCatalog = dataCatalogService.createDataCatalog();
+        DataCatalog dataCatalog = dataCatalogService.getDataCatalog();
         if (dataCatalog == null) {
             return createNotFoundErrorMultipartResponse(descriptionRequestMessage);
         }
 
-        DescriptionResponseMessage descriptionResponseMessage = descriptionResponseMessageFactory
-                .createDescriptionResponseMessage(descriptionRequestMessage);
+        TransformResult<ResourceCatalog> transformResult = transformerRegistry.transform(dataCatalog, ResourceCatalog.class);
+        if (transformResult.hasProblems()) {
+            // TODO log
+            return createBadParametersErrorMultipartResponse(descriptionRequestMessage);
+        }
+
+        ResourceCatalog catalog = transformResult.getOutput();
+
+        DescriptionResponseMessage descriptionResponseMessage = createDescriptionResponseMessage(descriptionRequestMessage);
 
         return MultipartResponse.Builder.newInstance()
                 .header(descriptionResponseMessage)
-                .payload(dataCatalog)
+                .payload(catalog)
                 .build();
     }
 

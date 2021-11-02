@@ -18,12 +18,14 @@ import de.fraunhofer.iais.eis.DescriptionRequestMessage;
 import de.fraunhofer.iais.eis.DescriptionResponseMessage;
 import de.fraunhofer.iais.eis.Message;
 import de.fraunhofer.iais.eis.Resource;
-import org.eclipse.dataspaceconnector.ids.api.multipart.factory.DescriptionResponseMessageFactory;
 import org.eclipse.dataspaceconnector.ids.api.multipart.message.MultipartResponse;
-import org.eclipse.dataspaceconnector.ids.api.multipart.service.ResourceService;
 import org.eclipse.dataspaceconnector.ids.spi.IdsId;
 import org.eclipse.dataspaceconnector.ids.spi.IdsType;
+import org.eclipse.dataspaceconnector.ids.spi.transform.TransformResult;
 import org.eclipse.dataspaceconnector.ids.spi.transform.TransformerRegistry;
+import org.eclipse.dataspaceconnector.spi.asset.AssetIndex;
+import org.eclipse.dataspaceconnector.spi.monitor.Monitor;
+import org.eclipse.dataspaceconnector.spi.types.domain.asset.Asset;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -33,21 +35,20 @@ import java.util.Objects;
 import static org.eclipse.dataspaceconnector.ids.api.multipart.util.RejectionMessageUtil.badParameters;
 import static org.eclipse.dataspaceconnector.ids.api.multipart.util.RejectionMessageUtil.notFound;
 
-public class ResourceDescriptionRequestHandler implements DescriptionRequestHandler {
+public class ResourceDescriptionRequestHandler extends AbstractDescriptionRequestHandler implements DescriptionRequestHandler {
     private final ResourceDescriptionRequestHandlerSettings resourceDescriptionRequestHandlerSettings;
-    private final ResourceService resourceService;
+    private final AssetIndex assetIndex;
     private final TransformerRegistry transformerRegistry;
-    private final DescriptionResponseMessageFactory descriptionResponseMessageFactory;
 
     public ResourceDescriptionRequestHandler(
-            ResourceDescriptionRequestHandlerSettings resourceDescriptionRequestHandlerSettings,
-            ResourceService resourceService,
-            TransformerRegistry transformerRegistry,
-            DescriptionResponseMessageFactory descriptionResponseMessageFactory) {
+            @NotNull Monitor monitor,
+            @NotNull ResourceDescriptionRequestHandlerSettings resourceDescriptionRequestHandlerSettings,
+            @NotNull AssetIndex assetIndex,
+            @NotNull TransformerRegistry transformerRegistry) {
+        super(resourceDescriptionRequestHandlerSettings.getId(), transformerRegistry);
         this.resourceDescriptionRequestHandlerSettings = resourceDescriptionRequestHandlerSettings;
-        this.resourceService = resourceService;
+        this.assetIndex = assetIndex;
         this.transformerRegistry = transformerRegistry;
-        this.descriptionResponseMessageFactory = descriptionResponseMessageFactory;
     }
 
     @Override
@@ -70,13 +71,20 @@ public class ResourceDescriptionRequestHandler implements DescriptionRequestHand
             return createBadParametersErrorMultipartResponse(descriptionRequestMessage);
         }
 
-        Resource resource = resourceService.createResource(idsId.getValue());
-        if (resource == null) {
+        Asset asset = assetIndex.findById(idsId.getValue());
+        if (asset == null) {
             return createNotFoundErrorMultipartResponse(descriptionRequestMessage);
         }
 
-        DescriptionResponseMessage descriptionResponseMessage = descriptionResponseMessageFactory
-                .createDescriptionResponseMessage(descriptionRequestMessage);
+        TransformResult<Resource> transformResult = transformerRegistry.transform(asset, Resource.class);
+        if (transformResult.hasProblems()) {
+            // TODO log
+            return createBadParametersErrorMultipartResponse(descriptionRequestMessage);
+        }
+
+        Resource resource = transformResult.getOutput();
+
+        DescriptionResponseMessage descriptionResponseMessage = createDescriptionResponseMessage(descriptionRequestMessage);
 
         return MultipartResponse.Builder.newInstance()
                 .header(descriptionResponseMessage)

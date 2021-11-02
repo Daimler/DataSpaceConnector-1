@@ -18,12 +18,14 @@ import de.fraunhofer.iais.eis.Artifact;
 import de.fraunhofer.iais.eis.DescriptionRequestMessage;
 import de.fraunhofer.iais.eis.DescriptionResponseMessage;
 import de.fraunhofer.iais.eis.Message;
-import org.eclipse.dataspaceconnector.ids.api.multipart.factory.DescriptionResponseMessageFactory;
 import org.eclipse.dataspaceconnector.ids.api.multipart.message.MultipartResponse;
-import org.eclipse.dataspaceconnector.ids.api.multipart.service.ArtifactService;
 import org.eclipse.dataspaceconnector.ids.spi.IdsId;
 import org.eclipse.dataspaceconnector.ids.spi.IdsType;
+import org.eclipse.dataspaceconnector.ids.spi.transform.TransformResult;
 import org.eclipse.dataspaceconnector.ids.spi.transform.TransformerRegistry;
+import org.eclipse.dataspaceconnector.spi.asset.AssetIndex;
+import org.eclipse.dataspaceconnector.spi.monitor.Monitor;
+import org.eclipse.dataspaceconnector.spi.types.domain.asset.Asset;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -33,21 +35,22 @@ import java.util.Objects;
 import static org.eclipse.dataspaceconnector.ids.api.multipart.util.RejectionMessageUtil.badParameters;
 import static org.eclipse.dataspaceconnector.ids.api.multipart.util.RejectionMessageUtil.notFound;
 
-public class ArtifactDescriptionRequestHandler implements DescriptionRequestHandler {
+public class ArtifactDescriptionRequestHandler extends AbstractDescriptionRequestHandler implements DescriptionRequestHandler {
+    private final Monitor monitor;
     private final ArtifactDescriptionRequestHandlerSettings artifactDescriptionRequestHandlerSettings;
-    private final ArtifactService artifactService;
+    private final AssetIndex assetIndex;
     private final TransformerRegistry transformerRegistry;
-    private final DescriptionResponseMessageFactory descriptionResponseMessageFactory;
 
     public ArtifactDescriptionRequestHandler(
-            ArtifactDescriptionRequestHandlerSettings artifactDescriptionRequestHandlerSettings,
-            ArtifactService artifactService,
-            TransformerRegistry transformerRegistry,
-            DescriptionResponseMessageFactory descriptionResponseMessageFactory) {
-        this.artifactDescriptionRequestHandlerSettings = artifactDescriptionRequestHandlerSettings;
-        this.artifactService = artifactService;
-        this.transformerRegistry = transformerRegistry;
-        this.descriptionResponseMessageFactory = descriptionResponseMessageFactory;
+            @NotNull Monitor monitor,
+            @NotNull ArtifactDescriptionRequestHandlerSettings artifactDescriptionRequestHandlerSettings,
+            @NotNull AssetIndex assetIndex,
+            @NotNull TransformerRegistry transformerRegistry) {
+        super(artifactDescriptionRequestHandlerSettings.getId(), transformerRegistry);
+        this.monitor = monitor;
+        this.artifactDescriptionRequestHandlerSettings = Objects.requireNonNull(artifactDescriptionRequestHandlerSettings);
+        this.assetIndex = Objects.requireNonNull(assetIndex);
+        this.transformerRegistry = Objects.requireNonNull(transformerRegistry);
     }
 
     @Override
@@ -70,13 +73,20 @@ public class ArtifactDescriptionRequestHandler implements DescriptionRequestHand
             return createBadParametersErrorMultipartResponse(descriptionRequestMessage);
         }
 
-        Artifact artifact = artifactService.createArtifact(idsId.getValue());
-        if (artifact == null) {
+        Asset asset = assetIndex.findById(idsId.getValue());
+        if (asset == null) {
             return createNotFoundErrorMultipartResponse(descriptionRequestMessage);
         }
 
-        DescriptionResponseMessage descriptionResponseMessage = descriptionResponseMessageFactory
-                .createDescriptionResponseMessage(descriptionRequestMessage);
+        TransformResult<Artifact> transformResult = transformerRegistry.transform(asset, Artifact.class);
+        if (transformResult.hasProblems()) {
+            // TODO log
+            return createBadParametersErrorMultipartResponse(descriptionRequestMessage);
+        }
+
+        Artifact artifact = transformResult.getOutput();
+
+        DescriptionResponseMessage descriptionResponseMessage = createDescriptionResponseMessage(descriptionRequestMessage);
 
         return MultipartResponse.Builder.newInstance()
                 .header(descriptionResponseMessage)

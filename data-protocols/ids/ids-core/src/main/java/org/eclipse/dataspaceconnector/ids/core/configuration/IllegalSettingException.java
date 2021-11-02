@@ -1,5 +1,7 @@
 package org.eclipse.dataspaceconnector.ids.core.configuration;
 
+import java.util.Objects;
+
 /**
  * The {@link IllegalSettingException} indicates that a configuration parameter was set to an invalid value.
  * </p>
@@ -7,19 +9,19 @@ package org.eclipse.dataspaceconnector.ids.core.configuration;
  * because it's not a {@link RuntimeException} and should never be unchecked.
  */
 public class IllegalSettingException extends Exception {
-    public IllegalSettingException(String message) {
+    private final String settingKey;
+
+    public IllegalSettingException(String settingKey, String message) {
         super(message);
+        this.settingKey = Objects.requireNonNull(settingKey, "settingKey is required");
     }
 
-    public IllegalSettingException(String message, Throwable cause) {
+    public IllegalSettingException(String settingKey, String message, Throwable cause) {
         super(message, cause);
+        this.settingKey = Objects.requireNonNull(settingKey, "settingKey is required");
     }
 
-    public IllegalSettingException(Throwable cause) {
-        super(cause);
-    }
-
-    public IllegalSettingException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
-        super(message, cause, enableSuppression, writableStackTrace);
+    public String getSettingKey() {
+        return settingKey;
     }
 }

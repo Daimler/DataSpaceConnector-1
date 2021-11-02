@@ -61,10 +61,14 @@ public class IdsTransformServiceExtension implements ServiceExtension {
                 new AssetToArtifactTransformer(),
                 new AssetToRepresentationTransformer(),
                 new AssetToResourceTransformer(),
+                new DataCatalogToResourceCatalogTransformer(),
+                new EdcConnectorToConnectorTransformer(),
                 new IdsIdToUriTransformer(),
                 new IntegerToBigIntegerTransformer(),
+                new SecurityProfileToSecurityProfileTransformer(),
                 new StringToMediaTypeTransformer(),
                 new StringToUriTransformer(),
+                new UriToConnectorEndpointTransformer(),
                 new UriToIdsIdTransformer(),
                 new UriToIdsTypeTransformer()
         ).forEach(registry::register);

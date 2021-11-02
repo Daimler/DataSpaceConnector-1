@@ -34,7 +34,7 @@ public class ArtifactDescriptionRequestHandlerSettingsFactory {
     public ArtifactDescriptionRequestHandlerSettingsFactoryResult createArtifactDescriptionRequestHandlerSettings() {
         List<String> errors = new ArrayList<>();
 
-        URI id = null;
+        String id = null;
 
         try {
             id = settingResolver.resolveId();
