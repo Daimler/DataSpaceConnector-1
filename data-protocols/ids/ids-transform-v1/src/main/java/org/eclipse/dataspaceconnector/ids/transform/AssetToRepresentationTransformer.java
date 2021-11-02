@@ -19,7 +19,10 @@ import de.fraunhofer.iais.eis.CustomMediaTypeBuilder;
 import de.fraunhofer.iais.eis.MediaType;
 import de.fraunhofer.iais.eis.Representation;
 import de.fraunhofer.iais.eis.RepresentationBuilder;
+import org.eclipse.dataspaceconnector.ids.spi.IdsId;
+import org.eclipse.dataspaceconnector.ids.spi.IdsType;
 import org.eclipse.dataspaceconnector.ids.spi.transform.IdsTypeTransformer;
+import org.eclipse.dataspaceconnector.ids.spi.transform.TransformKeys;
 import org.eclipse.dataspaceconnector.ids.spi.transform.TransformerContext;
 import org.eclipse.dataspaceconnector.spi.types.domain.asset.Asset;
 import org.jetbrains.annotations.NotNull;
@@ -33,7 +36,6 @@ import java.util.Objects;
 import java.util.function.Consumer;
 
 public class AssetToRepresentationTransformer implements IdsTypeTransformer<Asset, Representation> {
-    public static final String KEY_ASSET_FILE_EXTENSION = "ids:fileExtension";
 
     @Override
     public Class<Asset> getInputType() {
@@ -53,7 +55,11 @@ public class AssetToRepresentationTransformer implements IdsTypeTransformer<Asse
         }
 
         Artifact artifact = context.transform(object, Artifact.class);
-        URI uri = context.transform(object.getId(), URI.class);
+        IdsId id = IdsId.Builder.newInstance()
+                .value(object.getId())
+                .type(IdsType.REPRESENTATION)
+                .build();
+        URI uri = context.transform(id, URI.class);
 
         RepresentationBuilder representationBuilder = new RepresentationBuilder(uri);
 
@@ -61,7 +67,7 @@ public class AssetToRepresentationTransformer implements IdsTypeTransformer<Asse
         if (properties == null) {
             context.reportProblem("Asset properties null");
         } else {
-            extractProperty(context, properties, KEY_ASSET_FILE_EXTENSION, String.class, (value) -> {
+            extractProperty(context, properties, TransformKeys.KEY_ASSET_FILE_EXTENSION, String.class, (value) -> {
                 representationBuilder._mediaType_(createMediaType(value));
             });
         }

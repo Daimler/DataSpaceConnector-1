@@ -3,6 +3,7 @@ package org.eclipse.dataspaceconnector.ids.core.configuration;
 import org.eclipse.dataspaceconnector.ids.spi.IdsId;
 import org.eclipse.dataspaceconnector.ids.spi.IdsIdParser;
 import org.eclipse.dataspaceconnector.ids.spi.IdsType;
+import org.eclipse.dataspaceconnector.ids.spi.configuration.SettingKeys;
 import org.eclipse.dataspaceconnector.ids.spi.types.SecurityProfile;
 import org.eclipse.dataspaceconnector.spi.monitor.Monitor;
 import org.eclipse.dataspaceconnector.spi.system.ServiceExtensionContext;

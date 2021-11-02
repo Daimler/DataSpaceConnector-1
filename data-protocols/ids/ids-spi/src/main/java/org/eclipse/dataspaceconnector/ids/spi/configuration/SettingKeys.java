@@ -12,7 +12,7 @@
  *
  */
 
-package org.eclipse.dataspaceconnector.ids.core.configuration;
+package org.eclipse.dataspaceconnector.ids.spi.configuration;
 
 import org.eclipse.dataspaceconnector.spi.EdcSetting;
 

@@ -16,7 +16,10 @@ package org.eclipse.dataspaceconnector.ids.transform;
 
 import de.fraunhofer.iais.eis.Artifact;
 import de.fraunhofer.iais.eis.ArtifactBuilder;
+import org.eclipse.dataspaceconnector.ids.spi.IdsId;
+import org.eclipse.dataspaceconnector.ids.spi.IdsType;
 import org.eclipse.dataspaceconnector.ids.spi.transform.IdsTypeTransformer;
+import org.eclipse.dataspaceconnector.ids.spi.transform.TransformKeys;
 import org.eclipse.dataspaceconnector.ids.spi.transform.TransformerContext;
 import org.eclipse.dataspaceconnector.spi.types.domain.asset.Asset;
 import org.jetbrains.annotations.Nullable;
@@ -28,8 +31,6 @@ import java.util.Objects;
 import java.util.function.Consumer;
 
 public class AssetToArtifactTransformer implements IdsTypeTransformer<Asset, Artifact> {
-    public static final String KEY_ASSET_FILE_NAME = "ids:fileName";
-    public static final String KEY_ASSET_BYTE_SIZE = "ids:byteSize";
 
     @Override
     public Class<Asset> getInputType() {
@@ -48,7 +49,12 @@ public class AssetToArtifactTransformer implements IdsTypeTransformer<Asset, Art
             return null;
         }
 
-        URI uri = context.transform(object.getId(), URI.class);
+
+        IdsId id = IdsId.Builder.newInstance()
+                .value(object.getId())
+                .type(IdsType.ARTIFACT)
+                .build();
+        URI uri = context.transform(id, URI.class);
 
         ArtifactBuilder artifactBuilder = new ArtifactBuilder(uri);
 
@@ -58,8 +64,8 @@ public class AssetToArtifactTransformer implements IdsTypeTransformer<Asset, Art
             return artifactBuilder.build();
         }
 
-        extractProperty(context, properties, KEY_ASSET_FILE_NAME, String.class, artifactBuilder::_fileName_);
-        extractProperty(context, properties, KEY_ASSET_BYTE_SIZE, BigInteger.class, artifactBuilder::_byteSize_);
+        extractProperty(context, properties, TransformKeys.KEY_ASSET_FILE_NAME, String.class, artifactBuilder::_fileName_);
+        extractProperty(context, properties, TransformKeys.KEY_ASSET_BYTE_SIZE, BigInteger.class, artifactBuilder::_byteSize_);
 
         return artifactBuilder.build();
     }
