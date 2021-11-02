@@ -30,7 +30,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.Consumer;
 
-public class AssetToArtifactTransformer implements IdsTypeTransformer<Asset, Artifact> {
+public class AssetToArtifactTransformer extends AbstractAssetTransformer implements IdsTypeTransformer<Asset, Artifact> {
 
     @Override
     public Class<Asset> getInputType() {
@@ -68,23 +68,5 @@ public class AssetToArtifactTransformer implements IdsTypeTransformer<Asset, Art
         extractProperty(context, properties, TransformKeys.KEY_ASSET_BYTE_SIZE, BigInteger.class, artifactBuilder::_byteSize_);
 
         return artifactBuilder.build();
-    }
-
-    private <T> void extractProperty(TransformerContext context, Map<String, Object> properties, String propertyKey, Class<T> targetType, Consumer<T> consumer) {
-        var propertyValue = properties.get(propertyKey);
-        if (propertyValue == null) {
-            context.reportProblem(String.format("Asset property %s is null", propertyKey));
-        } else {
-            if (targetType.isAssignableFrom(propertyValue.getClass())) {
-                consumer.accept(targetType.cast(propertyValue));
-            } else {
-                T convertedPropertyValue;
-                if ((convertedPropertyValue = context.transform(propertyValue, targetType)) != null) {
-                    consumer.accept(convertedPropertyValue);
-                } else {
-                    context.reportProblem(String.format("Asset property %s not convertible to %s", propertyKey, targetType.getSimpleName()));
-                }
-            }
-        }
     }
 }

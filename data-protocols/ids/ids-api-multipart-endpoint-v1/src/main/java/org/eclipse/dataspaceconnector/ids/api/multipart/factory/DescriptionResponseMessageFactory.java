@@ -54,6 +54,7 @@ public class DescriptionResponseMessageFactory {
         DescriptionResponseMessageBuilder builder;
         TransformResult<URI> transformResult = transformerRegistry.transform(messageId, URI.class);
         if (transformResult.hasProblems()) {
+
             // TODO: handle transformer problems
             builder = new DescriptionResponseMessageBuilder();
         } else {
