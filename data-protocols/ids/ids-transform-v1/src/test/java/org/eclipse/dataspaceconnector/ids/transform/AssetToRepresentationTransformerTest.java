@@ -1,5 +1,7 @@
 package org.eclipse.dataspaceconnector.ids.transform;
 
+import de.fraunhofer.iais.eis.Artifact;
+import de.fraunhofer.iais.eis.ArtifactBuilder;
 import org.easymock.EasyMock;
 import org.eclipse.dataspaceconnector.ids.spi.IdsId;
 import org.eclipse.dataspaceconnector.ids.spi.IdsType;
@@ -11,20 +13,18 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.math.BigInteger;
 import java.net.URI;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-class AssetToArtifactTransformerTest {
-    private static final String ASSET_ID = "test_id";
-    private static final URI ASSET_ID_URI = URI.create("urn:asset:1");
-    private static final String ASSET_FILENAME = "test_filename";
-    private static final BigInteger ASSET_BYTESIZE = BigInteger.valueOf(5);
+public class AssetToRepresentationTransformerTest {
+    private static final String REPRESENTATION_ID = "test_id";
+    private static final URI REPRESENTATION_ID_URI = URI.create("urn:representation:1");
+    private static final String ASSET_FILE_EXTENSION = "file_extension";
 
     // subject
-    private AssetToArtifactTransformer assetToArtifactTransformer;
+    private AssetToRepresentationTransformer assetToRepresentationTransformer;
 
     // mocks
     private Asset asset;
@@ -32,7 +32,7 @@ class AssetToArtifactTransformerTest {
 
     @BeforeEach
     void setUp() {
-        assetToArtifactTransformer = new AssetToArtifactTransformer();
+        assetToRepresentationTransformer = new AssetToRepresentationTransformer();
         asset = EasyMock.createMock(Asset.class);
         context = EasyMock.createMock(TransformerContext.class);
     }
@@ -42,7 +42,7 @@ class AssetToArtifactTransformerTest {
         EasyMock.replay(asset, context);
 
         Assertions.assertThrows(NullPointerException.class, () -> {
-            assetToArtifactTransformer.transform(null, null);
+            assetToRepresentationTransformer.transform(null, null);
         });
     }
 
@@ -51,7 +51,7 @@ class AssetToArtifactTransformerTest {
         EasyMock.replay(asset, context);
 
         Assertions.assertThrows(NullPointerException.class, () -> {
-            assetToArtifactTransformer.transform(asset, null);
+            assetToRepresentationTransformer.transform(asset, null);
         });
     }
 
@@ -59,19 +59,23 @@ class AssetToArtifactTransformerTest {
     void testReturnsNull() {
         EasyMock.replay(asset, context);
 
-        var result = assetToArtifactTransformer.transform(null, context);
+        var result = assetToRepresentationTransformer.transform(null, context);
 
         Assertions.assertNull(result);
     }
 
+
     @Test
     void testSuccessfulSimple() {
         // prepare
-        EasyMock.expect(asset.getId()).andReturn(ASSET_ID);
+        EasyMock.expect(asset.getId()).andReturn(REPRESENTATION_ID);
         EasyMock.expect(asset.getProperties()).andReturn(Collections.emptyMap());
 
-        IdsId id = IdsId.Builder.newInstance().value(ASSET_ID).type(IdsType.ARTIFACT).build();
-        EasyMock.expect(context.transform(EasyMock.eq(id), EasyMock.eq(URI.class))).andReturn(ASSET_ID_URI);
+        var artifact = new ArtifactBuilder().build();
+        EasyMock.expect(context.transform(EasyMock.anyObject(Asset.class), EasyMock.eq(Artifact.class))).andReturn(artifact);
+
+        IdsId id = IdsId.Builder.newInstance().value(REPRESENTATION_ID).type(IdsType.REPRESENTATION).build();
+        EasyMock.expect(context.transform(EasyMock.eq(id), EasyMock.eq(URI.class))).andReturn(REPRESENTATION_ID_URI);
 
         context.reportProblem(EasyMock.anyString());
         EasyMock.expectLastCall().atLeastOnce();
@@ -80,39 +84,40 @@ class AssetToArtifactTransformerTest {
         EasyMock.replay(asset, context);
 
         // invoke
-        var result = assetToArtifactTransformer.transform(asset, context);
+        var result = assetToRepresentationTransformer.transform(asset, context);
 
         // verify
         Assertions.assertNotNull(result);
-        Assertions.assertEquals(ASSET_ID_URI, result.getId());
+        Assertions.assertEquals(REPRESENTATION_ID_URI, result.getId());
     }
 
     @Test
     void testSuccessfulMap() {
         // prepare
-        EasyMock.expect(asset.getId()).andReturn(ASSET_ID);
+        EasyMock.expect(asset.getId()).andReturn(REPRESENTATION_ID);
         Map<String, Object> properties = new HashMap<>() {
             {
-                put(TransformKeys.KEY_ASSET_FILE_NAME, ASSET_FILENAME);
-                put(TransformKeys.KEY_ASSET_BYTE_SIZE, ASSET_BYTESIZE);
+                put(TransformKeys.KEY_ASSET_FILE_EXTENSION, ASSET_FILE_EXTENSION);
             }
         };
         EasyMock.expect(asset.getProperties()).andReturn(properties);
 
-        IdsId id = IdsId.Builder.newInstance().value(ASSET_ID).type(IdsType.ARTIFACT).build();
-        EasyMock.expect(context.transform(EasyMock.eq(id), EasyMock.eq(URI.class))).andReturn(ASSET_ID_URI);
+        var artifact = new ArtifactBuilder().build();
+        EasyMock.expect(context.transform(EasyMock.anyObject(Asset.class), EasyMock.eq(Artifact.class))).andReturn(artifact);
+
+        IdsId id = IdsId.Builder.newInstance().value(REPRESENTATION_ID).type(IdsType.REPRESENTATION).build();
+        EasyMock.expect(context.transform(EasyMock.eq(id), EasyMock.eq(URI.class))).andReturn(REPRESENTATION_ID_URI);
 
         // record
         EasyMock.replay(asset, context);
 
         // invoke
-        var result = assetToArtifactTransformer.transform(asset, context);
+        var result = assetToRepresentationTransformer.transform(asset, context);
 
         // verify
         Assertions.assertNotNull(result);
-        Assertions.assertEquals(ASSET_ID_URI, result.getId());
-        Assertions.assertEquals(ASSET_FILENAME, result.getFileName());
-        Assertions.assertEquals(ASSET_BYTESIZE, result.getByteSize());
+        Assertions.assertEquals(REPRESENTATION_ID_URI, result.getId());
+        Assertions.assertEquals(ASSET_FILE_EXTENSION, result.getMediaType().getFilenameExtension());
     }
 
 
@@ -120,5 +125,4 @@ class AssetToArtifactTransformerTest {
     void tearDown() {
         EasyMock.verify(asset, context);
     }
-
 }
