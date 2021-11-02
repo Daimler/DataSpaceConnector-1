@@ -84,4 +84,18 @@ public class IdsId {
             return new IdsId(type, value);
         }
     }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(value, type);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof IdsId)) {
+            return false;
+        }
+        IdsId id = (IdsId) obj;
+        return this.value.equals(id.value) && this.type == id.type;
+    }
 }
