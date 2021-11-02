@@ -17,11 +17,14 @@ package org.eclipse.dataspaceconnector.ids.transform;
 import de.fraunhofer.iais.eis.Representation;
 import de.fraunhofer.iais.eis.Resource;
 import de.fraunhofer.iais.eis.ResourceBuilder;
+import org.eclipse.dataspaceconnector.ids.spi.IdsId;
+import org.eclipse.dataspaceconnector.ids.spi.IdsType;
 import org.eclipse.dataspaceconnector.ids.spi.transform.IdsTypeTransformer;
 import org.eclipse.dataspaceconnector.ids.spi.transform.TransformerContext;
 import org.eclipse.dataspaceconnector.spi.types.domain.asset.Asset;
 import org.jetbrains.annotations.Nullable;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Objects;
@@ -50,7 +53,12 @@ public class AssetToResourceTransformer implements IdsTypeTransformer<Asset, Res
 
         Representation result = context.transform(object, Representation.class);
 
-        ResourceBuilder resourceBuilder = new ResourceBuilder();
+        IdsId id = IdsId.Builder.newInstance()
+                .value(object.getId())
+                .type(IdsType.RESOURCE)
+                .build();
+        URI uri = context.transform(id, URI.class);
+        ResourceBuilder resourceBuilder = new ResourceBuilder(uri);
         resourceBuilder._representation_(new ArrayList<>(Collections.singletonList(result)));
 
         return resourceBuilder.build();
