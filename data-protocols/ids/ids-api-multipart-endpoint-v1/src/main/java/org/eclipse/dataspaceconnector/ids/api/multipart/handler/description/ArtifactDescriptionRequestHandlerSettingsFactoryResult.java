@@ -41,7 +41,7 @@ public class ArtifactDescriptionRequestHandlerSettingsFactoryResult {
         return Collections.unmodifiableList(errors);
     }
 
-    public static final class Builder {
+    static final class Builder {
         private ArtifactDescriptionRequestHandlerSettings artifactDescriptionRequestHandlerSettings;
         private List<String> errors;
 

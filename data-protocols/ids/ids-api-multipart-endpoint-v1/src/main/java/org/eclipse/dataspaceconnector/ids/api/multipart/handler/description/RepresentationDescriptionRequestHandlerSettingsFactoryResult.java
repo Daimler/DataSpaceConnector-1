@@ -41,7 +41,7 @@ public class RepresentationDescriptionRequestHandlerSettingsFactoryResult {
         return Collections.unmodifiableList(errors);
     }
 
-    public static final class Builder {
+    static final class Builder {
         private RepresentationDescriptionRequestHandlerSettings settings;
         private List<String> errors;
 

@@ -41,7 +41,7 @@ public class ConnectorDescriptionRequestHandlerSettingsFactoryResult {
         return Collections.unmodifiableList(errors);
     }
 
-    public static final class Builder {
+    static final class Builder {
         private ConnectorDescriptionRequestHandlerSettings connectorDescriptionRequestHandlerSettings;
         private List<String> errors;
 

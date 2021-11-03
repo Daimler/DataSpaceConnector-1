@@ -41,7 +41,7 @@ public class ConnectorServiceSettingsFactoryResult {
         return Collections.unmodifiableList(errors);
     }
 
-    public static final class Builder {
+    static final class Builder {
         private ConnectorServiceSettings settings;
         private List<String> errors;
 

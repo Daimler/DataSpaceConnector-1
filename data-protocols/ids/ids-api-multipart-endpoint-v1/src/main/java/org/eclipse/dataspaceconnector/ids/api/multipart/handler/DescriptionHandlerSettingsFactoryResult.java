@@ -41,7 +41,7 @@ public class DescriptionHandlerSettingsFactoryResult {
         return Collections.unmodifiableList(errors);
     }
 
-    public static final class Builder {
+    static final class Builder {
         private DescriptionHandlerSettings settings;
         private List<String> errors;
 

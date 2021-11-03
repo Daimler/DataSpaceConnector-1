@@ -29,7 +29,7 @@ public class ConnectorServiceSettings {
     private final URI maintainer;
     private final URI curator;
 
-    public ConnectorServiceSettings(
+    private ConnectorServiceSettings(
             @Nullable String id,
             @Nullable String title,
             @Nullable String description,
@@ -81,7 +81,7 @@ public class ConnectorServiceSettings {
         return curator;
     }
 
-    public static final class Builder {
+    static final class Builder {
         private String id;
         private String title;
         private String description;

@@ -28,7 +28,7 @@ public class DataCatalogServiceSettings {
         return catalogId;
     }
 
-    public static class Builder {
+    static class Builder {
         private String catalogId;
 
         public static Builder newInstance() {

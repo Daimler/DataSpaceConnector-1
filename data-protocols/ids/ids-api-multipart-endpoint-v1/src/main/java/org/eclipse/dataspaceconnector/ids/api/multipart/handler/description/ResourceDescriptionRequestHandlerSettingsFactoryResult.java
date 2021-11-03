@@ -41,7 +41,7 @@ public class ResourceDescriptionRequestHandlerSettingsFactoryResult {
         return Collections.unmodifiableList(errors);
     }
 
-    public static final class Builder {
+    static final class Builder {
         private ResourceDescriptionRequestHandlerSettings settings;
         private List<String> errors;
 

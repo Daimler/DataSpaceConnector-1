@@ -28,7 +28,7 @@ public class ArtifactDescriptionRequestHandlerSettings {
         return id;
     }
 
-    public static class Builder {
+    static class Builder {
         private String id;
 
         public static Builder newInstance() {

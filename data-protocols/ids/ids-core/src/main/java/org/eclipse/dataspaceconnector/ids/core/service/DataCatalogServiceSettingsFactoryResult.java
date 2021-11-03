@@ -41,7 +41,7 @@ public class DataCatalogServiceSettingsFactoryResult {
         return Collections.unmodifiableList(errors);
     }
 
-    public static final class Builder {
+    static final class Builder {
         private DataCatalogServiceSettings settings;
         private List<String> errors;
 

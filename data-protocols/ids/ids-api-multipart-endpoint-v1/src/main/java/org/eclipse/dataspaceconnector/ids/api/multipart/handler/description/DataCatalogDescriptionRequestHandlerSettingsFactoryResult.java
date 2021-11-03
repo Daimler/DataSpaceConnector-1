@@ -41,7 +41,7 @@ public class DataCatalogDescriptionRequestHandlerSettingsFactoryResult {
         return Collections.unmodifiableList(errors);
     }
 
-    public static final class Builder {
+    static final class Builder {
         private DataCatalogDescriptionRequestHandlerSettings settings;
         private List<String> errors;
 
