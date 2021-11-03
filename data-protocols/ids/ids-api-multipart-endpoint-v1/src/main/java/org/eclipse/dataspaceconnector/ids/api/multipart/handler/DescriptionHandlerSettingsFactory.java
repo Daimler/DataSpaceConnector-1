@@ -45,7 +45,7 @@ public class DescriptionHandlerSettingsFactory {
         var settings = DescriptionHandlerSettings.Builder.newInstance().id(id).build();
 
         return DescriptionHandlerSettingsFactoryResult.Builder.newInstance()
-                .descriptionHandlerSettings(settings)
+                .settings(settings)
                 .errors(errors)
                 .build();
     }

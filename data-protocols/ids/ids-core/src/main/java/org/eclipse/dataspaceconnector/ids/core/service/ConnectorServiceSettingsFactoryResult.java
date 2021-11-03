@@ -1,52 +1,52 @@
 package org.eclipse.dataspaceconnector.ids.core.service;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 public class ConnectorServiceSettingsFactoryResult {
-    private final ConnectorServiceSettings connectorServiceSettings;
+    private final ConnectorServiceSettings settings;
     private final List<String> errors;
 
     private ConnectorServiceSettingsFactoryResult(
-            @Nullable ConnectorServiceSettings connectorServiceSettings,
-            @Nullable List<String> errors) {
-        this.connectorServiceSettings = connectorServiceSettings;
-        this.errors = errors;
+            @NotNull ConnectorServiceSettings settings,
+            @NotNull List<String> errors) {
+        this.settings = Objects.requireNonNull(settings);
+        this.errors = Objects.requireNonNull(errors);
     }
 
-    @Nullable
+    @NotNull
     public ConnectorServiceSettings getConnectorServiceSettings() {
-        return connectorServiceSettings;
+        return settings;
     }
 
     @NotNull
     public List<String> getErrors() {
-        return Collections.unmodifiableList(errors != null ? errors : Collections.emptyList());
+        return Collections.unmodifiableList(errors);
     }
 
     public static final class Builder {
-        private ConnectorServiceSettings connectorServiceSettings;
+        private ConnectorServiceSettings settings;
         private List<String> errors;
 
-        public static ConnectorServiceSettingsFactoryResult.Builder newInstance() {
-            return new ConnectorServiceSettingsFactoryResult.Builder();
+        public static Builder newInstance() {
+            return new Builder();
         }
 
-        public ConnectorServiceSettingsFactoryResult.Builder connectorServiceSettings(@Nullable ConnectorServiceSettings connectorServiceSettings) {
-            this.connectorServiceSettings = connectorServiceSettings;
+        public Builder settings(ConnectorServiceSettings settings) {
+            this.settings = settings;
             return this;
         }
 
-        public ConnectorServiceSettingsFactoryResult.Builder errors(@Nullable List<String> errors) {
+        public Builder errors(List<String> errors) {
             this.errors = errors;
             return this;
         }
 
         public ConnectorServiceSettingsFactoryResult build() {
-            return new ConnectorServiceSettingsFactoryResult(connectorServiceSettings, errors);
+            return new ConnectorServiceSettingsFactoryResult(settings, errors);
         }
     }
 }

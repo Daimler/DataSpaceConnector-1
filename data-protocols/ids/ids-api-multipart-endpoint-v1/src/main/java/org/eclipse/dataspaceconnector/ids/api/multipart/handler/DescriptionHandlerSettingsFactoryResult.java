@@ -19,48 +19,49 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 public class DescriptionHandlerSettingsFactoryResult {
-    private final DescriptionHandlerSettings descriptionHandlerSettings;
+    private final DescriptionHandlerSettings settings;
     private final List<String> errors;
 
     private DescriptionHandlerSettingsFactoryResult(
-            @Nullable DescriptionHandlerSettings descriptionHandlerSettings,
-            @Nullable List<String> errors) {
-        this.descriptionHandlerSettings = descriptionHandlerSettings;
-        this.errors = errors;
+            @NotNull DescriptionHandlerSettings settings,
+            @NotNull List<String> errors) {
+        this.settings = Objects.requireNonNull(settings);
+        this.errors = Objects.requireNonNull(errors);
     }
 
-    @Nullable
+    @NotNull
     public DescriptionHandlerSettings getSettings() {
-        return descriptionHandlerSettings;
+        return settings;
     }
 
     @NotNull
     public List<String> getErrors() {
-        return Collections.unmodifiableList(errors != null ? errors : Collections.emptyList());
+        return Collections.unmodifiableList(errors);
     }
 
     public static final class Builder {
-        private DescriptionHandlerSettings descriptionHandlerSettings;
+        private DescriptionHandlerSettings settings;
         private List<String> errors;
 
         public static Builder newInstance() {
             return new Builder();
         }
 
-        public Builder descriptionHandlerSettings(@Nullable DescriptionHandlerSettings descriptionHandlerSettings) {
-            this.descriptionHandlerSettings = descriptionHandlerSettings;
+        public Builder settings(DescriptionHandlerSettings settings) {
+            this.settings = settings;
             return this;
         }
 
-        public Builder errors(@Nullable List<String> errors) {
+        public Builder errors(List<String> errors) {
             this.errors = errors;
             return this;
         }
 
         public DescriptionHandlerSettingsFactoryResult build() {
-            return new DescriptionHandlerSettingsFactoryResult(descriptionHandlerSettings, errors);
+            return new DescriptionHandlerSettingsFactoryResult(settings, errors);
         }
     }
 }

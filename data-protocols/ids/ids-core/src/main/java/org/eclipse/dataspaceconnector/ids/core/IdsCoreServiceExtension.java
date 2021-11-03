@@ -15,6 +15,7 @@
 package org.eclipse.dataspaceconnector.ids.core;
 
 import okhttp3.OkHttpClient;
+import org.eclipse.dataspaceconnector.ids.core.configuration.SettingResolver;
 import org.eclipse.dataspaceconnector.ids.core.daps.DapsServiceImpl;
 import org.eclipse.dataspaceconnector.ids.core.descriptor.IdsDescriptorServiceImpl;
 import org.eclipse.dataspaceconnector.ids.core.message.DataRequestMessageSender;
@@ -22,9 +23,11 @@ import org.eclipse.dataspaceconnector.ids.core.message.IdsRemoteMessageDispatche
 import org.eclipse.dataspaceconnector.ids.core.message.QueryMessageSender;
 import org.eclipse.dataspaceconnector.ids.core.policy.IdsPolicyServiceImpl;
 import org.eclipse.dataspaceconnector.ids.core.service.ConnectorServiceImpl;
-import org.eclipse.dataspaceconnector.ids.core.service.ConnectorServiceSettings;
+import org.eclipse.dataspaceconnector.ids.core.service.ConnectorServiceSettingsFactory;
+import org.eclipse.dataspaceconnector.ids.core.service.ConnectorServiceSettingsFactoryResult;
 import org.eclipse.dataspaceconnector.ids.core.service.DataCatalogServiceImpl;
-import org.eclipse.dataspaceconnector.ids.core.service.DataCatalogServiceSettings;
+import org.eclipse.dataspaceconnector.ids.core.service.DataCatalogServiceSettingsFactory;
+import org.eclipse.dataspaceconnector.ids.core.service.DataCatalogServiceSettingsFactoryResult;
 import org.eclipse.dataspaceconnector.ids.core.version.ConnectorVersionProviderImpl;
 import org.eclipse.dataspaceconnector.ids.spi.daps.DapsService;
 import org.eclipse.dataspaceconnector.ids.spi.descriptor.IdsDescriptorService;
@@ -32,6 +35,7 @@ import org.eclipse.dataspaceconnector.ids.spi.policy.IdsPolicyService;
 import org.eclipse.dataspaceconnector.ids.spi.service.ConnectorService;
 import org.eclipse.dataspaceconnector.ids.spi.service.DataCatalogService;
 import org.eclipse.dataspaceconnector.ids.spi.version.ConnectorVersionProvider;
+import org.eclipse.dataspaceconnector.spi.EdcException;
 import org.eclipse.dataspaceconnector.spi.asset.AssetIndex;
 import org.eclipse.dataspaceconnector.spi.iam.IdentityService;
 import org.eclipse.dataspaceconnector.spi.message.RemoteMessageDispatcherRegistry;
@@ -71,16 +75,18 @@ public class IdsCoreServiceExtension implements ServiceExtension {
     public void initialize(ServiceExtensionContext serviceExtensionContext) {
         monitor = serviceExtensionContext.getMonitor();
 
+        SettingResolver settingResolver = new SettingResolver(serviceExtensionContext);
+
         AssetIndex assetIndex = serviceExtensionContext.getService(AssetIndex.class);
 
-        ConnectorVersionProvider connectorVersionProvider = registerConnectorVersionProvider(
-                serviceExtensionContext);
+        ConnectorVersionProvider connectorVersionProvider = createConnectorVersionProvider();
+        serviceExtensionContext.registerService(ConnectorVersionProvider.class, connectorVersionProvider);
 
-        DataCatalogService dataCatalogService = registerDataCatalogService(
-                serviceExtensionContext, assetIndex);
+        DataCatalogService dataCatalogService = createDataCatalogService(settingResolver, assetIndex);
+        serviceExtensionContext.registerService(DataCatalogService.class, dataCatalogService);
 
-        ConnectorService connectorService = registerConnectorService(
-                serviceExtensionContext, connectorVersionProvider, dataCatalogService);
+        ConnectorService connectorService = createConnectorService(settingResolver, connectorVersionProvider, dataCatalogService);
+        serviceExtensionContext.registerService(ConnectorService.class, connectorService);
 
         registerOther(serviceExtensionContext);
 
@@ -133,46 +139,43 @@ public class IdsCoreServiceExtension implements ServiceExtension {
         registry.register(dispatcher);
     }
 
-    private DataCatalogService registerDataCatalogService(
-            ServiceExtensionContext serviceExtensionContext,
+    private DataCatalogService createDataCatalogService(
+            SettingResolver settingResolver,
             AssetIndex assetIndex) {
+        DataCatalogServiceSettingsFactory dataCatalogServiceSettingsFactory = new DataCatalogServiceSettingsFactory(settingResolver);
+        DataCatalogServiceSettingsFactoryResult dataCatalogServiceSettingsFactoryResult = dataCatalogServiceSettingsFactory.getSettingsResult();
 
-        DataCatalogServiceSettings dataCatalogServiceSettings = null; // TODO
+        if (!dataCatalogServiceSettingsFactoryResult.getErrors().isEmpty()) {
+            throw new EdcException(String.format("Could not set up DataCatalogServiceImpl: %s", String.join(", ", dataCatalogServiceSettingsFactoryResult.getErrors())));
+        }
 
-        DataCatalogService dataCatalogService = new DataCatalogServiceImpl(
+        return new DataCatalogServiceImpl(
                 monitor,
-                dataCatalogServiceSettings,
+                dataCatalogServiceSettingsFactoryResult.getSettings(),
                 assetIndex
         );
-
-        serviceExtensionContext.registerService(DataCatalogService.class, dataCatalogService);
-
-        return dataCatalogService;
     }
 
-    private ConnectorService registerConnectorService(
-            ServiceExtensionContext serviceExtensionContext,
+    private ConnectorService createConnectorService(
+            SettingResolver settingResolver,
             ConnectorVersionProvider connectorVersionProvider,
             DataCatalogService dataCatalogService) {
-        ConnectorServiceSettings connectorServiceSettings = null; // TODO
+        ConnectorServiceSettingsFactory connectorServiceSettingsFactory = new ConnectorServiceSettingsFactory(settingResolver);
+        ConnectorServiceSettingsFactoryResult connectorServiceSettingsFactoryResult = connectorServiceSettingsFactory.getSettingsResult();
 
-        ConnectorService connectorService = new ConnectorServiceImpl(
+        if (!connectorServiceSettingsFactoryResult.getErrors().isEmpty()) {
+            throw new EdcException(String.format("Could not set up ConnectorServiceImpl: %s", String.join(", ", connectorServiceSettingsFactoryResult.getErrors())));
+        }
+
+        return new ConnectorServiceImpl(
                 monitor,
-                connectorServiceSettings,
+                connectorServiceSettingsFactoryResult.getConnectorServiceSettings(),
                 connectorVersionProvider,
                 dataCatalogService
         );
-
-        serviceExtensionContext.registerService(ConnectorService.class, connectorService);
-
-        return connectorService;
     }
 
-    private ConnectorVersionProvider registerConnectorVersionProvider(ServiceExtensionContext serviceExtensionContext) {
-        ConnectorVersionProvider connectorVersionProvider = new ConnectorVersionProviderImpl();
-
-        serviceExtensionContext.registerService(ConnectorVersionProvider.class, connectorVersionProvider);
-
-        return connectorVersionProvider;
+    private ConnectorVersionProvider createConnectorVersionProvider() {
+        return new ConnectorVersionProviderImpl();
     }
 }
