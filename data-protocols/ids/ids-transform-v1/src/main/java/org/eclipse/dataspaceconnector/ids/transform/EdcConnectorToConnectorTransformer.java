@@ -69,6 +69,7 @@ public class EdcConnectorToConnectorTransformer implements IdsTypeTransformer<Co
         }
 
         builder._inboundModelVersion_(new ArrayList<>(Collections.singletonList(IdsProtocol.INFORMATION_MODEL_VERSION)));
+        builder._outboundModelVersion_(IdsProtocol.INFORMATION_MODEL_VERSION);
 
         SecurityProfile securityProfile = context.transform(object.getSecurityProfile(), SecurityProfile.class);
         if (securityProfile != null) {

@@ -13,8 +13,6 @@ public class Connector {
     private final String id;
     private final String title;
     private final String description;
-    private final String inboundModelVersion;
-    private final String outboundModelVersion;
     private final String connectorVersion;
     private final SecurityProfile securityProfile;
     private final List<DataCatalog> dataCatalogs;
@@ -26,8 +24,6 @@ public class Connector {
             @Nullable String id,
             @Nullable String title,
             @Nullable String description,
-            @Nullable String inboundModelVersion,
-            @Nullable String outboundModelVersion,
             @Nullable String connectorVersion,
             @Nullable SecurityProfile securityProfile,
             @Nullable List<DataCatalog> dataCatalogs,
@@ -37,8 +33,6 @@ public class Connector {
         this.id = id;
         this.title = title;
         this.description = description;
-        this.inboundModelVersion = inboundModelVersion;
-        this.outboundModelVersion = outboundModelVersion;
         this.connectorVersion = connectorVersion;
         this.securityProfile = securityProfile;
         this.dataCatalogs = dataCatalogs;
@@ -60,16 +54,6 @@ public class Connector {
     @Nullable
     public String getDescription() {
         return description;
-    }
-
-    @Nullable
-    public String getInboundModelVersion() {
-        return inboundModelVersion;
-    }
-
-    @Nullable
-    public String getOutboundModelVersion() {
-        return outboundModelVersion;
     }
 
     @Nullable
@@ -107,8 +91,6 @@ public class Connector {
         private String id;
         private String title;
         private String description;
-        private String inboundModelVersion;
-        private String outboundModelVersion;
         private String connectorVersion;
         private SecurityProfile securityProfile;
         private List<DataCatalog> dataCatalogs;
@@ -135,16 +117,6 @@ public class Connector {
 
         public Builder description(@Nullable String description) {
             this.description = description;
-            return this;
-        }
-
-        public Builder inboundModelVersion(@Nullable String inboundModelVersion) {
-            this.inboundModelVersion = inboundModelVersion;
-            return this;
-        }
-
-        public Builder outboundModelVersion(@Nullable String outboundModelVersion) {
-            this.outboundModelVersion = outboundModelVersion;
             return this;
         }
 
@@ -180,7 +152,7 @@ public class Connector {
 
         @NotNull
         public Connector build() {
-            return new Connector(id, title, description, inboundModelVersion, outboundModelVersion, connectorVersion, securityProfile, dataCatalogs, endpoint, maintainer, curator);
+            return new Connector(id, title, description, connectorVersion, securityProfile, dataCatalogs, endpoint, maintainer, curator);
         }
     }
 }
