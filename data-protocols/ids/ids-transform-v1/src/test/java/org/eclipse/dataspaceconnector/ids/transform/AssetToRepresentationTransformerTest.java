@@ -2,6 +2,9 @@ package org.eclipse.dataspaceconnector.ids.transform;
 
 import de.fraunhofer.iais.eis.Artifact;
 import de.fraunhofer.iais.eis.ArtifactBuilder;
+import de.fraunhofer.iais.eis.CustomMediaTypeBuilder;
+import de.fraunhofer.iais.eis.MediaType;
+import de.fraunhofer.iais.eis.Representation;
 import org.easymock.EasyMock;
 import org.eclipse.dataspaceconnector.ids.spi.IdsId;
 import org.eclipse.dataspaceconnector.ids.spi.IdsType;
@@ -22,6 +25,7 @@ public class AssetToRepresentationTransformerTest {
     private static final String REPRESENTATION_ID = "test_id";
     private static final URI REPRESENTATION_ID_URI = URI.create("urn:representation:1");
     private static final String ASSET_FILE_EXTENSION = "file_extension";
+    private static final MediaType MEDIA_TYPE = new CustomMediaTypeBuilder()._filenameExtension_(ASSET_FILE_EXTENSION).build();
 
     // subject
     private AssetToRepresentationTransformer assetToRepresentationTransformer;
@@ -102,6 +106,8 @@ public class AssetToRepresentationTransformerTest {
         };
         EasyMock.expect(asset.getProperties()).andReturn(properties);
 
+        EasyMock.expect(context.transform(ASSET_FILE_EXTENSION, MediaType.class)).andReturn(MEDIA_TYPE);
+
         var artifact = new ArtifactBuilder().build();
         EasyMock.expect(context.transform(EasyMock.anyObject(Asset.class), EasyMock.eq(Artifact.class))).andReturn(artifact);
 
@@ -112,7 +118,7 @@ public class AssetToRepresentationTransformerTest {
         EasyMock.replay(asset, context);
 
         // invoke
-        var result = assetToRepresentationTransformer.transform(asset, context);
+        Representation result = assetToRepresentationTransformer.transform(asset, context);
 
         // verify
         Assertions.assertNotNull(result);

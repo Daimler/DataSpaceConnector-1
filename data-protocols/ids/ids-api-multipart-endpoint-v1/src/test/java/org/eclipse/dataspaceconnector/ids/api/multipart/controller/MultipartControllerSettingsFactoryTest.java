@@ -31,7 +31,7 @@ public class MultipartControllerSettingsFactoryTest {
     private SettingResolver settingResolver;
 
     @BeforeEach
-    public void setup() throws URISyntaxException {
+    public void setup() {
         settingResolver = EasyMock.createMock(SettingResolver.class);
     }
 

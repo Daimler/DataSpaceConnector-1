@@ -1,3 +1,17 @@
+/*
+ *  Copyright (c) 2021 Daimler TSS GmbH
+ *
+ *  This program and the accompanying materials are made available under the
+ *  terms of the Apache License, Version 2.0 which is available at
+ *  https://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  SPDX-License-Identifier: Apache-2.0
+ *
+ *  Contributors:
+ *       Daimler TSS GmbH - Initial API and Implementation
+ *
+ */
+
 package org.eclipse.dataspaceconnector.ids.core.configuration;
 
 import org.eclipse.dataspaceconnector.ids.spi.IdsId;
@@ -18,7 +32,7 @@ import java.util.Objects;
 import java.util.Set;
 
 public class SettingResolver {
-    private static final Map<String, Set<String>> defaultsUsed = new HashMap<>();
+    private static final Map<String, Set<String>> DEFAULT_WARNINGS = new HashMap<>();
     private static final String WARNING_MISSING_CONFIGURATION = "IDS Settings: No setting found for key '%s'. Using default value '%s'";
     private static final String REASON_ILLEGAL_URI = "IDS Settings: Expected valid URI for setting '%s', but was %s'.";
 
@@ -55,7 +69,7 @@ public class SettingResolver {
             return;
         }
 
-        if (defaultsUsed.computeIfAbsent(settingKey, (k) -> new HashSet<>()).add(settingValue)) {
+        if (DEFAULT_WARNINGS.computeIfAbsent(settingKey, (k) -> new HashSet<>()).add(settingValue)) {
             monitor.warning(String.format(WARNING_MISSING_CONFIGURATION, settingKey, settingValue));
         }
     }

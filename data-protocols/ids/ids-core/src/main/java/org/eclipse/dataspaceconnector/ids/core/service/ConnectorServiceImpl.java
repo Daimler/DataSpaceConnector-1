@@ -19,7 +19,6 @@ import org.eclipse.dataspaceconnector.ids.spi.service.DataCatalogService;
 import org.eclipse.dataspaceconnector.ids.spi.types.Connector;
 import org.eclipse.dataspaceconnector.ids.spi.types.DataCatalog;
 import org.eclipse.dataspaceconnector.ids.spi.version.ConnectorVersionProvider;
-import org.eclipse.dataspaceconnector.ids.spi.version.IdsProtocol;
 import org.eclipse.dataspaceconnector.spi.monitor.Monitor;
 import org.jetbrains.annotations.NotNull;
 
@@ -52,8 +51,6 @@ public class ConnectorServiceImpl implements ConnectorService {
                 .id(connectorServiceSettings.getId())
                 .title(connectorServiceSettings.getTitle())
                 .description(connectorServiceSettings.getDescription())
-                .inboundModelVersion(IdsProtocol.INFORMATION_MODEL_VERSION)
-                .outboundModelVersion(IdsProtocol.INFORMATION_MODEL_VERSION)
                 .connectorVersion(connectorVersionProvider.getVersion())
                 .securityProfile(connectorServiceSettings.getSecurityProfile())
                 .dataCatalogs(dataCatalog != null ? Collections.singletonList(dataCatalog) : Collections.emptyList())

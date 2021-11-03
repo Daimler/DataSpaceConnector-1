@@ -45,7 +45,7 @@ class DescriptionHandlerTest {
     // subject
     private DescriptionHandler descriptionHandler;
 
-    //mocks
+    // mocks
     private Monitor monitor;
     private DescriptionHandlerSettings descriptionHandlerSettings;
     private TransformerRegistry transformerRegistry;
@@ -122,7 +122,6 @@ class DescriptionHandlerTest {
     void testHandleRequestOfTypeDescriptionRequestMessage() {
         // prepare
         DescriptionRequestMessage requestHeader = EasyMock.mock(DescriptionRequestMessage.class);
-        String requestPayload = null;
 
         Message responseHeader = EasyMock.mock(Message.class);
         MultipartResponse response = MultipartResponse.Builder.newInstance()
@@ -198,7 +197,7 @@ class DescriptionHandlerTest {
 
 
     @Test
-    void testHandleRequestOfTypeDescriptionRequestMessageUnknwonButValidRequestedElement() {
+    void testHandleRequestOfTypeDescriptionRequestMessageUnknownButValidRequestedElement() {
         // prepare
         DescriptionRequestMessage requestHeader = EasyMock.mock(DescriptionRequestMessage.class);
 
@@ -236,6 +235,178 @@ class DescriptionHandlerTest {
                 .extracting(MultipartResponse::getHeader).isInstanceOf(RejectionMessage.class);
         assertThat(((RejectionMessage) result.getHeader()).getRejectionReason())
                 .isEqualTo(RejectionReason.MESSAGE_TYPE_NOT_SUPPORTED);
+    }
+
+    @Test
+    void testHandleRequestOfTypeDescriptionRequestMessageForArtifact() {
+        // prepare
+        DescriptionRequestMessage requestHeader = EasyMock.mock(DescriptionRequestMessage.class);
+
+        Message responseHeader = EasyMock.mock(Message.class);
+        MultipartResponse response = MultipartResponse.Builder.newInstance()
+                .header(responseHeader)
+                .build();
+
+        URI uri = URI.create("urn:artifact:1");
+        EasyMock.expect(requestHeader.getRequestedElement()).andReturn(uri);
+
+        EasyMock.expect(transformerRegistry.transform(uri, IdsType.class))
+                .andReturn(new TransformResult<>(IdsType.ARTIFACT));
+
+        EasyMock.expect(artifactDescriptionRequestHandler.handle(EasyMock.eq(requestHeader), EasyMock.anyObject())).andReturn(response);
+
+        MultipartRequest multipartRequest = MultipartRequest.Builder.newInstance()
+                .header(requestHeader)
+                .build();
+
+        // record
+        EasyMock.replay(
+                monitor,
+                descriptionHandlerSettings,
+                transformerRegistry,
+                artifactDescriptionRequestHandler,
+                dataCatalogDescriptionRequestHandler,
+                representationDescriptionRequestHandler,
+                resourceDescriptionRequestHandler,
+                connectorDescriptionRequestHandler,
+                requestHeader,
+                responseHeader);
+
+        // invoke
+        var result = descriptionHandler.handleRequest(multipartRequest);
+
+        // verify
+        assertThat(result).isNotNull();
+        assertThat(result).extracting(MultipartResponse::getHeader).isEqualTo(responseHeader);
+    }
+
+    @Test
+    void testHandleRequestOfTypeDescriptionRequestMessageForCatalog() {
+        // prepare
+        DescriptionRequestMessage requestHeader = EasyMock.mock(DescriptionRequestMessage.class);
+
+        Message responseHeader = EasyMock.mock(Message.class);
+        MultipartResponse response = MultipartResponse.Builder.newInstance()
+                .header(responseHeader)
+                .build();
+
+        URI uri = URI.create("urn:catalog:1");
+        EasyMock.expect(requestHeader.getRequestedElement()).andReturn(uri);
+
+        EasyMock.expect(transformerRegistry.transform(uri, IdsType.class))
+                .andReturn(new TransformResult<>(IdsType.CATALOG));
+
+        EasyMock.expect(dataCatalogDescriptionRequestHandler.handle(EasyMock.eq(requestHeader), EasyMock.anyObject())).andReturn(response);
+
+        MultipartRequest multipartRequest = MultipartRequest.Builder.newInstance()
+                .header(requestHeader)
+                .build();
+
+        // record
+        EasyMock.replay(
+                monitor,
+                descriptionHandlerSettings,
+                transformerRegistry,
+                artifactDescriptionRequestHandler,
+                dataCatalogDescriptionRequestHandler,
+                representationDescriptionRequestHandler,
+                resourceDescriptionRequestHandler,
+                connectorDescriptionRequestHandler,
+                requestHeader,
+                responseHeader);
+
+        // invoke
+        var result = descriptionHandler.handleRequest(multipartRequest);
+
+        // verify
+        assertThat(result).isNotNull();
+        assertThat(result).extracting(MultipartResponse::getHeader).isEqualTo(responseHeader);
+    }
+
+    @Test
+    void testHandleRequestOfTypeDescriptionRequestMessageForRepresentation() {
+        // prepare
+        DescriptionRequestMessage requestHeader = EasyMock.mock(DescriptionRequestMessage.class);
+
+        Message responseHeader = EasyMock.mock(Message.class);
+        MultipartResponse response = MultipartResponse.Builder.newInstance()
+                .header(responseHeader)
+                .build();
+
+        URI uri = URI.create("urn:representation:1");
+        EasyMock.expect(requestHeader.getRequestedElement()).andReturn(uri);
+
+        EasyMock.expect(transformerRegistry.transform(uri, IdsType.class))
+                .andReturn(new TransformResult<>(IdsType.REPRESENTATION));
+
+        EasyMock.expect(representationDescriptionRequestHandler.handle(EasyMock.eq(requestHeader), EasyMock.anyObject())).andReturn(response);
+
+        MultipartRequest multipartRequest = MultipartRequest.Builder.newInstance()
+                .header(requestHeader)
+                .build();
+
+        // record
+        EasyMock.replay(
+                monitor,
+                descriptionHandlerSettings,
+                transformerRegistry,
+                artifactDescriptionRequestHandler,
+                dataCatalogDescriptionRequestHandler,
+                representationDescriptionRequestHandler,
+                resourceDescriptionRequestHandler,
+                connectorDescriptionRequestHandler,
+                requestHeader,
+                responseHeader);
+
+        // invoke
+        var result = descriptionHandler.handleRequest(multipartRequest);
+
+        // verify
+        assertThat(result).isNotNull();
+        assertThat(result).extracting(MultipartResponse::getHeader).isEqualTo(responseHeader);
+    }
+
+    @Test
+    void testHandleRequestOfTypeDescriptionRequestMessageForResource() {
+        // prepare
+        DescriptionRequestMessage requestHeader = EasyMock.mock(DescriptionRequestMessage.class);
+
+        Message responseHeader = EasyMock.mock(Message.class);
+        MultipartResponse response = MultipartResponse.Builder.newInstance()
+                .header(responseHeader)
+                .build();
+
+        URI uri = URI.create("urn:resource:1");
+        EasyMock.expect(requestHeader.getRequestedElement()).andReturn(uri);
+
+        EasyMock.expect(transformerRegistry.transform(uri, IdsType.class))
+                .andReturn(new TransformResult<>(IdsType.RESOURCE));
+
+        EasyMock.expect(resourceDescriptionRequestHandler.handle(EasyMock.eq(requestHeader), EasyMock.anyObject())).andReturn(response);
+
+        MultipartRequest multipartRequest = MultipartRequest.Builder.newInstance()
+                .header(requestHeader)
+                .build();
+
+        // record
+        EasyMock.replay(
+                monitor,
+                descriptionHandlerSettings,
+                transformerRegistry,
+                artifactDescriptionRequestHandler,
+                dataCatalogDescriptionRequestHandler,
+                representationDescriptionRequestHandler,
+                resourceDescriptionRequestHandler,
+                connectorDescriptionRequestHandler,
+                requestHeader,
+                responseHeader);
+
+        // invoke
+        var result = descriptionHandler.handleRequest(multipartRequest);
+
+        // verify
+        assertThat(result).isNotNull();
+        assertThat(result).extracting(MultipartResponse::getHeader).isEqualTo(responseHeader);
     }
 
     @AfterEach
