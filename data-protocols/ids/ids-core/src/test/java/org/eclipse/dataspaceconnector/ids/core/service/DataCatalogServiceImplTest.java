@@ -66,7 +66,7 @@ class DataCatalogServiceImplTest {
         // verify
         assertThat(result).isNotNull();
         assertThat(result.getId()).isEqualTo(CATALOG_ID);
-        assertThat(result.getAssets()).hasSameElementsAs(assets);
+        assertThat(result.getContractOffers()).hasSameElementsAs(assets);
     }
 
     @AfterEach

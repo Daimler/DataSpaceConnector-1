@@ -8,7 +8,8 @@ import org.eclipse.dataspaceconnector.ids.spi.IdsType;
 import org.eclipse.dataspaceconnector.ids.spi.transform.IdsTypeTransformer;
 import org.eclipse.dataspaceconnector.ids.spi.transform.TransformerContext;
 import org.eclipse.dataspaceconnector.ids.spi.types.DataCatalog;
-import org.eclipse.dataspaceconnector.spi.types.domain.asset.Asset;
+import org.eclipse.dataspaceconnector.spi.types.domain.contract.ContractOffer;
+import org.eclipse.dataspaceconnector.spi.types.domain.contract.OfferedAsset;
 import org.jetbrains.annotations.Nullable;
 
 import java.net.URI;
@@ -51,11 +52,13 @@ public class DataCatalogToResourceCatalogTransformer implements IdsTypeTransform
         }
 
         List<Resource> resources = new LinkedList<>();
-        if (object.getAssets() != null) {
-            for (Asset asset : object.getAssets()) {
-                Resource resource = context.transform(asset, Resource.class);
-                if (resource != null) {
-                    resources.add(resource);
+        if (object.getContractOffers() != null) {
+            for (ContractOffer contractOffer : object.getContractOffers()) {
+                for (OfferedAsset offeredAsset : contractOffer.getAssets()) {
+                    Resource resource = context.transform(offeredAsset, Resource.class);
+                    if (resource != null) {
+                        resources.add(resource);
+                    }
                 }
             }
         }

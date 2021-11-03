@@ -16,15 +16,14 @@ package org.eclipse.dataspaceconnector.ids.core.service;
 
 import org.eclipse.dataspaceconnector.ids.spi.service.DataCatalogService;
 import org.eclipse.dataspaceconnector.ids.spi.types.DataCatalog;
-import org.eclipse.dataspaceconnector.spi.asset.AssetIndex;
-import org.eclipse.dataspaceconnector.spi.asset.AssetSelectorExpression;
+import org.eclipse.dataspaceconnector.spi.contract.ContractOfferQuery;
+import org.eclipse.dataspaceconnector.spi.contract.ContractOfferQueryResponse;
+import org.eclipse.dataspaceconnector.spi.contract.ContractOfferService;
 import org.eclipse.dataspaceconnector.spi.monitor.Monitor;
-import org.eclipse.dataspaceconnector.spi.types.domain.asset.Asset;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * The IDS service is able to create IDS compliant description of a data catalog.
@@ -33,15 +32,15 @@ import java.util.stream.Stream;
 public class DataCatalogServiceImpl implements DataCatalogService {
     private final Monitor monitor;
     private final DataCatalogServiceSettings dataCatalogServiceSettings;
-    private final AssetIndex assetIndex;
+    private final ContractOfferService contractOfferService;
 
     public DataCatalogServiceImpl(
             @NotNull Monitor monitor,
             @NotNull DataCatalogServiceSettings dataCatalogServiceSettings,
-            @NotNull AssetIndex assetIndex) {
+            @NotNull ContractOfferService contractOfferService) {
         this.monitor = monitor;
         this.dataCatalogServiceSettings = Objects.requireNonNull(dataCatalogServiceSettings);
-        this.assetIndex = Objects.requireNonNull(assetIndex);
+        this.contractOfferService = Objects.requireNonNull(contractOfferService);
     }
 
     /**
@@ -51,13 +50,13 @@ public class DataCatalogServiceImpl implements DataCatalogService {
      */
     @Override
     public DataCatalog getDataCatalog() {
-        Stream<Asset> assetStream = assetIndex
-                .queryAssets(AssetSelectorExpression.Builder.newInstance().build());
+        var query = ContractOfferQuery.Builder.newInstance().build(); // TODO
+        ContractOfferQueryResponse response = contractOfferService.queryContractOffers(query);
 
         return DataCatalog.Builder
                 .newInstance()
                 .id(dataCatalogServiceSettings.getCatalogId())
-                .assets(assetStream.collect(Collectors.toList()))
+                .contractOffers(response.getContractOfferStream().collect(Collectors.toList()))
                 .build();
     }
 }
