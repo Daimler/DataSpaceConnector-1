@@ -16,7 +16,6 @@ package org.eclipse.dataspaceconnector.ids.api.multipart.handler.description;
 
 import de.fraunhofer.iais.eis.DescriptionRequestMessage;
 import de.fraunhofer.iais.eis.DescriptionResponseMessage;
-import de.fraunhofer.iais.eis.Message;
 import de.fraunhofer.iais.eis.Resource;
 import org.eclipse.dataspaceconnector.ids.api.multipart.message.MultipartResponse;
 import org.eclipse.dataspaceconnector.ids.spi.IdsId;
@@ -32,12 +31,9 @@ import org.jetbrains.annotations.Nullable;
 import java.net.URI;
 import java.util.Objects;
 
-import static org.eclipse.dataspaceconnector.ids.api.multipart.util.RejectionMessageUtil.badParameters;
-import static org.eclipse.dataspaceconnector.ids.api.multipart.util.RejectionMessageUtil.notFound;
-
 public class ResourceDescriptionRequestHandler extends AbstractDescriptionRequestHandler implements DescriptionRequestHandler {
     private final Monitor monitor;
-    private final ResourceDescriptionRequestHandlerSettings resourceDescriptionRequestHandlerSettings;
+    private final String connectorId;
     private final AssetIndex assetIndex;
     private final TransformerRegistry transformerRegistry;
 
@@ -46,11 +42,11 @@ public class ResourceDescriptionRequestHandler extends AbstractDescriptionReques
             @NotNull ResourceDescriptionRequestHandlerSettings resourceDescriptionRequestHandlerSettings,
             @NotNull AssetIndex assetIndex,
             @NotNull TransformerRegistry transformerRegistry) {
-        super(resourceDescriptionRequestHandlerSettings.getId(), transformerRegistry);
+        super(transformerRegistry);
         this.monitor = Objects.requireNonNull(monitor);
-        this.resourceDescriptionRequestHandlerSettings = Objects.requireNonNull(resourceDescriptionRequestHandlerSettings);
         this.assetIndex = Objects.requireNonNull(assetIndex);
         this.transformerRegistry = Objects.requireNonNull(transformerRegistry);
+        this.connectorId = Objects.requireNonNull(resourceDescriptionRequestHandlerSettings).getId();
     }
 
     @Override
@@ -59,34 +55,34 @@ public class ResourceDescriptionRequestHandler extends AbstractDescriptionReques
 
         URI uri = descriptionRequestMessage.getRequestedElement();
         if (uri == null) {
-            return createBadParametersErrorMultipartResponse(descriptionRequestMessage);
+            return createBadParametersErrorMultipartResponse(connectorId, descriptionRequestMessage);
         }
 
         var result = transformerRegistry.transform(uri, IdsId.class);
         if (result.hasProblems()) {
             // TODO log problems
-            return createBadParametersErrorMultipartResponse(descriptionRequestMessage);
+            return createBadParametersErrorMultipartResponse(connectorId, descriptionRequestMessage);
         }
 
         IdsId idsId = result.getOutput();
         if (Objects.requireNonNull(idsId).getType() != IdsType.RESOURCE) {
-            return createBadParametersErrorMultipartResponse(descriptionRequestMessage);
+            return createBadParametersErrorMultipartResponse(connectorId, descriptionRequestMessage);
         }
 
         Asset asset = assetIndex.findById(idsId.getValue());
         if (asset == null) {
-            return createNotFoundErrorMultipartResponse(descriptionRequestMessage);
+            return createNotFoundErrorMultipartResponse(connectorId, descriptionRequestMessage);
         }
 
         TransformResult<Resource> transformResult = transformerRegistry.transform(asset, Resource.class);
         if (transformResult.hasProblems()) {
             // TODO log
-            return createBadParametersErrorMultipartResponse(descriptionRequestMessage);
+            return createBadParametersErrorMultipartResponse(connectorId, descriptionRequestMessage);
         }
 
         Resource resource = transformResult.getOutput();
 
-        DescriptionResponseMessage descriptionResponseMessage = createDescriptionResponseMessage(descriptionRequestMessage);
+        DescriptionResponseMessage descriptionResponseMessage = createDescriptionResponseMessage(connectorId, descriptionRequestMessage);
 
         return MultipartResponse.Builder.newInstance()
                 .header(descriptionResponseMessage)
@@ -94,15 +90,4 @@ public class ResourceDescriptionRequestHandler extends AbstractDescriptionReques
                 .build();
     }
 
-    private MultipartResponse createBadParametersErrorMultipartResponse(Message message) {
-        return MultipartResponse.Builder.newInstance()
-                .header(badParameters(message, resourceDescriptionRequestHandlerSettings.getId()))
-                .build();
-    }
-
-    private MultipartResponse createNotFoundErrorMultipartResponse(Message message) {
-        return MultipartResponse.Builder.newInstance()
-                .header(notFound(message, resourceDescriptionRequestHandlerSettings.getId()))
-                .build();
-    }
 }

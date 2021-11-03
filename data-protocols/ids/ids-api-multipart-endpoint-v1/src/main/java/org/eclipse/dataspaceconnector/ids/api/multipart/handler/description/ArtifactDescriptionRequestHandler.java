@@ -17,7 +17,6 @@ package org.eclipse.dataspaceconnector.ids.api.multipart.handler.description;
 import de.fraunhofer.iais.eis.Artifact;
 import de.fraunhofer.iais.eis.DescriptionRequestMessage;
 import de.fraunhofer.iais.eis.DescriptionResponseMessage;
-import de.fraunhofer.iais.eis.Message;
 import org.eclipse.dataspaceconnector.ids.api.multipart.message.MultipartResponse;
 import org.eclipse.dataspaceconnector.ids.spi.IdsId;
 import org.eclipse.dataspaceconnector.ids.spi.IdsType;
@@ -32,12 +31,9 @@ import org.jetbrains.annotations.Nullable;
 import java.net.URI;
 import java.util.Objects;
 
-import static org.eclipse.dataspaceconnector.ids.api.multipart.util.RejectionMessageUtil.badParameters;
-import static org.eclipse.dataspaceconnector.ids.api.multipart.util.RejectionMessageUtil.notFound;
-
-public class ArtifactDescriptionRequestHandler extends AbstractDescriptionRequestHandler implements DescriptionRequestHandler {
+public class ArtifactDescriptionRequestHandler extends AbstractDescriptionRequestHandler {
     private final Monitor monitor;
-    private final ArtifactDescriptionRequestHandlerSettings artifactDescriptionRequestHandlerSettings;
+    private final String connectorId;
     private final AssetIndex assetIndex;
     private final TransformerRegistry transformerRegistry;
 
@@ -46,10 +42,10 @@ public class ArtifactDescriptionRequestHandler extends AbstractDescriptionReques
             @NotNull ArtifactDescriptionRequestHandlerSettings artifactDescriptionRequestHandlerSettings,
             @NotNull AssetIndex assetIndex,
             @NotNull TransformerRegistry transformerRegistry) {
-        super(artifactDescriptionRequestHandlerSettings.getId(), transformerRegistry);
+        super(transformerRegistry);
         this.monitor = Objects.requireNonNull(monitor);
-        this.artifactDescriptionRequestHandlerSettings = Objects.requireNonNull(artifactDescriptionRequestHandlerSettings);
         this.assetIndex = Objects.requireNonNull(assetIndex);
+        this.connectorId = Objects.requireNonNull(artifactDescriptionRequestHandlerSettings).getId();
         this.transformerRegistry = Objects.requireNonNull(transformerRegistry);
     }
 
@@ -59,50 +55,38 @@ public class ArtifactDescriptionRequestHandler extends AbstractDescriptionReques
 
         URI uri = descriptionRequestMessage.getRequestedElement();
         if (uri == null) {
-            return createBadParametersErrorMultipartResponse(descriptionRequestMessage);
+            return createBadParametersErrorMultipartResponse(connectorId, descriptionRequestMessage);
         }
 
         var result = transformerRegistry.transform(uri, IdsId.class);
         if (result.hasProblems()) {
             // TODO log problems
-            return createBadParametersErrorMultipartResponse(descriptionRequestMessage);
+            return createBadParametersErrorMultipartResponse(connectorId, descriptionRequestMessage);
         }
 
         IdsId idsId = result.getOutput();
         if (Objects.requireNonNull(idsId).getType() != IdsType.ARTIFACT) {
-            return createBadParametersErrorMultipartResponse(descriptionRequestMessage);
+            return createBadParametersErrorMultipartResponse(connectorId, descriptionRequestMessage);
         }
 
         Asset asset = assetIndex.findById(idsId.getValue());
         if (asset == null) {
-            return createNotFoundErrorMultipartResponse(descriptionRequestMessage);
+            return createNotFoundErrorMultipartResponse(connectorId, descriptionRequestMessage);
         }
 
         TransformResult<Artifact> transformResult = transformerRegistry.transform(asset, Artifact.class);
         if (transformResult.hasProblems()) {
             // TODO log
-            return createBadParametersErrorMultipartResponse(descriptionRequestMessage);
+            return createBadParametersErrorMultipartResponse(connectorId, descriptionRequestMessage);
         }
 
         Artifact artifact = transformResult.getOutput();
 
-        DescriptionResponseMessage descriptionResponseMessage = createDescriptionResponseMessage(descriptionRequestMessage);
+        DescriptionResponseMessage descriptionResponseMessage = createDescriptionResponseMessage(connectorId, descriptionRequestMessage);
 
         return MultipartResponse.Builder.newInstance()
                 .header(descriptionResponseMessage)
                 .payload(artifact)
-                .build();
-    }
-
-    private MultipartResponse createBadParametersErrorMultipartResponse(Message message) {
-        return MultipartResponse.Builder.newInstance()
-                .header(badParameters(message, artifactDescriptionRequestHandlerSettings.getId()))
-                .build();
-    }
-
-    private MultipartResponse createNotFoundErrorMultipartResponse(Message message) {
-        return MultipartResponse.Builder.newInstance()
-                .header(notFound(message, artifactDescriptionRequestHandlerSettings.getId()))
                 .build();
     }
 }

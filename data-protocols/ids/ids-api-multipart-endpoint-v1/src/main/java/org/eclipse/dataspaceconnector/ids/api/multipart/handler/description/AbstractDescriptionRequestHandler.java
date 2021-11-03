@@ -17,6 +17,7 @@ package org.eclipse.dataspaceconnector.ids.api.multipart.handler.description;
 import de.fraunhofer.iais.eis.DescriptionResponseMessage;
 import de.fraunhofer.iais.eis.DescriptionResponseMessageBuilder;
 import de.fraunhofer.iais.eis.Message;
+import org.eclipse.dataspaceconnector.ids.api.multipart.message.MultipartResponse;
 import org.eclipse.dataspaceconnector.ids.core.util.CalendarUtil;
 import org.eclipse.dataspaceconnector.ids.spi.IdsId;
 import org.eclipse.dataspaceconnector.ids.spi.IdsIdParser;
@@ -33,16 +34,37 @@ import java.util.Collections;
 import java.util.Objects;
 import java.util.UUID;
 
-abstract class AbstractDescriptionRequestHandler {
-    private final String connectorId;
-    private final TransformerRegistry transformerRegistry;
+import static org.eclipse.dataspaceconnector.ids.api.multipart.util.RejectionMessageUtil.badParameters;
+import static org.eclipse.dataspaceconnector.ids.api.multipart.util.RejectionMessageUtil.messageTypeNotSupported;
+import static org.eclipse.dataspaceconnector.ids.api.multipart.util.RejectionMessageUtil.notFound;
 
-    public AbstractDescriptionRequestHandler(@NotNull String connectorId, @NotNull TransformerRegistry transformerRegistry) {
-        this.connectorId = Objects.requireNonNull(connectorId);
+abstract class AbstractDescriptionRequestHandler implements DescriptionRequestHandler {
+    protected final TransformerRegistry transformerRegistry;
+
+    public AbstractDescriptionRequestHandler(@NotNull TransformerRegistry transformerRegistry) {
         this.transformerRegistry = Objects.requireNonNull(transformerRegistry);
     }
 
-    public DescriptionResponseMessage createDescriptionResponseMessage(
+    protected MultipartResponse createBadParametersErrorMultipartResponse(@Nullable String connectorId, @Nullable Message message) {
+        return MultipartResponse.Builder.newInstance()
+                .header(badParameters(message, connectorId))
+                .build();
+    }
+
+    protected MultipartResponse createNotFoundErrorMultipartResponse(@Nullable String connectorId, @Nullable Message message) {
+        return MultipartResponse.Builder.newInstance()
+                .header(notFound(message, connectorId))
+                .build();
+    }
+
+    protected MultipartResponse createErrorMultipartResponse(@Nullable String connectorId, @Nullable Message message) {
+        return MultipartResponse.Builder.newInstance()
+                .header(messageTypeNotSupported(message, connectorId))
+                .build();
+    }
+
+    protected DescriptionResponseMessage createDescriptionResponseMessage(
+            @Nullable String connectorId,
             @Nullable Message correlationMessage) {
 
         IdsId messageId = IdsId.Builder.newInstance()

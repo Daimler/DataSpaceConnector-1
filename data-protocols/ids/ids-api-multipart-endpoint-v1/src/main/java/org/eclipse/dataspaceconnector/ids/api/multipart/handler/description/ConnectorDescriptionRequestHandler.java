@@ -17,7 +17,6 @@ package org.eclipse.dataspaceconnector.ids.api.multipart.handler.description;
 import de.fraunhofer.iais.eis.Connector;
 import de.fraunhofer.iais.eis.DescriptionRequestMessage;
 import de.fraunhofer.iais.eis.DescriptionResponseMessage;
-import de.fraunhofer.iais.eis.Message;
 import org.eclipse.dataspaceconnector.ids.api.multipart.message.MultipartResponse;
 import org.eclipse.dataspaceconnector.ids.spi.IdsIdParser;
 import org.eclipse.dataspaceconnector.ids.spi.IdsType;
@@ -31,12 +30,9 @@ import org.jetbrains.annotations.Nullable;
 import java.net.URI;
 import java.util.Objects;
 
-import static org.eclipse.dataspaceconnector.ids.api.multipart.util.RejectionMessageUtil.badParameters;
-import static org.eclipse.dataspaceconnector.ids.api.multipart.util.RejectionMessageUtil.messageTypeNotSupported;
-
-public class ConnectorDescriptionRequestHandler extends AbstractDescriptionRequestHandler implements DescriptionRequestHandler {
+public class ConnectorDescriptionRequestHandler extends AbstractDescriptionRequestHandler {
+    private final String connectorId;
     private final Monitor monitor;
-    private final ConnectorDescriptionRequestHandlerSettings connectorDescriptionRequestHandlerSettings;
     private final ConnectorService connectorService;
     private final TransformerRegistry transformerRegistry;
 
@@ -45,11 +41,11 @@ public class ConnectorDescriptionRequestHandler extends AbstractDescriptionReque
             @NotNull ConnectorDescriptionRequestHandlerSettings connectorDescriptionRequestHandlerSettings,
             @NotNull ConnectorService connectorService,
             @NotNull TransformerRegistry transformerRegistry) {
-        super(connectorDescriptionRequestHandlerSettings.getId(), transformerRegistry);
+        super(transformerRegistry);
         this.monitor = Objects.requireNonNull(monitor);
         this.connectorService = Objects.requireNonNull(connectorService);
-        this.connectorDescriptionRequestHandlerSettings = Objects.requireNonNull(connectorDescriptionRequestHandlerSettings);
         this.transformerRegistry = Objects.requireNonNull(transformerRegistry);
+        this.connectorId = Objects.requireNonNull(connectorDescriptionRequestHandlerSettings).getId();
     }
 
     @Override
@@ -57,15 +53,15 @@ public class ConnectorDescriptionRequestHandler extends AbstractDescriptionReque
         Objects.requireNonNull(descriptionRequestMessage);
 
         if (!isRequestingCurrentConnectorsDescription(descriptionRequestMessage)) {
-            return createErrorMultipartResponse(descriptionRequestMessage);
+            return createErrorMultipartResponse(connectorId, descriptionRequestMessage);
         }
 
-        DescriptionResponseMessage descriptionResponseMessage = createDescriptionResponseMessage(descriptionRequestMessage);
+        DescriptionResponseMessage descriptionResponseMessage = createDescriptionResponseMessage(connectorId, descriptionRequestMessage);
 
         TransformResult<Connector> transformResult = transformerRegistry.transform(connectorService.getConnector(), Connector.class);
         if (transformResult.hasProblems()) {
             // TODO log
-            return createBadParametersErrorMultipartResponse(descriptionRequestMessage);
+            return createBadParametersErrorMultipartResponse(connectorId, descriptionRequestMessage);
         }
 
         Connector connector = transformResult.getOutput();
@@ -87,20 +83,9 @@ public class ConnectorDescriptionRequestHandler extends AbstractDescriptionReque
                 IdsIdParser.DELIMITER,
                 IdsIdParser.SCHEME,
                 IdsType.CONNECTOR.getValue(),
-                connectorDescriptionRequestHandlerSettings.getId()));
+                connectorId));
 
         return requestedConnectorId.equals(connectorIdUri);
     }
 
-    private MultipartResponse createErrorMultipartResponse(Message message) {
-        return MultipartResponse.Builder.newInstance()
-                .header(messageTypeNotSupported(message, connectorDescriptionRequestHandlerSettings.getId()))
-                .build();
-    }
-
-    private MultipartResponse createBadParametersErrorMultipartResponse(Message message) {
-        return MultipartResponse.Builder.newInstance()
-                .header(badParameters(message, connectorDescriptionRequestHandlerSettings.getId()))
-                .build();
-    }
 }

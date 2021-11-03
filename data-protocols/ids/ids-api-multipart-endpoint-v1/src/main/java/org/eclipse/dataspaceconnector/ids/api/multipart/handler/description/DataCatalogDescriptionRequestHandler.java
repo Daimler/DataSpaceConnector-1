@@ -16,7 +16,6 @@ package org.eclipse.dataspaceconnector.ids.api.multipart.handler.description;
 
 import de.fraunhofer.iais.eis.DescriptionRequestMessage;
 import de.fraunhofer.iais.eis.DescriptionResponseMessage;
-import de.fraunhofer.iais.eis.Message;
 import de.fraunhofer.iais.eis.ResourceCatalog;
 import org.eclipse.dataspaceconnector.ids.api.multipart.message.MultipartResponse;
 import org.eclipse.dataspaceconnector.ids.spi.IdsId;
@@ -32,12 +31,9 @@ import org.jetbrains.annotations.Nullable;
 import java.net.URI;
 import java.util.Objects;
 
-import static org.eclipse.dataspaceconnector.ids.api.multipart.util.RejectionMessageUtil.badParameters;
-import static org.eclipse.dataspaceconnector.ids.api.multipart.util.RejectionMessageUtil.notFound;
-
-public class DataCatalogDescriptionRequestHandler extends AbstractDescriptionRequestHandler implements DescriptionRequestHandler {
+public class DataCatalogDescriptionRequestHandler extends AbstractDescriptionRequestHandler {
     private final Monitor monitor;
-    private final DataCatalogDescriptionRequestHandlerSettings dataCatalogDescriptionRequestHandlerSettings;
+    private final String connectorId;
     private final DataCatalogService dataCatalogService;
     private final TransformerRegistry transformerRegistry;
 
@@ -46,11 +42,11 @@ public class DataCatalogDescriptionRequestHandler extends AbstractDescriptionReq
             @NotNull DataCatalogDescriptionRequestHandlerSettings dataCatalogDescriptionRequestHandlerSettings,
             @NotNull DataCatalogService dataCatalogService,
             @NotNull TransformerRegistry transformerRegistry) {
-        super(dataCatalogDescriptionRequestHandlerSettings.getId(), transformerRegistry);
+        super(transformerRegistry);
         this.monitor = Objects.requireNonNull(monitor);
-        this.dataCatalogDescriptionRequestHandlerSettings = Objects.requireNonNull(dataCatalogDescriptionRequestHandlerSettings);
         this.dataCatalogService = Objects.requireNonNull(dataCatalogService);
         this.transformerRegistry = Objects.requireNonNull(transformerRegistry);
+        this.connectorId = Objects.requireNonNull(dataCatalogDescriptionRequestHandlerSettings).getId();
     }
 
     @Override
@@ -59,34 +55,34 @@ public class DataCatalogDescriptionRequestHandler extends AbstractDescriptionReq
 
         URI uri = descriptionRequestMessage.getRequestedElement();
         if (uri == null) {
-            return createBadParametersErrorMultipartResponse(descriptionRequestMessage);
+            return createBadParametersErrorMultipartResponse(connectorId, descriptionRequestMessage);
         }
 
         var result = transformerRegistry.transform(uri, IdsId.class);
         if (result.hasProblems()) {
             // TODO log problems
-            return createBadParametersErrorMultipartResponse(descriptionRequestMessage);
+            return createBadParametersErrorMultipartResponse(connectorId, descriptionRequestMessage);
         }
 
         IdsId idsId = result.getOutput();
         if (Objects.requireNonNull(idsId).getType() != IdsType.CATALOG) {
-            return createBadParametersErrorMultipartResponse(descriptionRequestMessage);
+            return createBadParametersErrorMultipartResponse(connectorId, descriptionRequestMessage);
         }
 
         DataCatalog dataCatalog = dataCatalogService.getDataCatalog();
         if (dataCatalog == null) {
-            return createNotFoundErrorMultipartResponse(descriptionRequestMessage);
+            return createNotFoundErrorMultipartResponse(connectorId, descriptionRequestMessage);
         }
 
         TransformResult<ResourceCatalog> transformResult = transformerRegistry.transform(dataCatalog, ResourceCatalog.class);
         if (transformResult.hasProblems()) {
             // TODO log
-            return createBadParametersErrorMultipartResponse(descriptionRequestMessage);
+            return createBadParametersErrorMultipartResponse(connectorId, descriptionRequestMessage);
         }
 
         ResourceCatalog catalog = transformResult.getOutput();
 
-        DescriptionResponseMessage descriptionResponseMessage = createDescriptionResponseMessage(descriptionRequestMessage);
+        DescriptionResponseMessage descriptionResponseMessage = createDescriptionResponseMessage(connectorId, descriptionRequestMessage);
 
         return MultipartResponse.Builder.newInstance()
                 .header(descriptionResponseMessage)
@@ -94,15 +90,4 @@ public class DataCatalogDescriptionRequestHandler extends AbstractDescriptionReq
                 .build();
     }
 
-    private MultipartResponse createBadParametersErrorMultipartResponse(Message message) {
-        return MultipartResponse.Builder.newInstance()
-                .header(badParameters(message, dataCatalogDescriptionRequestHandlerSettings.getId()))
-                .build();
-    }
-
-    private MultipartResponse createNotFoundErrorMultipartResponse(Message message) {
-        return MultipartResponse.Builder.newInstance()
-                .header(notFound(message, dataCatalogDescriptionRequestHandlerSettings.getId()))
-                .build();
-    }
 }
