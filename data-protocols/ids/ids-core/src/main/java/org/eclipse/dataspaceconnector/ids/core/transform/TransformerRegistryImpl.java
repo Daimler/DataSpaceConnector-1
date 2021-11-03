@@ -90,7 +90,7 @@ public class TransformerRegistryImpl implements TransformerRegistry {
     }
 
     private static class TransformerContextImpl implements TransformerContext {
-        private static final Map<Integer, Object> cache = new HashMap<>();
+        private static final Map<Integer, Object> CACHE = new HashMap<>();
 
         private final List<String> problems = new ArrayList<>();
         private final TransformerRegistryImpl registry;
@@ -118,7 +118,7 @@ public class TransformerRegistryImpl implements TransformerRegistry {
         public <INPUT, OUTPUT> @Nullable OUTPUT transform(INPUT object, Class<OUTPUT> outputType) {
             if (object != null) {
                 // mitigate infinite recursive calls to the transformer subsystem
-                return (OUTPUT) cache.computeIfAbsent(Objects.hash(object, outputType), (k) -> registry.transform(object, outputType, this));
+                return (OUTPUT) CACHE.computeIfAbsent(Objects.hash(object, outputType), (k) -> registry.transform(object, outputType, this));
             }
             return registry.transform(object, outputType, this);
         }
