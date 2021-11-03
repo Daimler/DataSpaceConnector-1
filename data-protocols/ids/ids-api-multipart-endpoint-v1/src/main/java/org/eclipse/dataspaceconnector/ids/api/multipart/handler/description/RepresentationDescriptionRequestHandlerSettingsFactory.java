@@ -44,7 +44,7 @@ public class RepresentationDescriptionRequestHandlerSettingsFactory {
         RepresentationDescriptionRequestHandlerSettings settings = RepresentationDescriptionRequestHandlerSettings.Builder.newInstance().id(id).build();
 
         return RepresentationDescriptionRequestHandlerSettingsFactoryResult.Builder.newInstance()
-                .representationDescriptionRequestHandlerSettings(settings)
+                .settings(settings)
                 .errors(errors)
                 .build();
     }
