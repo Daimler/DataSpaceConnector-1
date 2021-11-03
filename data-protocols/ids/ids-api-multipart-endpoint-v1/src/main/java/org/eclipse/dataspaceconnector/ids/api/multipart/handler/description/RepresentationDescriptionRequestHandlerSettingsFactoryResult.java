@@ -32,7 +32,7 @@ public class RepresentationDescriptionRequestHandlerSettingsFactoryResult {
         this.errors = Objects.requireNonNull(errors);
     }
 
-    @Nullable
+    @NotNull
     public RepresentationDescriptionRequestHandlerSettings getSettings() {
         return settings;
     }
@@ -50,12 +50,12 @@ public class RepresentationDescriptionRequestHandlerSettingsFactoryResult {
             return new Builder();
         }
 
-        public Builder settings(@NotNull RepresentationDescriptionRequestHandlerSettings settings) {
+        public Builder settings(RepresentationDescriptionRequestHandlerSettings settings) {
             this.settings = settings;
             return this;
         }
 
-        public Builder errors(@NotNull List<String> errors) {
+        public Builder errors(List<String> errors) {
             this.errors = errors;
             return this;
         }

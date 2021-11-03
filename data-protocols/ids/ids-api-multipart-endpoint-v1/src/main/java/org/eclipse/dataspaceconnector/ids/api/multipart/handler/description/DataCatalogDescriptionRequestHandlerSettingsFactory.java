@@ -30,7 +30,7 @@ public class DataCatalogDescriptionRequestHandlerSettingsFactory {
     }
 
     @NotNull
-    public DataCatalogDescriptionRequestHandlerSettingsFactoryResult createDataCatalogDescriptionRequestHandlerSettings() {
+    public DataCatalogDescriptionRequestHandlerSettingsFactoryResult createSettingsResult() {
         List<String> errors = new ArrayList<>();
 
         String id = null;
@@ -44,7 +44,7 @@ public class DataCatalogDescriptionRequestHandlerSettingsFactory {
         var settings = DataCatalogDescriptionRequestHandlerSettings.Builder.newInstance().id(id).build();
 
         return DataCatalogDescriptionRequestHandlerSettingsFactoryResult.Builder.newInstance()
-                .dataCatalogDescriptionRequestHandlerSettings(settings)
+                .settings(settings)
                 .errors(errors)
                 .build();
     }

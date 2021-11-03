@@ -32,7 +32,7 @@ public class ResourceDescriptionRequestHandlerSettingsFactoryResult {
         this.errors = Objects.requireNonNull(errors);
     }
 
-    @Nullable
+    @NotNull
     public ResourceDescriptionRequestHandlerSettings getSettings() {
         return settings;
     }
