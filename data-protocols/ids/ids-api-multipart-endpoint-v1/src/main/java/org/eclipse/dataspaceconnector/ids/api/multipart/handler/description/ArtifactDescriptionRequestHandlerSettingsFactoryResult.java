@@ -15,24 +15,24 @@
 package org.eclipse.dataspaceconnector.ids.api.multipart.handler.description;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 public class ArtifactDescriptionRequestHandlerSettingsFactoryResult {
     private final ArtifactDescriptionRequestHandlerSettings artifactDescriptionRequestHandlerSettings;
     private final List<String> errors;
 
     private ArtifactDescriptionRequestHandlerSettingsFactoryResult(
-            @Nullable ArtifactDescriptionRequestHandlerSettings artifactDescriptionRequestHandlerSettings,
-            @Nullable List<String> errors) {
-        this.artifactDescriptionRequestHandlerSettings = artifactDescriptionRequestHandlerSettings;
-        this.errors = errors;
+            @NotNull ArtifactDescriptionRequestHandlerSettings artifactDescriptionRequestHandlerSettings,
+            @NotNull List<String> errors) {
+        this.artifactDescriptionRequestHandlerSettings = Objects.requireNonNull(artifactDescriptionRequestHandlerSettings);
+        this.errors = Objects.requireNonNull(errors);
     }
 
-    @Nullable
-    public ArtifactDescriptionRequestHandlerSettings getArtifactDescriptionRequestHandlerSettings() {
+    @NotNull
+    public ArtifactDescriptionRequestHandlerSettings getSettings() {
         return artifactDescriptionRequestHandlerSettings;
     }
 
@@ -49,13 +49,13 @@ public class ArtifactDescriptionRequestHandlerSettingsFactoryResult {
             return new Builder();
         }
 
-        public Builder artifactDescriptionRequestHandlerSettings(@Nullable ArtifactDescriptionRequestHandlerSettings artifactDescriptionRequestHandlerSettings) {
-            this.artifactDescriptionRequestHandlerSettings = artifactDescriptionRequestHandlerSettings;
+        public Builder settings(@NotNull ArtifactDescriptionRequestHandlerSettings artifactDescriptionRequestHandlerSettings) {
+            this.artifactDescriptionRequestHandlerSettings = Objects.requireNonNull(artifactDescriptionRequestHandlerSettings);
             return this;
         }
 
-        public Builder errors(@Nullable List<String> errors) {
-            this.errors = errors;
+        public Builder errors(@NotNull List<String> errors) {
+            this.errors = Objects.requireNonNull(errors);
             return this;
         }
 

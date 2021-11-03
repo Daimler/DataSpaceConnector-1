@@ -18,7 +18,6 @@ import org.eclipse.dataspaceconnector.ids.core.configuration.IllegalSettingExcep
 import org.eclipse.dataspaceconnector.ids.core.configuration.SettingResolver;
 import org.jetbrains.annotations.NotNull;
 
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -31,7 +30,7 @@ public class ArtifactDescriptionRequestHandlerSettingsFactory {
     }
 
     @NotNull
-    public ArtifactDescriptionRequestHandlerSettingsFactoryResult createArtifactDescriptionRequestHandlerSettings() {
+    public ArtifactDescriptionRequestHandlerSettingsFactoryResult getSettingsResult() {
         List<String> errors = new ArrayList<>();
 
         String id = null;
@@ -45,7 +44,7 @@ public class ArtifactDescriptionRequestHandlerSettingsFactory {
         var settings = ArtifactDescriptionRequestHandlerSettings.Builder.newInstance().id(id).build();
 
         return ArtifactDescriptionRequestHandlerSettingsFactoryResult.Builder.newInstance()
-                .artifactDescriptionRequestHandlerSettings(settings)
+                .settings(settings)
                 .errors(errors)
                 .build();
     }

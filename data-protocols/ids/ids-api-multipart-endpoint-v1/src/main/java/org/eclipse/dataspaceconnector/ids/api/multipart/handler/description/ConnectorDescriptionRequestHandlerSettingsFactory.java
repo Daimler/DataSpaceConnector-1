@@ -31,7 +31,7 @@ public class ConnectorDescriptionRequestHandlerSettingsFactory {
     }
 
     @NotNull
-    public ConnectorDescriptionRequestHandlerSettingsFactoryResult createConnectorDescriptionRequestHandlerSettings() {
+    public ConnectorDescriptionRequestHandlerSettingsFactoryResult getSettingsResult() {
         List<String> errors = new ArrayList<>();
 
         String id = null;
@@ -45,7 +45,7 @@ public class ConnectorDescriptionRequestHandlerSettingsFactory {
         var settings = ConnectorDescriptionRequestHandlerSettings.Builder.newInstance().id(id).build();
 
         return ConnectorDescriptionRequestHandlerSettingsFactoryResult.Builder.newInstance()
-                .connectorDescriptionRequestHandlerSettings(settings)
+                .settings(settings)
                 .errors(errors)
                 .build();
     }
