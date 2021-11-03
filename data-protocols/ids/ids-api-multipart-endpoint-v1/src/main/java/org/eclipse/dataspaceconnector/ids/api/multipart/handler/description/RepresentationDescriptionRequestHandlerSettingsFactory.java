@@ -30,7 +30,7 @@ public class RepresentationDescriptionRequestHandlerSettingsFactory {
     }
 
     @NotNull
-    public RepresentationDescriptionRequestHandlerSettingsFactoryResult createRepresentationDescriptionRequestHandlerSettings() {
+    public RepresentationDescriptionRequestHandlerSettingsFactoryResult createSettingsResult() {
         List<String> errors = new ArrayList<>();
 
         String id = null;
@@ -41,7 +41,7 @@ public class RepresentationDescriptionRequestHandlerSettingsFactory {
             errors.add(e.getMessage());
         }
 
-        var settings = RepresentationDescriptionRequestHandlerSettings.Builder.newInstance().id(id).build();
+        RepresentationDescriptionRequestHandlerSettings settings = RepresentationDescriptionRequestHandlerSettings.Builder.newInstance().id(id).build();
 
         return RepresentationDescriptionRequestHandlerSettingsFactoryResult.Builder.newInstance()
                 .representationDescriptionRequestHandlerSettings(settings)

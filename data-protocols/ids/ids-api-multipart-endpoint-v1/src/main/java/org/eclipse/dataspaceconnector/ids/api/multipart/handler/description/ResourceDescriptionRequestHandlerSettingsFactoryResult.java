@@ -19,48 +19,49 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 public class ResourceDescriptionRequestHandlerSettingsFactoryResult {
-    private final ResourceDescriptionRequestHandlerSettings resourceDescriptionRequestHandlerSettings;
+    private final ResourceDescriptionRequestHandlerSettings settings;
     private final List<String> errors;
 
     private ResourceDescriptionRequestHandlerSettingsFactoryResult(
-            @Nullable ResourceDescriptionRequestHandlerSettings resourceDescriptionRequestHandlerSettings,
-            @Nullable List<String> errors) {
-        this.resourceDescriptionRequestHandlerSettings = resourceDescriptionRequestHandlerSettings;
-        this.errors = errors;
+            @NotNull ResourceDescriptionRequestHandlerSettings settings,
+            @NotNull List<String> errors) {
+        this.settings = Objects.requireNonNull(settings);
+        this.errors = Objects.requireNonNull(errors);
     }
 
     @Nullable
-    public ResourceDescriptionRequestHandlerSettings getResourceDescriptionRequestHandlerSettings() {
-        return resourceDescriptionRequestHandlerSettings;
+    public ResourceDescriptionRequestHandlerSettings getSettings() {
+        return settings;
     }
 
     @NotNull
     public List<String> getErrors() {
-        return Collections.unmodifiableList(errors != null ? errors : Collections.emptyList());
+        return Collections.unmodifiableList(errors);
     }
 
     public static final class Builder {
-        private ResourceDescriptionRequestHandlerSettings resourceDescriptionRequestHandlerSettings;
+        private ResourceDescriptionRequestHandlerSettings settings;
         private List<String> errors;
 
         public static Builder newInstance() {
             return new Builder();
         }
 
-        public Builder resourceDescriptionRequestHandlerSettings(@Nullable ResourceDescriptionRequestHandlerSettings resourceDescriptionRequestHandlerSettings) {
-            this.resourceDescriptionRequestHandlerSettings = resourceDescriptionRequestHandlerSettings;
+        public Builder settings(ResourceDescriptionRequestHandlerSettings settings) {
+            this.settings = settings;
             return this;
         }
 
-        public Builder errors(@Nullable List<String> errors) {
+        public Builder errors(List<String> errors) {
             this.errors = errors;
             return this;
         }
 
         public ResourceDescriptionRequestHandlerSettingsFactoryResult build() {
-            return new ResourceDescriptionRequestHandlerSettingsFactoryResult(resourceDescriptionRequestHandlerSettings, errors);
+            return new ResourceDescriptionRequestHandlerSettingsFactoryResult(settings, errors);
         }
     }
 }

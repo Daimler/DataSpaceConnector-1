@@ -19,48 +19,49 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 public class RepresentationDescriptionRequestHandlerSettingsFactoryResult {
-    private final RepresentationDescriptionRequestHandlerSettings representationDescriptionRequestHandlerSettings;
+    private final RepresentationDescriptionRequestHandlerSettings settings;
     private final List<String> errors;
 
     private RepresentationDescriptionRequestHandlerSettingsFactoryResult(
-            @Nullable RepresentationDescriptionRequestHandlerSettings representationDescriptionRequestHandlerSettings,
-            @Nullable List<String> errors) {
-        this.representationDescriptionRequestHandlerSettings = representationDescriptionRequestHandlerSettings;
-        this.errors = errors;
+            @NotNull RepresentationDescriptionRequestHandlerSettings settings,
+            @NotNull List<String> errors) {
+        this.settings = Objects.requireNonNull(settings);
+        this.errors = Objects.requireNonNull(errors);
     }
 
     @Nullable
-    public RepresentationDescriptionRequestHandlerSettings getRepresentationDescriptionRequestHandlerSettings() {
-        return representationDescriptionRequestHandlerSettings;
+    public RepresentationDescriptionRequestHandlerSettings getSettings() {
+        return settings;
     }
 
     @NotNull
     public List<String> getErrors() {
-        return Collections.unmodifiableList(errors != null ? errors : Collections.emptyList());
+        return Collections.unmodifiableList(errors);
     }
 
     public static final class Builder {
-        private RepresentationDescriptionRequestHandlerSettings representationDescriptionRequestHandlerSettings;
+        private RepresentationDescriptionRequestHandlerSettings settings;
         private List<String> errors;
 
         public static Builder newInstance() {
             return new Builder();
         }
 
-        public Builder representationDescriptionRequestHandlerSettings(@Nullable RepresentationDescriptionRequestHandlerSettings representationDescriptionRequestHandlerSettings) {
-            this.representationDescriptionRequestHandlerSettings = representationDescriptionRequestHandlerSettings;
+        public Builder settings(@NotNull RepresentationDescriptionRequestHandlerSettings settings) {
+            this.settings = settings;
             return this;
         }
 
-        public Builder errors(@Nullable List<String> errors) {
+        public Builder errors(@NotNull List<String> errors) {
             this.errors = errors;
             return this;
         }
 
         public RepresentationDescriptionRequestHandlerSettingsFactoryResult build() {
-            return new RepresentationDescriptionRequestHandlerSettingsFactoryResult(representationDescriptionRequestHandlerSettings, errors);
+            return new RepresentationDescriptionRequestHandlerSettingsFactoryResult(settings, errors);
         }
     }
 }

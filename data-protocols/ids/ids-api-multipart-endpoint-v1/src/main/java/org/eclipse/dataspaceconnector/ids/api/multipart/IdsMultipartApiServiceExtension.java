@@ -30,7 +30,8 @@ import org.eclipse.dataspaceconnector.ids.api.multipart.handler.description.Data
 import org.eclipse.dataspaceconnector.ids.api.multipart.handler.description.RepresentationDescriptionRequestHandler;
 import org.eclipse.dataspaceconnector.ids.api.multipart.handler.description.RepresentationDescriptionRequestHandlerSettings;
 import org.eclipse.dataspaceconnector.ids.api.multipart.handler.description.ResourceDescriptionRequestHandler;
-import org.eclipse.dataspaceconnector.ids.api.multipart.handler.description.ResourceDescriptionRequestHandlerSettings;
+import org.eclipse.dataspaceconnector.ids.api.multipart.handler.description.ResourceDescriptionRequestHandlerSettingsFactory;
+import org.eclipse.dataspaceconnector.ids.api.multipart.handler.description.ResourceDescriptionRequestHandlerSettingsFactoryResult;
 import org.eclipse.dataspaceconnector.ids.core.configuration.SettingResolver;
 import org.eclipse.dataspaceconnector.ids.spi.service.ConnectorService;
 import org.eclipse.dataspaceconnector.ids.spi.service.DataCatalogService;
@@ -228,16 +229,19 @@ public final class IdsMultipartApiServiceExtension implements ServiceExtension {
             SettingResolver settingResolver,
             AssetIndex assetIndex,
             TransformerRegistry transformerRegistry) {
-        ResourceDescriptionRequestHandlerSettings resourceDescriptionRequestHandlerSettings = null; // TODO
+        ResourceDescriptionRequestHandlerSettingsFactory resourceDescriptionRequestHandlerSettingsFactory = new ResourceDescriptionRequestHandlerSettingsFactory(settingResolver);
+        ResourceDescriptionRequestHandlerSettingsFactoryResult resourceDescriptionRequestHandlerSettingsFactoryResult = resourceDescriptionRequestHandlerSettingsFactory.getSettingsResult();
 
-        ResourceDescriptionRequestHandler resourceDescriptionRequestHandler = new ResourceDescriptionRequestHandler(
+        if (!resourceDescriptionRequestHandlerSettingsFactoryResult.getErrors().isEmpty()) {
+            throw new EdcException(String.format("Could not set up ResourceDescriptionRequestHandler: %s", String.join(", ", resourceDescriptionRequestHandlerSettingsFactoryResult.getErrors())));
+        }
+
+        return new ResourceDescriptionRequestHandler(
                 monitor,
-                resourceDescriptionRequestHandlerSettings,
+                resourceDescriptionRequestHandlerSettingsFactoryResult.getSettings(),
                 assetIndex,
                 transformerRegistry
         );
-
-        return resourceDescriptionRequestHandler;
     }
 
     private RepresentationDescriptionRequestHandler createRepresentationDescriptionRequestHandler(

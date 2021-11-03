@@ -30,7 +30,7 @@ public class ResourceDescriptionRequestHandlerSettingsFactory {
     }
 
     @NotNull
-    public ResourceDescriptionRequestHandlerSettingsFactoryResult createResourceDescriptionRequestHandlerSettings() {
+    public ResourceDescriptionRequestHandlerSettingsFactoryResult getSettingsResult() {
         List<String> errors = new ArrayList<>();
 
         String id = null;
@@ -41,10 +41,13 @@ public class ResourceDescriptionRequestHandlerSettingsFactory {
             errors.add(e.getMessage());
         }
 
-        var settings = ResourceDescriptionRequestHandlerSettings.Builder.newInstance().id(id).build();
+        ResourceDescriptionRequestHandlerSettings settings = ResourceDescriptionRequestHandlerSettings.Builder
+                .newInstance()
+                .id(id)
+                .build();
 
         return ResourceDescriptionRequestHandlerSettingsFactoryResult.Builder.newInstance()
-                .resourceDescriptionRequestHandlerSettings(settings)
+                .settings(settings)
                 .errors(errors)
                 .build();
     }
