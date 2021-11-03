@@ -16,7 +16,7 @@ public class DataCatalogServiceSettingsFactory {
     }
 
     @NotNull
-    public DataCatalogServiceSettingsFactoryResult createResourceCatalogFactorySettings() {
+    public DataCatalogServiceSettingsFactoryResult getSettingsResult() {
         List<String> errors = new ArrayList<>();
 
         String catalogId = null;
@@ -30,7 +30,7 @@ public class DataCatalogServiceSettingsFactory {
         var settings = DataCatalogServiceSettings.Builder.newInstance().catalogId(catalogId).build();
 
         return DataCatalogServiceSettingsFactoryResult.Builder.newInstance()
-                .dataCatalogServiceSettings(settings)
+                .settings(settings)
                 .errors(errors)
                 .build();
     }

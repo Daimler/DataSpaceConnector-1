@@ -47,10 +47,10 @@ public class RepresentationDescriptionRequestHandler extends AbstractDescription
             @NotNull AssetIndex assetIndex,
             @NotNull TransformerRegistry transformerRegistry) {
         super(representationDescriptionRequestHandlerSettings.getId(), transformerRegistry);
-        this.monitor = monitor;
-        this.representationDescriptionRequestHandlerSettings = representationDescriptionRequestHandlerSettings;
-        this.assetIndex = assetIndex;
-        this.transformerRegistry = transformerRegistry;
+        this.monitor = Objects.requireNonNull(monitor);
+        this.representationDescriptionRequestHandlerSettings = Objects.requireNonNull(representationDescriptionRequestHandlerSettings);
+        this.assetIndex = Objects.requireNonNull(assetIndex);
+        this.transformerRegistry = Objects.requireNonNull(transformerRegistry);
     }
 
     @Override

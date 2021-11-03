@@ -31,7 +31,7 @@ public class DescriptionHandlerSettingsFactory {
     }
 
     @NotNull
-    public DescriptionHandlerSettingsFactoryResult createDescriptionHandlerSettings() {
+    public DescriptionHandlerSettingsFactoryResult getSettingsResult() {
         List<String> errors = new ArrayList<>();
 
         String id = null;
@@ -45,7 +45,7 @@ public class DescriptionHandlerSettingsFactory {
         var settings = DescriptionHandlerSettings.Builder.newInstance().id(id).build();
 
         return DescriptionHandlerSettingsFactoryResult.Builder.newInstance()
-                .descriptionHandlerSettings(settings)
+                .settings(settings)
                 .errors(errors)
                 .build();
     }

@@ -30,7 +30,7 @@ public class RepresentationDescriptionRequestHandlerSettingsFactory {
     }
 
     @NotNull
-    public RepresentationDescriptionRequestHandlerSettingsFactoryResult createSettingsResult() {
+    public RepresentationDescriptionRequestHandlerSettingsFactoryResult getSettingsResult() {
         List<String> errors = new ArrayList<>();
 
         String id = null;

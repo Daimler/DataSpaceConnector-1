@@ -30,7 +30,7 @@ public class DataCatalogDescriptionRequestHandlerSettingsFactory {
     }
 
     @NotNull
-    public DataCatalogDescriptionRequestHandlerSettingsFactoryResult createSettingsResult() {
+    public DataCatalogDescriptionRequestHandlerSettingsFactoryResult getSettingsResult() {
         List<String> errors = new ArrayList<>();
 
         String id = null;

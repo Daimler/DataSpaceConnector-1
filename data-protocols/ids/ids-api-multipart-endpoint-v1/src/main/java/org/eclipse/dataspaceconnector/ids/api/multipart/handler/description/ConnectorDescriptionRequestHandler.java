@@ -46,10 +46,10 @@ public class ConnectorDescriptionRequestHandler extends AbstractDescriptionReque
             @NotNull ConnectorService connectorService,
             @NotNull TransformerRegistry transformerRegistry) {
         super(connectorDescriptionRequestHandlerSettings.getId(), transformerRegistry);
-        this.monitor = monitor;
+        this.monitor = Objects.requireNonNull(monitor);
         this.connectorService = Objects.requireNonNull(connectorService);
         this.connectorDescriptionRequestHandlerSettings = Objects.requireNonNull(connectorDescriptionRequestHandlerSettings);
-        this.transformerRegistry = transformerRegistry;
+        this.transformerRegistry = Objects.requireNonNull(transformerRegistry);
     }
 
     @Override

@@ -18,7 +18,7 @@ public class ConnectorServiceSettingsFactory {
     }
 
     @NotNull
-    public ConnectorServiceSettingsFactoryResult createBaseConnectorFactorySettings() {
+    public ConnectorServiceSettingsFactoryResult getSettingsResult() {
         List<String> errors = new ArrayList<>();
 
         String title;
@@ -73,7 +73,7 @@ public class ConnectorServiceSettingsFactory {
                 .build();
 
         return ConnectorServiceSettingsFactoryResult.Builder.newInstance()
-                .connectorServiceSettings(settings)
+                .settings(settings)
                 .errors(errors)
                 .build();
     }

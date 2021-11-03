@@ -45,7 +45,7 @@ public class TransformerRegistryImpl implements TransformerRegistry {
         return context.hasProblems() ? new TransformResult<>(context.problems) : new TransformResult<>(output);
     }
 
-    @SuppressWarnings({"rawtypes", "unchecked"})
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     private <INPUT, OUTPUT> @Nullable OUTPUT transform(INPUT object, Class<OUTPUT> outputType, TransformerContext context) {
         Objects.requireNonNull(object);
         var key = new TransformKey(object.getClass(), outputType);
@@ -116,7 +116,7 @@ public class TransformerRegistryImpl implements TransformerRegistry {
 
         @Override
         public <INPUT, OUTPUT> @Nullable OUTPUT transform(INPUT object, Class<OUTPUT> outputType) {
-            if(object != null) {
+            if (object != null) {
                 // mitigate infinite recursive calls to the transformer subsystem
                 return (OUTPUT) cache.computeIfAbsent(Objects.hash(object, outputType), (k) -> registry.transform(object, outputType, this));
             }

@@ -45,22 +45,22 @@ public class DescriptionHandler implements Handler {
     private final ConnectorDescriptionRequestHandler connectorDescriptionRequestHandler;
 
     public DescriptionHandler(
-            Monitor monitor,
-            DescriptionHandlerSettings descriptionHandlerSettings,
-            TransformerRegistry transformerRegistry,
-            ArtifactDescriptionRequestHandler artifactDescriptionRequestHandler,
-            DataCatalogDescriptionRequestHandler dataCatalogDescriptionRequestHandler,
-            RepresentationDescriptionRequestHandler representationDescriptionRequestHandler,
-            ResourceDescriptionRequestHandler resourceDescriptionRequestHandler,
-            ConnectorDescriptionRequestHandler connectorDescriptionRequestHandler) {
-        this.monitor = monitor;
-        this.descriptionHandlerSettings = descriptionHandlerSettings;
-        this.transformerRegistry = transformerRegistry;
-        this.artifactDescriptionRequestHandler = artifactDescriptionRequestHandler;
-        this.dataCatalogDescriptionRequestHandler = dataCatalogDescriptionRequestHandler;
-        this.representationDescriptionRequestHandler = representationDescriptionRequestHandler;
-        this.resourceDescriptionRequestHandler = resourceDescriptionRequestHandler;
-        this.connectorDescriptionRequestHandler = connectorDescriptionRequestHandler;
+            @NotNull Monitor monitor,
+            @NotNull DescriptionHandlerSettings descriptionHandlerSettings,
+            @NotNull TransformerRegistry transformerRegistry,
+            @NotNull ArtifactDescriptionRequestHandler artifactDescriptionRequestHandler,
+            @NotNull DataCatalogDescriptionRequestHandler dataCatalogDescriptionRequestHandler,
+            @NotNull RepresentationDescriptionRequestHandler representationDescriptionRequestHandler,
+            @NotNull ResourceDescriptionRequestHandler resourceDescriptionRequestHandler,
+            @NotNull ConnectorDescriptionRequestHandler connectorDescriptionRequestHandler) {
+        this.monitor = Objects.requireNonNull(monitor);
+        this.descriptionHandlerSettings = Objects.requireNonNull(descriptionHandlerSettings);
+        this.transformerRegistry = Objects.requireNonNull(transformerRegistry);
+        this.artifactDescriptionRequestHandler = Objects.requireNonNull(artifactDescriptionRequestHandler);
+        this.dataCatalogDescriptionRequestHandler = Objects.requireNonNull(dataCatalogDescriptionRequestHandler);
+        this.representationDescriptionRequestHandler = Objects.requireNonNull(representationDescriptionRequestHandler);
+        this.resourceDescriptionRequestHandler = Objects.requireNonNull(resourceDescriptionRequestHandler);
+        this.connectorDescriptionRequestHandler = Objects.requireNonNull(connectorDescriptionRequestHandler);
     }
 
     @Override
