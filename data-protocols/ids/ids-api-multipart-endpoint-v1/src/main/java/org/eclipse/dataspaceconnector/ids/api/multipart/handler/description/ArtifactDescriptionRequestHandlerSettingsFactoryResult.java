@@ -38,7 +38,7 @@ public class ArtifactDescriptionRequestHandlerSettingsFactoryResult {
 
     @NotNull
     public List<String> getErrors() {
-        return Collections.unmodifiableList(errors != null ? errors : Collections.emptyList());
+        return Collections.unmodifiableList(errors);
     }
 
     public static final class Builder {
