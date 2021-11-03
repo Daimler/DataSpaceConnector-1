@@ -76,7 +76,20 @@ public class SettingResolver {
 
     @NotNull
     public String resolveCatalogId() throws IllegalSettingException {
-        return getSetting(SettingKeys.EDC_IDS_CATALOG_ID, SettingDefaults.EDC_IDS_CATALOG_ID);
+        String configuredCatalogId = getSetting(SettingKeys.EDC_IDS_CATALOG_ID, SettingDefaults.EDC_IDS_CATALOG_ID);
+
+        try {
+            URI uri = URI.create(configuredCatalogId);
+            // Hint: use stringified uri to keep uri path and query
+            IdsId idsId = IdsIdParser.parse(uri.toString());
+            if (idsId != null && idsId.getType() == IdsType.CATALOG) {
+                return idsId.getValue();
+            }
+        } catch (IllegalArgumentException e) {
+            return configuredCatalogId;
+        }
+
+        return configuredCatalogId;
     }
 
     @NotNull

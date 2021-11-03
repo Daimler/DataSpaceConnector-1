@@ -19,6 +19,7 @@ All content reflects the current state of discussion, not final decisions.
 | edc.ids.curator |  Participant responsible for the correctness of the offered content |
 | edc.ids.endpoint | Default endpoint for basic infrastructure interactions |
 | edc.ids.security.profile |  Supported IDS security profile |
+| edc.ids.catalog.id | The ID of the data catalog (e.g. urn:catalog:ids-catalog-45) |
 
 ## IDS Asset Property
 
