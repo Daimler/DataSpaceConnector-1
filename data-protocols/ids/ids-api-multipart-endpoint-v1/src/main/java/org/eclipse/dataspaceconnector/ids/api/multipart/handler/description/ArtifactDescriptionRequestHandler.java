@@ -47,7 +47,7 @@ public class ArtifactDescriptionRequestHandler extends AbstractDescriptionReques
             @NotNull AssetIndex assetIndex,
             @NotNull TransformerRegistry transformerRegistry) {
         super(artifactDescriptionRequestHandlerSettings.getId(), transformerRegistry);
-        this.monitor = monitor;
+        this.monitor = Objects.requireNonNull(monitor);
         this.artifactDescriptionRequestHandlerSettings = Objects.requireNonNull(artifactDescriptionRequestHandlerSettings);
         this.assetIndex = Objects.requireNonNull(assetIndex);
         this.transformerRegistry = Objects.requireNonNull(transformerRegistry);

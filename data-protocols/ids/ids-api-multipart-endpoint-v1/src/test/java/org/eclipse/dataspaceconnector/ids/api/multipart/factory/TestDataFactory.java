@@ -1,7 +1,6 @@
 package org.eclipse.dataspaceconnector.ids.api.multipart.factory;
 
-import org.eclipse.dataspaceconnector.ids.transform.AssetToArtifactTransformer;
-import org.eclipse.dataspaceconnector.ids.transform.AssetToRepresentationTransformer;
+import org.eclipse.dataspaceconnector.ids.spi.transform.TransformKeys;
 import org.eclipse.dataspaceconnector.spi.types.domain.asset.Asset;
 
 import java.math.BigInteger;
@@ -19,9 +18,9 @@ public class TestDataFactory {
                 .id(IDS_ASSET_ID)
                 .name(IDS_ASSET_NAME)
                 .version(IDS_ASSET_VERSION)
-                .property(AssetToRepresentationTransformer.KEY_ASSET_FILE_EXTENSION, IDS_ASSET_FILE_EXTENSION)
-                .property(AssetToArtifactTransformer.KEY_ASSET_BYTE_SIZE, IDS_ASSET_BYTE_SIZE)
-                .property(AssetToArtifactTransformer.KEY_ASSET_FILE_NAME, IDS_ASSET_FILE_NAME);
+                .property(TransformKeys.KEY_ASSET_FILE_EXTENSION, IDS_ASSET_FILE_EXTENSION)
+                .property(TransformKeys.KEY_ASSET_BYTE_SIZE, IDS_ASSET_BYTE_SIZE)
+                .property(TransformKeys.KEY_ASSET_FILE_NAME, IDS_ASSET_FILE_NAME);
 
         return builder.build();
     }

@@ -29,6 +29,7 @@ import org.eclipse.dataspaceconnector.ids.api.multipart.message.MultipartRespons
 import org.eclipse.dataspaceconnector.ids.spi.IdsType;
 import org.eclipse.dataspaceconnector.ids.spi.transform.TransformResult;
 import org.eclipse.dataspaceconnector.ids.spi.transform.TransformerRegistry;
+import org.eclipse.dataspaceconnector.spi.monitor.Monitor;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -45,6 +46,7 @@ class DescriptionHandlerTest {
     private DescriptionHandler descriptionHandler;
 
     //mocks
+    private Monitor monitor;
     private DescriptionHandlerSettings descriptionHandlerSettings;
     private TransformerRegistry transformerRegistry;
     private ArtifactDescriptionRequestHandler artifactDescriptionRequestHandler;
@@ -55,6 +57,7 @@ class DescriptionHandlerTest {
 
     @BeforeEach
     void setUp() {
+        monitor = EasyMock.mock(Monitor.class);
         descriptionHandlerSettings = EasyMock.mock(DescriptionHandlerSettings.class);
         transformerRegistry = EasyMock.mock(TransformerRegistry.class);
         artifactDescriptionRequestHandler = EasyMock.mock(ArtifactDescriptionRequestHandler.class);
@@ -63,7 +66,9 @@ class DescriptionHandlerTest {
         resourceDescriptionRequestHandler = EasyMock.mock(ResourceDescriptionRequestHandler.class);
         connectorDescriptionRequestHandler = EasyMock.mock(ConnectorDescriptionRequestHandler.class);
 
-        descriptionHandler = new DescriptionHandler(descriptionHandlerSettings,
+        descriptionHandler = new DescriptionHandler(
+                monitor,
+                descriptionHandlerSettings,
                 transformerRegistry,
                 artifactDescriptionRequestHandler,
                 dataCatalogDescriptionRequestHandler,
