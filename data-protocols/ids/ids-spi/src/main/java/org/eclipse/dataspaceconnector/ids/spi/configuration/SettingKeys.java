@@ -18,7 +18,7 @@ import org.eclipse.dataspaceconnector.spi.EdcSetting;
 
 public final class SettingKeys {
     @EdcSetting
-    public static final String EDC_IDS_ID = "edc.ids.id"; // alsdkjhabnbsdsd, urn:connector:alsdkjhabnbsdsd, urn:connector:urn:connector:alsdkjhabnbsdsd
+    public static final String EDC_IDS_ID = "edc.ids.id";
 
     @EdcSetting
     public static final String EDC_IDS_TITLE = "edc.ids.title";
