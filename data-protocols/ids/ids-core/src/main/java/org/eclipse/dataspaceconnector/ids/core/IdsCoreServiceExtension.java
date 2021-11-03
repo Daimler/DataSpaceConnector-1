@@ -28,12 +28,14 @@ import org.eclipse.dataspaceconnector.ids.core.service.ConnectorServiceSettingsF
 import org.eclipse.dataspaceconnector.ids.core.service.DataCatalogServiceImpl;
 import org.eclipse.dataspaceconnector.ids.core.service.DataCatalogServiceSettingsFactory;
 import org.eclipse.dataspaceconnector.ids.core.service.DataCatalogServiceSettingsFactoryResult;
+import org.eclipse.dataspaceconnector.ids.core.transform.TransformerRegistryImpl;
 import org.eclipse.dataspaceconnector.ids.core.version.ConnectorVersionProviderImpl;
 import org.eclipse.dataspaceconnector.ids.spi.daps.DapsService;
 import org.eclipse.dataspaceconnector.ids.spi.descriptor.IdsDescriptorService;
 import org.eclipse.dataspaceconnector.ids.spi.policy.IdsPolicyService;
 import org.eclipse.dataspaceconnector.ids.spi.service.ConnectorService;
 import org.eclipse.dataspaceconnector.ids.spi.service.DataCatalogService;
+import org.eclipse.dataspaceconnector.ids.spi.transform.TransformerRegistry;
 import org.eclipse.dataspaceconnector.ids.spi.version.ConnectorVersionProvider;
 import org.eclipse.dataspaceconnector.spi.EdcException;
 import org.eclipse.dataspaceconnector.spi.asset.AssetIndex;
@@ -78,6 +80,9 @@ public class IdsCoreServiceExtension implements ServiceExtension {
         SettingResolver settingResolver = new SettingResolver(serviceExtensionContext);
 
         AssetIndex assetIndex = serviceExtensionContext.getService(AssetIndex.class);
+
+        TransformerRegistry transformerRegistry = createTransformerRegistry();
+        serviceExtensionContext.registerService(TransformerRegistry.class, transformerRegistry);
 
         ConnectorVersionProvider connectorVersionProvider = createConnectorVersionProvider();
         serviceExtensionContext.registerService(ConnectorVersionProvider.class, connectorVersionProvider);
@@ -137,6 +142,10 @@ public class IdsCoreServiceExtension implements ServiceExtension {
 
         var registry = context.getService(RemoteMessageDispatcherRegistry.class);
         registry.register(dispatcher);
+    }
+
+    private TransformerRegistry createTransformerRegistry() {
+        return new TransformerRegistryImpl();
     }
 
     private DataCatalogService createDataCatalogService(
