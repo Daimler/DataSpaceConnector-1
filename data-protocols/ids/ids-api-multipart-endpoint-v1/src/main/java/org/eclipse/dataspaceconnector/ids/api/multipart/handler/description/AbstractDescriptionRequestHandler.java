@@ -37,8 +37,8 @@ abstract class AbstractDescriptionRequestHandler {
     private final String connectorId;
     private final TransformerRegistry transformerRegistry;
 
-    public AbstractDescriptionRequestHandler(@Nullable String connectorId, @NotNull TransformerRegistry transformerRegistry) {
-        this.connectorId = connectorId;
+    public AbstractDescriptionRequestHandler(@NotNull String connectorId, @NotNull TransformerRegistry transformerRegistry) {
+        this.connectorId = Objects.requireNonNull(connectorId);
         this.transformerRegistry = Objects.requireNonNull(transformerRegistry);
     }
 
@@ -63,18 +63,16 @@ abstract class AbstractDescriptionRequestHandler {
         builder._contentVersion_(IdsProtocol.INFORMATION_MODEL_VERSION);
         builder._modelVersion_(IdsProtocol.INFORMATION_MODEL_VERSION);
 
-        if (connectorId != null) {
-            String connectorIdUrn = String.join(
-                    IdsIdParser.DELIMITER,
-                    IdsIdParser.SCHEME,
-                    IdsType.CONNECTOR.getValue(),
-                    connectorId);
+        String connectorIdUrn = String.join(
+                IdsIdParser.DELIMITER,
+                IdsIdParser.SCHEME,
+                IdsType.CONNECTOR.getValue(),
+                connectorId);
 
-            URI connectorIdUri = URI.create(connectorIdUrn);
+        URI connectorIdUri = URI.create(connectorIdUrn);
 
-            builder._issuerConnector_(connectorIdUri);
-            builder._senderAgent_(connectorIdUri);
-        }
+        builder._issuerConnector_(connectorIdUri);
+        builder._senderAgent_(connectorIdUri);
 
         builder._issued_(CalendarUtil.gregorianNow());
 
