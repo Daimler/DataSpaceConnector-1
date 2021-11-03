@@ -80,6 +80,7 @@ class DescriptionHandlerTest {
     @Test
     void testCanHandleNullThrowsNullPointerException() {
         EasyMock.replay(
+                monitor,
                 descriptionHandlerSettings,
                 transformerRegistry,
                 artifactDescriptionRequestHandler,
@@ -98,6 +99,7 @@ class DescriptionHandlerTest {
         DescriptionRequestMessage message = EasyMock.mock(DescriptionRequestMessage.class);
 
         EasyMock.replay(
+                monitor,
                 descriptionHandlerSettings,
                 transformerRegistry,
                 artifactDescriptionRequestHandler,
@@ -137,6 +139,7 @@ class DescriptionHandlerTest {
 
         // record
         EasyMock.replay(
+                monitor,
                 descriptionHandlerSettings,
                 transformerRegistry,
                 artifactDescriptionRequestHandler,
@@ -176,6 +179,7 @@ class DescriptionHandlerTest {
 
         // record
         EasyMock.replay(
+                monitor,
                 descriptionHandlerSettings,
                 transformerRegistry,
                 artifactDescriptionRequestHandler,
@@ -214,6 +218,7 @@ class DescriptionHandlerTest {
 
         // record
         EasyMock.replay(
+                monitor,
                 descriptionHandlerSettings,
                 transformerRegistry,
                 artifactDescriptionRequestHandler,
@@ -236,6 +241,7 @@ class DescriptionHandlerTest {
     @AfterEach
     void tearDown() {
         EasyMock.verify(
+                monitor,
                 descriptionHandlerSettings,
                 transformerRegistry,
                 artifactDescriptionRequestHandler,

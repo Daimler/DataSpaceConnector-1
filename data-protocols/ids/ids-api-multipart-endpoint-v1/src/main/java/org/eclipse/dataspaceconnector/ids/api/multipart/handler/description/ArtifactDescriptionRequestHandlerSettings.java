@@ -16,8 +16,6 @@ package org.eclipse.dataspaceconnector.ids.api.multipart.handler.description;
 
 import org.jetbrains.annotations.Nullable;
 
-import java.net.URI;
-
 public class ArtifactDescriptionRequestHandlerSettings {
     private final String id;
 

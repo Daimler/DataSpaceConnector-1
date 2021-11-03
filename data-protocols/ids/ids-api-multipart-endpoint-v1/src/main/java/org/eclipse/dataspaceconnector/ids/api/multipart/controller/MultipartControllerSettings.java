@@ -16,8 +16,6 @@ package org.eclipse.dataspaceconnector.ids.api.multipart.controller;
 
 import org.jetbrains.annotations.Nullable;
 
-import java.net.URI;
-
 public class MultipartControllerSettings {
     private final String id;
 

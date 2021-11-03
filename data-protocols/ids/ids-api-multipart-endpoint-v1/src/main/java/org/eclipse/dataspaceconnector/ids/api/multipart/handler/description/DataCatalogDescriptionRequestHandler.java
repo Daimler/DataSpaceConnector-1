@@ -47,7 +47,7 @@ public class DataCatalogDescriptionRequestHandler extends AbstractDescriptionReq
             @NotNull DataCatalogService dataCatalogService,
             @NotNull TransformerRegistry transformerRegistry) {
         super(dataCatalogDescriptionRequestHandlerSettings.getId(), transformerRegistry);
-        this.monitor = monitor;
+        this.monitor = Objects.requireNonNull(monitor);
         this.dataCatalogDescriptionRequestHandlerSettings = Objects.requireNonNull(dataCatalogDescriptionRequestHandlerSettings);
         this.dataCatalogService = Objects.requireNonNull(dataCatalogService);
         this.transformerRegistry = Objects.requireNonNull(transformerRegistry);

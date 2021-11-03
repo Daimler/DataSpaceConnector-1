@@ -32,7 +32,7 @@ public class DescriptionHandlerSettingsFactoryResult {
     }
 
     @Nullable
-    public DescriptionHandlerSettings getDescriptionHandlerSettings() {
+    public DescriptionHandlerSettings getSettings() {
         return descriptionHandlerSettings;
     }
 

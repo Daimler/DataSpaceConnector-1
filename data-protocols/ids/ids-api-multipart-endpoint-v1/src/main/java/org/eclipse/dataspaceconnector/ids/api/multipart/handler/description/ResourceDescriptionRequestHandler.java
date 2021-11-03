@@ -36,6 +36,7 @@ import static org.eclipse.dataspaceconnector.ids.api.multipart.util.RejectionMes
 import static org.eclipse.dataspaceconnector.ids.api.multipart.util.RejectionMessageUtil.notFound;
 
 public class ResourceDescriptionRequestHandler extends AbstractDescriptionRequestHandler implements DescriptionRequestHandler {
+    private final Monitor monitor;
     private final ResourceDescriptionRequestHandlerSettings resourceDescriptionRequestHandlerSettings;
     private final AssetIndex assetIndex;
     private final TransformerRegistry transformerRegistry;
@@ -46,9 +47,10 @@ public class ResourceDescriptionRequestHandler extends AbstractDescriptionReques
             @NotNull AssetIndex assetIndex,
             @NotNull TransformerRegistry transformerRegistry) {
         super(resourceDescriptionRequestHandlerSettings.getId(), transformerRegistry);
-        this.resourceDescriptionRequestHandlerSettings = resourceDescriptionRequestHandlerSettings;
-        this.assetIndex = assetIndex;
-        this.transformerRegistry = transformerRegistry;
+        this.monitor = Objects.requireNonNull(monitor);
+        this.resourceDescriptionRequestHandlerSettings = Objects.requireNonNull(resourceDescriptionRequestHandlerSettings);
+        this.assetIndex = Objects.requireNonNull(assetIndex);
+        this.transformerRegistry = Objects.requireNonNull(transformerRegistry);
     }
 
     @Override
