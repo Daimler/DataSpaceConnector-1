@@ -1,4 +1,4 @@
-package org.eclipse.dataspaceconnector.ids.api.multipart.handler;
+package org.eclipse.dataspaceconnector.ids.api.multipart.handler.description;
 
 import de.fraunhofer.iais.eis.DescriptionRequestMessage;
 import org.easymock.EasyMock;
