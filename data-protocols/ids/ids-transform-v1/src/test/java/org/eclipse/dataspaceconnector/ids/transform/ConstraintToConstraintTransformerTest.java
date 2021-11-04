@@ -8,6 +8,7 @@ import org.eclipse.dataspaceconnector.ids.spi.IdsId;
 import org.eclipse.dataspaceconnector.ids.spi.IdsType;
 import org.eclipse.dataspaceconnector.ids.spi.transform.TransformerContext;
 import org.eclipse.dataspaceconnector.policy.model.AtomicConstraint;
+import org.eclipse.dataspaceconnector.policy.model.Constraint;
 import org.eclipse.dataspaceconnector.policy.model.Expression;
 import org.eclipse.dataspaceconnector.policy.model.Operator;
 import org.junit.jupiter.api.AfterEach;
@@ -59,6 +60,24 @@ public class ConstraintToConstraintTransformerTest {
 
         var result = constraintToConstraintTransformer.transform(null, context);
 
+        Assertions.assertNull(result);
+    }
+
+    @Test
+    void testNonAtomicConstraint() {
+        // prepare
+        Constraint nonAtomicConstraint = EasyMock.mock(Constraint.class);
+
+        context.reportProblem(EasyMock.anyString());
+        EasyMock.expectLastCall().once();
+
+        // record
+        EasyMock.replay(constraint, context);
+
+        // invoke
+        var result = constraintToConstraintTransformer.transform(nonAtomicConstraint, context);
+
+        // verify
         Assertions.assertNull(result);
     }
 
