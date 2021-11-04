@@ -54,7 +54,7 @@ import java.util.Set;
  */
 public class IdsCoreServiceExtension implements ServiceExtension {
     private static final String[] REQUIRES = {
-            IdentityService.FEATURE, "dataspaceconnector:http-client", "dataspaceconnector:transferprocessstore"
+            IdentityService.FEATURE, "edc:core:contract", "dataspaceconnector:http-client", "dataspaceconnector:transferprocessstore"
     };
 
     private static final String[] PROVIDES = {
