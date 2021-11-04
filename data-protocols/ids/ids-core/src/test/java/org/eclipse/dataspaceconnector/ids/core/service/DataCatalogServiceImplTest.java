@@ -14,11 +14,6 @@
 
 package org.eclipse.dataspaceconnector.ids.core.service;
 
-import java.util.Arrays;
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
 import org.easymock.EasyMock;
 import org.eclipse.dataspaceconnector.spi.contract.ContractOfferQuery;
 import org.eclipse.dataspaceconnector.spi.contract.ContractOfferQueryResponse;
@@ -29,6 +24,11 @@ import org.eclipse.dataspaceconnector.spi.types.domain.contract.ContractOffer;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.util.Arrays;
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 class DataCatalogServiceImplTest {
     private static final String CATALOG_ID = "catalogId";

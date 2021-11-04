@@ -14,9 +14,6 @@
 
 package org.eclipse.dataspaceconnector.ids.core.service;
 
-import java.util.Objects;
-import java.util.stream.Collectors;
-
 import org.eclipse.dataspaceconnector.ids.spi.service.DataCatalogService;
 import org.eclipse.dataspaceconnector.ids.spi.types.DataCatalog;
 import org.eclipse.dataspaceconnector.spi.contract.ContractOfferQuery;
@@ -25,6 +22,9 @@ import org.eclipse.dataspaceconnector.spi.contract.ContractOfferService;
 import org.eclipse.dataspaceconnector.spi.iam.VerificationResult;
 import org.eclipse.dataspaceconnector.spi.monitor.Monitor;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class DataCatalogServiceImpl implements DataCatalogService {
     private final Monitor monitor;

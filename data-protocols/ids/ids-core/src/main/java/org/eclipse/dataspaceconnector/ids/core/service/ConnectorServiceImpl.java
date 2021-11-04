@@ -14,9 +14,6 @@
 
 package org.eclipse.dataspaceconnector.ids.core.service;
 
-import java.util.Collections;
-import java.util.Objects;
-
 import org.eclipse.dataspaceconnector.ids.spi.service.ConnectorService;
 import org.eclipse.dataspaceconnector.ids.spi.service.DataCatalogService;
 import org.eclipse.dataspaceconnector.ids.spi.types.Connector;
@@ -25,6 +22,9 @@ import org.eclipse.dataspaceconnector.ids.spi.version.ConnectorVersionProvider;
 import org.eclipse.dataspaceconnector.spi.iam.VerificationResult;
 import org.eclipse.dataspaceconnector.spi.monitor.Monitor;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Collections;
+import java.util.Objects;
 
 public class ConnectorServiceImpl implements ConnectorService {
     private final Monitor monitor;

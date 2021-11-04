@@ -14,10 +14,6 @@
 
 package org.eclipse.dataspaceconnector.contract;
 
-import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Stream;
-
 import org.eclipse.dataspaceconnector.spi.asset.AssetIndex;
 import org.eclipse.dataspaceconnector.spi.asset.AssetSelectorExpression;
 import org.eclipse.dataspaceconnector.spi.contract.ContractOfferFramework;
@@ -28,6 +24,10 @@ import org.eclipse.dataspaceconnector.spi.contract.ContractOfferService;
 import org.eclipse.dataspaceconnector.spi.contract.ContractOfferTemplate;
 import org.eclipse.dataspaceconnector.spi.types.domain.asset.Asset;
 import org.eclipse.dataspaceconnector.spi.types.domain.contract.ContractOffer;
+
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 public class ContractOfferServiceImpl implements ContractOfferService {
 

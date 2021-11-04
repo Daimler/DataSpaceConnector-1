@@ -14,10 +14,6 @@
 
 package org.eclipse.dataspaceconnector.ids.api.multipart.controller;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-
 import de.fraunhofer.iais.eis.DescriptionRequestMessageBuilder;
 import de.fraunhofer.iais.eis.DynamicAttributeTokenBuilder;
 import de.fraunhofer.iais.eis.Message;
@@ -39,6 +35,10 @@ import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 public class MultipartControllerTest {
 

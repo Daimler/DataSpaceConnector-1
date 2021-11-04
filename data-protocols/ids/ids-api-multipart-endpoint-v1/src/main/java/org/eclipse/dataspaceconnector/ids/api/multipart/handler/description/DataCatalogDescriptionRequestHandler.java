@@ -14,9 +14,6 @@
 
 package org.eclipse.dataspaceconnector.ids.api.multipart.handler.description;
 
-import java.net.URI;
-import java.util.Objects;
-
 import de.fraunhofer.iais.eis.DescriptionRequestMessage;
 import de.fraunhofer.iais.eis.DescriptionResponseMessage;
 import de.fraunhofer.iais.eis.ResourceCatalog;
@@ -31,6 +28,9 @@ import org.eclipse.dataspaceconnector.spi.iam.VerificationResult;
 import org.eclipse.dataspaceconnector.spi.monitor.Monitor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.net.URI;
+import java.util.Objects;
 
 public class DataCatalogDescriptionRequestHandler extends AbstractDescriptionRequestHandler {
     private final Monitor monitor;
