@@ -1,3 +1,17 @@
+/*
+ *  Copyright (c) 2021 Daimler TSS GmbH
+ *
+ *  This program and the accompanying materials are made available under the
+ *  terms of the Apache License, Version 2.0 which is available at
+ *  https://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  SPDX-License-Identifier: Apache-2.0
+ *
+ *  Contributors:
+ *       Daimler TSS GmbH - Initial Implementation
+ *
+ */
+
 package org.eclipse.dataspaceconnector.ids.transform;
 
 import de.fraunhofer.iais.eis.Representation;
@@ -14,13 +28,13 @@ import org.junit.jupiter.api.Test;
 import java.net.URI;
 import java.util.Collections;
 
-public class AssetToResourceTransformerTest {
+class AssetToIdsResourceTransformerTest {
 
     private static final String RESOURCE_ID = "test_id";
     private static final URI RESOURCE_ID_URI = URI.create("urn:resource:1");
 
     // subject
-    private AssetToResourceTransformer assetToResourceTransformer;
+    private AssetToIdsResourceTransformer assetToIdsResourceTransformer;
 
     // mocks
     private Asset asset;
@@ -28,7 +42,7 @@ public class AssetToResourceTransformerTest {
 
     @BeforeEach
     void setUp() {
-        assetToResourceTransformer = new AssetToResourceTransformer();
+        assetToIdsResourceTransformer = new AssetToIdsResourceTransformer();
         asset = EasyMock.createMock(Asset.class);
         context = EasyMock.createMock(TransformerContext.class);
     }
@@ -39,7 +53,7 @@ public class AssetToResourceTransformerTest {
         EasyMock.replay(asset, context);
 
         Assertions.assertThrows(NullPointerException.class, () -> {
-            assetToResourceTransformer.transform(null, null);
+            assetToIdsResourceTransformer.transform(null, null);
         });
     }
 
@@ -48,7 +62,7 @@ public class AssetToResourceTransformerTest {
         EasyMock.replay(asset, context);
 
         Assertions.assertThrows(NullPointerException.class, () -> {
-            assetToResourceTransformer.transform(asset, null);
+            assetToIdsResourceTransformer.transform(asset, null);
         });
     }
 
@@ -56,7 +70,7 @@ public class AssetToResourceTransformerTest {
     void testReturnsNull() {
         EasyMock.replay(asset, context);
 
-        var result = assetToResourceTransformer.transform(null, context);
+        var result = assetToIdsResourceTransformer.transform(null, context);
 
         Assertions.assertNull(result);
     }
@@ -80,7 +94,7 @@ public class AssetToResourceTransformerTest {
         EasyMock.replay(asset, context);
 
         // invoke
-        var result = assetToResourceTransformer.transform(asset, context);
+        var result = assetToIdsResourceTransformer.transform(asset, context);
 
         // verify
         Assertions.assertNotNull(result);

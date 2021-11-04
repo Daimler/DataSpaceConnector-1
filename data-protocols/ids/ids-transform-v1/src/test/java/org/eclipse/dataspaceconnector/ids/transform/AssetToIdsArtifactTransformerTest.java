@@ -1,3 +1,17 @@
+/*
+ *  Copyright (c) 2021 Daimler TSS GmbH
+ *
+ *  This program and the accompanying materials are made available under the
+ *  terms of the Apache License, Version 2.0 which is available at
+ *  https://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  SPDX-License-Identifier: Apache-2.0
+ *
+ *  Contributors:
+ *       Daimler TSS GmbH - Initial Implementation
+ *
+ */
+
 package org.eclipse.dataspaceconnector.ids.transform;
 
 import org.easymock.EasyMock;
@@ -17,14 +31,14 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-class AssetToArtifactTransformerTest {
+class AssetToIdsArtifactTransformerTest {
     private static final String ASSET_ID = "test_id";
     private static final URI ASSET_ID_URI = URI.create("urn:asset:1");
     private static final String ASSET_FILENAME = "test_filename";
     private static final BigInteger ASSET_BYTESIZE = BigInteger.valueOf(5);
 
     // subject
-    private AssetToArtifactTransformer assetToArtifactTransformer;
+    private AssetToIdsArtifactTransformer assetToIdsArtifactTransformer;
 
     // mocks
     private Asset asset;
@@ -32,7 +46,7 @@ class AssetToArtifactTransformerTest {
 
     @BeforeEach
     void setUp() {
-        assetToArtifactTransformer = new AssetToArtifactTransformer();
+        assetToIdsArtifactTransformer = new AssetToIdsArtifactTransformer();
         asset = EasyMock.createMock(Asset.class);
         context = EasyMock.createMock(TransformerContext.class);
     }
@@ -42,7 +56,7 @@ class AssetToArtifactTransformerTest {
         EasyMock.replay(asset, context);
 
         Assertions.assertThrows(NullPointerException.class, () -> {
-            assetToArtifactTransformer.transform(null, null);
+            assetToIdsArtifactTransformer.transform(null, null);
         });
     }
 
@@ -51,7 +65,7 @@ class AssetToArtifactTransformerTest {
         EasyMock.replay(asset, context);
 
         Assertions.assertThrows(NullPointerException.class, () -> {
-            assetToArtifactTransformer.transform(asset, null);
+            assetToIdsArtifactTransformer.transform(asset, null);
         });
     }
 
@@ -59,7 +73,7 @@ class AssetToArtifactTransformerTest {
     void testReturnsNull() {
         EasyMock.replay(asset, context);
 
-        var result = assetToArtifactTransformer.transform(null, context);
+        var result = assetToIdsArtifactTransformer.transform(null, context);
 
         Assertions.assertNull(result);
     }
@@ -80,7 +94,7 @@ class AssetToArtifactTransformerTest {
         EasyMock.replay(asset, context);
 
         // invoke
-        var result = assetToArtifactTransformer.transform(asset, context);
+        var result = assetToIdsArtifactTransformer.transform(asset, context);
 
         // verify
         Assertions.assertNotNull(result);
@@ -106,7 +120,7 @@ class AssetToArtifactTransformerTest {
         EasyMock.replay(asset, context);
 
         // invoke
-        var result = assetToArtifactTransformer.transform(asset, context);
+        var result = assetToIdsArtifactTransformer.transform(asset, context);
 
         // verify
         Assertions.assertNotNull(result);
@@ -114,7 +128,6 @@ class AssetToArtifactTransformerTest {
         Assertions.assertEquals(ASSET_FILENAME, result.getFileName());
         Assertions.assertEquals(ASSET_BYTESIZE, result.getByteSize());
     }
-
 
     @AfterEach
     void tearDown() {

@@ -18,7 +18,7 @@ import de.fraunhofer.iais.eis.Message;
 import de.fraunhofer.iais.eis.RejectionMessage;
 import de.fraunhofer.iais.eis.RejectionReason;
 import org.easymock.EasyMock;
-import org.eclipse.dataspaceconnector.ids.spi.version.IdsProtocol;
+import org.eclipse.dataspaceconnector.ids.transform.IdsProtocol;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -184,6 +184,33 @@ class RejectionMessageUtilTest {
                 .messageTypeNotSupported(correlationMessage, connectorId);
 
         assertBasePropertiesMapped(rejectionMessage, RejectionReason.MESSAGE_TYPE_NOT_SUPPORTED);
+        assertCorrelationMessagePropertiesMapped(rejectionMessage);
+        assertConnectorIdPropertiesMapped(rejectionMessage);
+    }
+
+    @Test
+    public void testInternalRecipientError() {
+        var rejectionMessage = RejectionMessageUtil
+                .internalRecipientError(null, null);
+
+        assertBasePropertiesMapped(rejectionMessage, RejectionReason.INTERNAL_RECIPIENT_ERROR);
+
+        rejectionMessage = RejectionMessageUtil
+                .internalRecipientError(correlationMessage, null);
+
+        assertBasePropertiesMapped(rejectionMessage, RejectionReason.INTERNAL_RECIPIENT_ERROR);
+        assertCorrelationMessagePropertiesMapped(rejectionMessage);
+
+        rejectionMessage = RejectionMessageUtil
+                .internalRecipientError(null, connectorId);
+
+        assertBasePropertiesMapped(rejectionMessage, RejectionReason.INTERNAL_RECIPIENT_ERROR);
+        assertConnectorIdPropertiesMapped(rejectionMessage);
+
+        rejectionMessage = RejectionMessageUtil
+                .internalRecipientError(correlationMessage, connectorId);
+
+        assertBasePropertiesMapped(rejectionMessage, RejectionReason.INTERNAL_RECIPIENT_ERROR);
         assertCorrelationMessagePropertiesMapped(rejectionMessage);
         assertConnectorIdPropertiesMapped(rejectionMessage);
     }

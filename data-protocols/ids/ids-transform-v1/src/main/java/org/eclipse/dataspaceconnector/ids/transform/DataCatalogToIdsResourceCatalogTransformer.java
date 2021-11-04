@@ -18,7 +18,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
-public class DataCatalogToResourceCatalogTransformer implements IdsTypeTransformer<DataCatalog, ResourceCatalog> {
+public class DataCatalogToIdsResourceCatalogTransformer implements IdsTypeTransformer<DataCatalog, ResourceCatalog> {
 
     @Override
     public Class<DataCatalog> getInputType() {
@@ -52,8 +52,9 @@ public class DataCatalogToResourceCatalogTransformer implements IdsTypeTransform
         }
 
         List<Resource> resources = new LinkedList<>();
-        if (object.getContractOffers() != null) {
-            for (ContractOffer contractOffer : object.getContractOffers()) {
+        List<ContractOffer>  contractOffers = object.getContractOffers();
+        if (contractOffers != null) {
+            for (ContractOffer contractOffer : contractOffers) {
                 for (OfferedAsset offeredAsset : contractOffer.getAssets()) {
                     Resource resource = context.transform(offeredAsset, Resource.class);
                     if (resource != null) {
