@@ -11,6 +11,7 @@ public enum IdsType {
     MEDIA_TYPE("mediatype"),
     PARTICIPANT("participant"),
     PERMISSION("permission"),
+    CONSTRAINT("constraint"),
     MESSAGE("message");
 
     private final String value;
