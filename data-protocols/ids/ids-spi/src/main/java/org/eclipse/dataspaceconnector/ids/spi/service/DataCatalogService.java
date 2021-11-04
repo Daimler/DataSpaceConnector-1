@@ -1,6 +1,7 @@
 package org.eclipse.dataspaceconnector.ids.spi.service;
 
 import org.eclipse.dataspaceconnector.ids.spi.types.DataCatalog;
+import org.eclipse.dataspaceconnector.spi.iam.VerificationResult;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -14,5 +15,5 @@ public interface DataCatalogService {
      * @return data catalog
      */
     @NotNull
-    DataCatalog getDataCatalog();
+    DataCatalog getDataCatalog(VerificationResult verificationResult);
 }

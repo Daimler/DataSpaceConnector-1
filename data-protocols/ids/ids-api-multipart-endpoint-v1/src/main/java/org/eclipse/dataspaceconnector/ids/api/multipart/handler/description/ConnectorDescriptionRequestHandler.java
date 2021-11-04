@@ -23,6 +23,7 @@ import org.eclipse.dataspaceconnector.ids.spi.IdsType;
 import org.eclipse.dataspaceconnector.ids.spi.service.ConnectorService;
 import org.eclipse.dataspaceconnector.ids.spi.transform.TransformResult;
 import org.eclipse.dataspaceconnector.ids.spi.transform.TransformerRegistry;
+import org.eclipse.dataspaceconnector.spi.iam.VerificationResult;
 import org.eclipse.dataspaceconnector.spi.monitor.Monitor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -49,7 +50,10 @@ public class ConnectorDescriptionRequestHandler extends AbstractDescriptionReque
     }
 
     @Override
-    public MultipartResponse handle(@NotNull DescriptionRequestMessage descriptionRequestMessage, @Nullable String payload) {
+    public MultipartResponse handle(@NotNull DescriptionRequestMessage descriptionRequestMessage,
+                                    @NotNull VerificationResult verificationResult,
+                                    @Nullable String payload) {
+        Objects.requireNonNull(verificationResult);
         Objects.requireNonNull(descriptionRequestMessage);
 
         if (!isRequestingCurrentConnectorsDescription(descriptionRequestMessage)) {
@@ -58,7 +62,7 @@ public class ConnectorDescriptionRequestHandler extends AbstractDescriptionReque
 
         DescriptionResponseMessage descriptionResponseMessage = createDescriptionResponseMessage(connectorId, descriptionRequestMessage);
 
-        TransformResult<Connector> transformResult = transformerRegistry.transform(connectorService.getConnector(), Connector.class);
+        TransformResult<Connector> transformResult = transformerRegistry.transform(connectorService.getConnector(verificationResult), Connector.class);
         if (transformResult.hasProblems()) {
             monitor.warning(
                     String.format(

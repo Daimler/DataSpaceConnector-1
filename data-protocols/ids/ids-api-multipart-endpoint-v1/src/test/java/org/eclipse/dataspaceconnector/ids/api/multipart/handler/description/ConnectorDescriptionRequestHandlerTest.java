@@ -1,5 +1,12 @@
 package org.eclipse.dataspaceconnector.ids.api.multipart.handler.description;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+
+import static org.eclipse.dataspaceconnector.ids.api.multipart.handler.description.DescriptionRequestHandlerMocks.mockDescriptionRequestMessage;
+import static org.eclipse.dataspaceconnector.ids.api.multipart.handler.description.DescriptionRequestHandlerMocks.mockSettingsResolver;
+import static org.eclipse.dataspaceconnector.ids.api.multipart.handler.description.DescriptionRequestHandlerMocks.mockTransformerRegistry;
+
 import de.fraunhofer.iais.eis.Connector;
 import de.fraunhofer.iais.eis.DescriptionRequestMessage;
 import org.easymock.EasyMock;
@@ -8,17 +15,11 @@ import org.eclipse.dataspaceconnector.ids.spi.IdsType;
 import org.eclipse.dataspaceconnector.ids.spi.service.ConnectorService;
 import org.eclipse.dataspaceconnector.ids.spi.transform.TransformResult;
 import org.eclipse.dataspaceconnector.ids.spi.transform.TransformerRegistry;
+import org.eclipse.dataspaceconnector.spi.iam.VerificationResult;
 import org.eclipse.dataspaceconnector.spi.monitor.Monitor;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import java.net.URI;
-import java.net.URISyntaxException;
-
-import static org.eclipse.dataspaceconnector.ids.api.multipart.handler.description.DescriptionRequestHandlerMocks.mockDescriptionRequestMessage;
-import static org.eclipse.dataspaceconnector.ids.api.multipart.handler.description.DescriptionRequestHandlerMocks.mockSettingsResolver;
-import static org.eclipse.dataspaceconnector.ids.api.multipart.handler.description.DescriptionRequestHandlerMocks.mockTransformerRegistry;
 
 public class ConnectorDescriptionRequestHandlerTest {
     // subject
@@ -47,7 +48,7 @@ public class ConnectorDescriptionRequestHandlerTest {
         connectorDescriptionRequestHandlerSettings = settings;
 
         connectorService = EasyMock.createMock(ConnectorService.class);
-        EasyMock.expect(connectorService.getConnector()).andReturn(EasyMock.createMock(org.eclipse.dataspaceconnector.ids.spi.types.Connector.class));
+        EasyMock.expect(connectorService.getConnector(EasyMock.isA(VerificationResult.class))).andReturn(EasyMock.createMock(org.eclipse.dataspaceconnector.ids.spi.types.Connector.class));
         EasyMock.replay(connectorService);
 
         transformerRegistry = mockTransformerRegistry(IdsType.CONNECTOR);
@@ -78,7 +79,8 @@ public class ConnectorDescriptionRequestHandlerTest {
 
     @Test
     public void testSimpleSuccessPath() {
-        var result = connectorDescriptionRequestHandler.handle(descriptionRequestMessage, null);
+        VerificationResult verificationResult = EasyMock.createMock(VerificationResult.class);
+        var result = connectorDescriptionRequestHandler.handle(descriptionRequestMessage, verificationResult, null);
 
         Assertions.assertNotNull(result);
         Assertions.assertNotNull(result.getHeader());

@@ -23,6 +23,7 @@ import org.eclipse.dataspaceconnector.ids.spi.IdsType;
 import org.eclipse.dataspaceconnector.ids.spi.transform.TransformResult;
 import org.eclipse.dataspaceconnector.ids.spi.transform.TransformerRegistry;
 import org.eclipse.dataspaceconnector.spi.asset.AssetIndex;
+import org.eclipse.dataspaceconnector.spi.iam.VerificationResult;
 import org.eclipse.dataspaceconnector.spi.monitor.Monitor;
 import org.eclipse.dataspaceconnector.spi.types.domain.asset.Asset;
 import org.jetbrains.annotations.NotNull;
@@ -50,8 +51,11 @@ public class ArtifactDescriptionRequestHandler extends AbstractDescriptionReques
     }
 
     @Override
-    public MultipartResponse handle(@NotNull DescriptionRequestMessage descriptionRequestMessage, @Nullable String payload) {
+    public MultipartResponse handle(@NotNull DescriptionRequestMessage descriptionRequestMessage,
+                                    @NotNull VerificationResult verificationResult,
+                                    @Nullable String payload) {
         Objects.requireNonNull(descriptionRequestMessage);
+        Objects.requireNonNull(verificationResult);
 
         URI uri = descriptionRequestMessage.getRequestedElement();
         if (uri == null) {

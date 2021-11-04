@@ -14,21 +14,18 @@
 
 package org.eclipse.dataspaceconnector.ids.core.service;
 
+import java.util.Objects;
+import java.util.stream.Collectors;
+
 import org.eclipse.dataspaceconnector.ids.spi.service.DataCatalogService;
 import org.eclipse.dataspaceconnector.ids.spi.types.DataCatalog;
 import org.eclipse.dataspaceconnector.spi.contract.ContractOfferQuery;
 import org.eclipse.dataspaceconnector.spi.contract.ContractOfferQueryResponse;
 import org.eclipse.dataspaceconnector.spi.contract.ContractOfferService;
+import org.eclipse.dataspaceconnector.spi.iam.VerificationResult;
 import org.eclipse.dataspaceconnector.spi.monitor.Monitor;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Objects;
-import java.util.stream.Collectors;
-
-/**
- * The IDS service is able to create IDS compliant description of a data catalog.
- * That description may be used to create a self-description or answer a Description Request Message.
- */
 public class DataCatalogServiceImpl implements DataCatalogService {
     private final Monitor monitor;
     private final DataCatalogServiceSettings dataCatalogServiceSettings;
@@ -49,8 +46,10 @@ public class DataCatalogServiceImpl implements DataCatalogService {
      * @return data catalog
      */
     @Override
-    public DataCatalog getDataCatalog() {
-        var query = ContractOfferQuery.Builder.newInstance().build(); // TODO
+    @NotNull
+    public DataCatalog getDataCatalog(VerificationResult verificationResult) {
+
+        var query = ContractOfferQuery.Builder.newInstance().verificationResult(verificationResult).build();
         ContractOfferQueryResponse response = contractOfferService.queryContractOffers(query);
 
         return DataCatalog.Builder

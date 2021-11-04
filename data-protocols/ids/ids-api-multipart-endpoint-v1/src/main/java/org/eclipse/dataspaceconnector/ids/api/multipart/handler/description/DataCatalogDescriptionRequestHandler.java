@@ -14,6 +14,9 @@
 
 package org.eclipse.dataspaceconnector.ids.api.multipart.handler.description;
 
+import java.net.URI;
+import java.util.Objects;
+
 import de.fraunhofer.iais.eis.DescriptionRequestMessage;
 import de.fraunhofer.iais.eis.DescriptionResponseMessage;
 import de.fraunhofer.iais.eis.ResourceCatalog;
@@ -24,12 +27,10 @@ import org.eclipse.dataspaceconnector.ids.spi.service.DataCatalogService;
 import org.eclipse.dataspaceconnector.ids.spi.transform.TransformResult;
 import org.eclipse.dataspaceconnector.ids.spi.transform.TransformerRegistry;
 import org.eclipse.dataspaceconnector.ids.spi.types.DataCatalog;
+import org.eclipse.dataspaceconnector.spi.iam.VerificationResult;
 import org.eclipse.dataspaceconnector.spi.monitor.Monitor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import java.net.URI;
-import java.util.Objects;
 
 public class DataCatalogDescriptionRequestHandler extends AbstractDescriptionRequestHandler {
     private final Monitor monitor;
@@ -50,8 +51,12 @@ public class DataCatalogDescriptionRequestHandler extends AbstractDescriptionReq
     }
 
     @Override
-    public MultipartResponse handle(@NotNull DescriptionRequestMessage descriptionRequestMessage, @Nullable String payload) {
+    public MultipartResponse handle(
+            @NotNull DescriptionRequestMessage descriptionRequestMessage,
+            @NotNull VerificationResult verificationResult,
+            @Nullable String payload) {
         Objects.requireNonNull(descriptionRequestMessage);
+        Objects.requireNonNull(verificationResult);
 
         URI uri = descriptionRequestMessage.getRequestedElement();
         if (uri == null) {
@@ -74,10 +79,7 @@ public class DataCatalogDescriptionRequestHandler extends AbstractDescriptionReq
             return createBadParametersErrorMultipartResponse(connectorId, descriptionRequestMessage);
         }
 
-        DataCatalog dataCatalog = dataCatalogService.getDataCatalog();
-        if (dataCatalog == null) {
-            return createNotFoundErrorMultipartResponse(connectorId, descriptionRequestMessage);
-        }
+        DataCatalog dataCatalog = dataCatalogService.getDataCatalog(verificationResult);
 
         TransformResult<ResourceCatalog> transformResult = transformerRegistry.transform(dataCatalog, ResourceCatalog.class);
         if (transformResult.hasProblems()) {

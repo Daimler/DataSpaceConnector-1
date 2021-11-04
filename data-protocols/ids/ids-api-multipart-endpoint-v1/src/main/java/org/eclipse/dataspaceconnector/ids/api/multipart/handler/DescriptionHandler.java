@@ -14,6 +14,11 @@
 
 package org.eclipse.dataspaceconnector.ids.api.multipart.handler;
 
+import java.util.Objects;
+
+import static org.eclipse.dataspaceconnector.ids.api.multipart.util.RejectionMessageUtil.badParameters;
+import static org.eclipse.dataspaceconnector.ids.api.multipart.util.RejectionMessageUtil.messageTypeNotSupported;
+
 import de.fraunhofer.iais.eis.DescriptionRequestMessage;
 import de.fraunhofer.iais.eis.Message;
 import org.eclipse.dataspaceconnector.ids.api.multipart.handler.description.ArtifactDescriptionRequestHandler;
@@ -26,13 +31,9 @@ import org.eclipse.dataspaceconnector.ids.api.multipart.message.MultipartRespons
 import org.eclipse.dataspaceconnector.ids.spi.IdsType;
 import org.eclipse.dataspaceconnector.ids.spi.transform.TransformerRegistry;
 import org.eclipse.dataspaceconnector.spi.EdcException;
+import org.eclipse.dataspaceconnector.spi.iam.VerificationResult;
 import org.eclipse.dataspaceconnector.spi.monitor.Monitor;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.Objects;
-
-import static org.eclipse.dataspaceconnector.ids.api.multipart.util.RejectionMessageUtil.badParameters;
-import static org.eclipse.dataspaceconnector.ids.api.multipart.util.RejectionMessageUtil.messageTypeNotSupported;
 
 public class DescriptionHandler implements Handler {
     private final Monitor monitor;
@@ -71,11 +72,13 @@ public class DescriptionHandler implements Handler {
     }
 
     @Override
-    public MultipartResponse handleRequest(@NotNull MultipartRequest multipartRequest) {
+    public MultipartResponse handleRequest(@NotNull MultipartRequest multipartRequest,
+                                           @NotNull VerificationResult verificationResult) {
         Objects.requireNonNull(multipartRequest);
+        Objects.requireNonNull(verificationResult);
 
         try {
-            return handleRequestInternal(multipartRequest);
+            return handleRequestInternal(multipartRequest, verificationResult);
         } catch (EdcException exception) {
             monitor.severe(String.format("Could not handle multipart request: %s", exception.getMessage()), exception);
         }
@@ -83,7 +86,11 @@ public class DescriptionHandler implements Handler {
         return createErrorMultipartResponse(multipartRequest.getHeader());
     }
 
-    public MultipartResponse handleRequestInternal(@NotNull MultipartRequest multipartRequest) {
+    public MultipartResponse handleRequestInternal(@NotNull MultipartRequest multipartRequest,
+                                                   @NotNull VerificationResult verificationResult) {
+        Objects.requireNonNull(multipartRequest);
+        Objects.requireNonNull(verificationResult);
+
         var descriptionRequestMessage = (DescriptionRequestMessage) multipartRequest.getHeader();
 
         var payload = multipartRequest.getPayload();
@@ -106,18 +113,18 @@ public class DescriptionHandler implements Handler {
         }
 
         if (type == null || type == IdsType.CONNECTOR) {
-            return connectorDescriptionRequestHandler.handle(descriptionRequestMessage, payload);
+            return connectorDescriptionRequestHandler.handle(descriptionRequestMessage, verificationResult, payload);
         }
 
         switch (type) {
             case ARTIFACT:
-                return artifactDescriptionRequestHandler.handle(descriptionRequestMessage, payload);
+                return artifactDescriptionRequestHandler.handle(descriptionRequestMessage, verificationResult, payload);
             case CATALOG:
-                return dataCatalogDescriptionRequestHandler.handle(descriptionRequestMessage, payload);
+                return dataCatalogDescriptionRequestHandler.handle(descriptionRequestMessage, verificationResult, payload);
             case REPRESENTATION:
-                return representationDescriptionRequestHandler.handle(descriptionRequestMessage, payload);
+                return representationDescriptionRequestHandler.handle(descriptionRequestMessage, verificationResult, payload);
             case RESOURCE:
-                return resourceDescriptionRequestHandler.handle(descriptionRequestMessage, payload);
+                return resourceDescriptionRequestHandler.handle(descriptionRequestMessage, verificationResult, payload);
             default:
                 return createErrorMultipartResponse(descriptionRequestMessage);
         }

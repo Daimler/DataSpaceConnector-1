@@ -14,6 +14,8 @@
 
 package org.eclipse.dataspaceconnector.ids.core;
 
+import java.util.Set;
+
 import okhttp3.OkHttpClient;
 import org.eclipse.dataspaceconnector.ids.core.configuration.SettingResolver;
 import org.eclipse.dataspaceconnector.ids.core.daps.DapsServiceImpl;
@@ -38,7 +40,7 @@ import org.eclipse.dataspaceconnector.ids.spi.service.DataCatalogService;
 import org.eclipse.dataspaceconnector.ids.spi.transform.TransformerRegistry;
 import org.eclipse.dataspaceconnector.ids.spi.version.ConnectorVersionProvider;
 import org.eclipse.dataspaceconnector.spi.EdcException;
-import org.eclipse.dataspaceconnector.spi.asset.AssetIndex;
+import org.eclipse.dataspaceconnector.spi.contract.ContractOfferService;
 import org.eclipse.dataspaceconnector.spi.iam.IdentityService;
 import org.eclipse.dataspaceconnector.spi.message.RemoteMessageDispatcherRegistry;
 import org.eclipse.dataspaceconnector.spi.monitor.Monitor;
@@ -46,8 +48,6 @@ import org.eclipse.dataspaceconnector.spi.security.Vault;
 import org.eclipse.dataspaceconnector.spi.system.ServiceExtension;
 import org.eclipse.dataspaceconnector.spi.system.ServiceExtensionContext;
 import org.eclipse.dataspaceconnector.spi.transfer.store.TransferProcessStore;
-
-import java.util.Set;
 
 /**
  * Implements the IDS Controller REST API.
@@ -79,7 +79,7 @@ public class IdsCoreServiceExtension implements ServiceExtension {
 
         SettingResolver settingResolver = new SettingResolver(serviceExtensionContext);
 
-        AssetIndex assetIndex = serviceExtensionContext.getService(AssetIndex.class);
+        ContractOfferService contextService = serviceExtensionContext.getService(ContractOfferService.class);
 
         TransformerRegistry transformerRegistry = createTransformerRegistry();
         serviceExtensionContext.registerService(TransformerRegistry.class, transformerRegistry);
@@ -87,7 +87,7 @@ public class IdsCoreServiceExtension implements ServiceExtension {
         ConnectorVersionProvider connectorVersionProvider = createConnectorVersionProvider();
         serviceExtensionContext.registerService(ConnectorVersionProvider.class, connectorVersionProvider);
 
-        DataCatalogService dataCatalogService = createDataCatalogService(settingResolver, assetIndex);
+        DataCatalogService dataCatalogService = createDataCatalogService(settingResolver, contextService);
         serviceExtensionContext.registerService(DataCatalogService.class, dataCatalogService);
 
         ConnectorService connectorService = createConnectorService(settingResolver, connectorVersionProvider, dataCatalogService);
@@ -150,7 +150,7 @@ public class IdsCoreServiceExtension implements ServiceExtension {
 
     private DataCatalogService createDataCatalogService(
             SettingResolver settingResolver,
-            AssetIndex assetIndex) {
+            ContractOfferService contractOfferService) {
         DataCatalogServiceSettingsFactory dataCatalogServiceSettingsFactory = new DataCatalogServiceSettingsFactory(settingResolver);
         DataCatalogServiceSettingsFactoryResult dataCatalogServiceSettingsFactoryResult = dataCatalogServiceSettingsFactory.getSettingsResult();
 
@@ -161,7 +161,7 @@ public class IdsCoreServiceExtension implements ServiceExtension {
         return new DataCatalogServiceImpl(
                 monitor,
                 dataCatalogServiceSettingsFactoryResult.getSettings(),
-                assetIndex
+                contractOfferService
         );
     }
 

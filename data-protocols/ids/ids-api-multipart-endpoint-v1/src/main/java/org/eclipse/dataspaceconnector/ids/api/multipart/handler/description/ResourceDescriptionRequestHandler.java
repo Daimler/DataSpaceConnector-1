@@ -14,6 +14,9 @@
 
 package org.eclipse.dataspaceconnector.ids.api.multipart.handler.description;
 
+import java.net.URI;
+import java.util.Objects;
+
 import de.fraunhofer.iais.eis.DescriptionRequestMessage;
 import de.fraunhofer.iais.eis.DescriptionResponseMessage;
 import de.fraunhofer.iais.eis.Resource;
@@ -23,13 +26,11 @@ import org.eclipse.dataspaceconnector.ids.spi.IdsType;
 import org.eclipse.dataspaceconnector.ids.spi.transform.TransformResult;
 import org.eclipse.dataspaceconnector.ids.spi.transform.TransformerRegistry;
 import org.eclipse.dataspaceconnector.spi.asset.AssetIndex;
+import org.eclipse.dataspaceconnector.spi.iam.VerificationResult;
 import org.eclipse.dataspaceconnector.spi.monitor.Monitor;
 import org.eclipse.dataspaceconnector.spi.types.domain.asset.Asset;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import java.net.URI;
-import java.util.Objects;
 
 public class ResourceDescriptionRequestHandler extends AbstractDescriptionRequestHandler implements DescriptionRequestHandler {
     private final Monitor monitor;
@@ -50,8 +51,12 @@ public class ResourceDescriptionRequestHandler extends AbstractDescriptionReques
     }
 
     @Override
-    public MultipartResponse handle(@NotNull DescriptionRequestMessage descriptionRequestMessage, @Nullable String payload) {
+    public MultipartResponse handle(
+            @NotNull DescriptionRequestMessage descriptionRequestMessage,
+            @NotNull VerificationResult verificationResult,
+            @Nullable String payload) {
         Objects.requireNonNull(descriptionRequestMessage);
+        Objects.requireNonNull(verificationResult);
 
         URI uri = descriptionRequestMessage.getRequestedElement();
         if (uri == null) {

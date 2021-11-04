@@ -14,7 +14,7 @@
 
 package org.eclipse.dataspaceconnector.spi.contract;
 
-import java.security.Principal;
+import org.eclipse.dataspaceconnector.spi.iam.VerificationResult;
 
 // TODO: add pagination attributes
 
@@ -24,15 +24,13 @@ import java.security.Principal;
  */
 public class ContractOfferQuery {
 
-    // TODO: decide whether either use org.eclipse.dataspaceconnector.spi.iam.VerificationResult or introduce
-    //       container principal object wrapping org.eclipse.dataspaceconnector.spi.iam.VerificationResult
-    private Principal principal;
+    private VerificationResult verificationResult;
 
     private ContractOfferQuery() {
     }
 
-    public Principal getPrincipal() {
-        return principal;
+    public VerificationResult getVerificationResult() {
+        return verificationResult;
     }
 
     public static ContractOfferQuery.Builder builder() {
@@ -40,23 +38,23 @@ public class ContractOfferQuery {
     }
 
     public static final class Builder {
-        private Principal principal;
+        private VerificationResult verificationResult;
 
         private Builder() {
         }
 
-        public static ContractOfferQuery.Builder newInstance() {
+        public static Builder newInstance() {
             return new ContractOfferQuery.Builder();
         }
 
-        public ContractOfferQuery.Builder principal(final Principal principal) {
-            this.principal = principal;
+        public Builder verificationResult(final VerificationResult verificationResult) {
+            this.verificationResult = verificationResult;
             return this;
         }
 
         public ContractOfferQuery build() {
             final ContractOfferQuery contractOfferQuery = new ContractOfferQuery();
-            contractOfferQuery.principal = this.principal;
+            contractOfferQuery.verificationResult = this.verificationResult;
             return contractOfferQuery;
         }
     }

@@ -14,6 +14,12 @@
 
 package org.eclipse.dataspaceconnector.ids.api.multipart.handler.description;
 
+import java.net.URI;
+import java.util.Collections;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import de.fraunhofer.iais.eis.DescriptionRequestMessage;
 import de.fraunhofer.iais.eis.Message;
 import de.fraunhofer.iais.eis.RejectionMessage;
@@ -21,26 +27,16 @@ import de.fraunhofer.iais.eis.RejectionReason;
 import org.easymock.EasyMock;
 import org.eclipse.dataspaceconnector.ids.api.multipart.handler.DescriptionHandler;
 import org.eclipse.dataspaceconnector.ids.api.multipart.handler.DescriptionHandlerSettings;
-import org.eclipse.dataspaceconnector.ids.api.multipart.handler.description.ArtifactDescriptionRequestHandler;
-import org.eclipse.dataspaceconnector.ids.api.multipart.handler.description.ConnectorDescriptionRequestHandler;
-import org.eclipse.dataspaceconnector.ids.api.multipart.handler.description.DataCatalogDescriptionRequestHandler;
-import org.eclipse.dataspaceconnector.ids.api.multipart.handler.description.RepresentationDescriptionRequestHandler;
-import org.eclipse.dataspaceconnector.ids.api.multipart.handler.description.ResourceDescriptionRequestHandler;
 import org.eclipse.dataspaceconnector.ids.api.multipart.message.MultipartRequest;
 import org.eclipse.dataspaceconnector.ids.api.multipart.message.MultipartResponse;
 import org.eclipse.dataspaceconnector.ids.spi.IdsType;
 import org.eclipse.dataspaceconnector.ids.spi.transform.TransformResult;
 import org.eclipse.dataspaceconnector.ids.spi.transform.TransformerRegistry;
+import org.eclipse.dataspaceconnector.spi.iam.VerificationResult;
 import org.eclipse.dataspaceconnector.spi.monitor.Monitor;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import java.net.URI;
-import java.util.Collections;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class DescriptionHandlerTest {
 
@@ -56,10 +52,12 @@ class DescriptionHandlerTest {
     private RepresentationDescriptionRequestHandler representationDescriptionRequestHandler;
     private ResourceDescriptionRequestHandler resourceDescriptionRequestHandler;
     private ConnectorDescriptionRequestHandler connectorDescriptionRequestHandler;
+    private VerificationResult verificationResult;
 
     @BeforeEach
     void setUp() {
         monitor = EasyMock.mock(Monitor.class);
+        verificationResult = EasyMock.createMock(VerificationResult.class);
         descriptionHandlerSettings = EasyMock.mock(DescriptionHandlerSettings.class);
         transformerRegistry = EasyMock.mock(TransformerRegistry.class);
         artifactDescriptionRequestHandler = EasyMock.mock(ArtifactDescriptionRequestHandler.class);
@@ -136,7 +134,7 @@ class DescriptionHandlerTest {
                 .header(requestHeader)
                 .build();
 
-        EasyMock.expect(connectorDescriptionRequestHandler.handle(requestHeader, multipartRequest.getPayload())).andReturn(response);
+        EasyMock.expect(connectorDescriptionRequestHandler.handle(requestHeader, verificationResult, multipartRequest.getPayload())).andReturn(response);
 
         // record
         EasyMock.replay(
@@ -152,7 +150,7 @@ class DescriptionHandlerTest {
                 responseHeader);
 
         // invoke
-        var result = descriptionHandler.handleRequest(multipartRequest);
+        var result = descriptionHandler.handleRequest(multipartRequest, verificationResult);
 
         // verify
         assertThat(result).isNotNull();
@@ -194,7 +192,7 @@ class DescriptionHandlerTest {
                 requestHeader);
 
         // invoke
-        var result = descriptionHandler.handleRequest(multipartRequest);
+        var result = descriptionHandler.handleRequest(multipartRequest, verificationResult);
 
         assertThat(result).isNotNull();
         assertThat(result).extracting(MultipartResponse::getHeader).isInstanceOf(RejectionMessage.class);
@@ -232,7 +230,7 @@ class DescriptionHandlerTest {
                 requestHeader);
 
         // invoke
-        var result = descriptionHandler.handleRequest(multipartRequest);
+        var result = descriptionHandler.handleRequest(multipartRequest, verificationResult);
 
         // verify
         assertThat(result).isNotNull()
@@ -257,7 +255,7 @@ class DescriptionHandlerTest {
         EasyMock.expect(transformerRegistry.transform(uri, IdsType.class))
                 .andReturn(new TransformResult<>(IdsType.ARTIFACT));
 
-        EasyMock.expect(artifactDescriptionRequestHandler.handle(EasyMock.eq(requestHeader), EasyMock.anyObject())).andReturn(response);
+        EasyMock.expect(artifactDescriptionRequestHandler.handle(EasyMock.eq(requestHeader), EasyMock.anyObject(VerificationResult.class), EasyMock.anyObject())).andReturn(response);
 
         MultipartRequest multipartRequest = MultipartRequest.Builder.newInstance()
                 .header(requestHeader)
@@ -277,7 +275,7 @@ class DescriptionHandlerTest {
                 responseHeader);
 
         // invoke
-        var result = descriptionHandler.handleRequest(multipartRequest);
+        var result = descriptionHandler.handleRequest(multipartRequest, verificationResult);
 
         // verify
         assertThat(result).isNotNull();
@@ -300,7 +298,7 @@ class DescriptionHandlerTest {
         EasyMock.expect(transformerRegistry.transform(uri, IdsType.class))
                 .andReturn(new TransformResult<>(IdsType.CATALOG));
 
-        EasyMock.expect(dataCatalogDescriptionRequestHandler.handle(EasyMock.eq(requestHeader), EasyMock.anyObject())).andReturn(response);
+        EasyMock.expect(dataCatalogDescriptionRequestHandler.handle(EasyMock.eq(requestHeader), EasyMock.anyObject(VerificationResult.class), EasyMock.anyObject())).andReturn(response);
 
         MultipartRequest multipartRequest = MultipartRequest.Builder.newInstance()
                 .header(requestHeader)
@@ -320,7 +318,7 @@ class DescriptionHandlerTest {
                 responseHeader);
 
         // invoke
-        var result = descriptionHandler.handleRequest(multipartRequest);
+        var result = descriptionHandler.handleRequest(multipartRequest, verificationResult);
 
         // verify
         assertThat(result).isNotNull();
@@ -343,7 +341,7 @@ class DescriptionHandlerTest {
         EasyMock.expect(transformerRegistry.transform(uri, IdsType.class))
                 .andReturn(new TransformResult<>(IdsType.REPRESENTATION));
 
-        EasyMock.expect(representationDescriptionRequestHandler.handle(EasyMock.eq(requestHeader), EasyMock.anyObject())).andReturn(response);
+        EasyMock.expect(representationDescriptionRequestHandler.handle(EasyMock.eq(requestHeader), EasyMock.anyObject(VerificationResult.class), EasyMock.anyObject())).andReturn(response);
 
         MultipartRequest multipartRequest = MultipartRequest.Builder.newInstance()
                 .header(requestHeader)
@@ -363,7 +361,7 @@ class DescriptionHandlerTest {
                 responseHeader);
 
         // invoke
-        var result = descriptionHandler.handleRequest(multipartRequest);
+        var result = descriptionHandler.handleRequest(multipartRequest, verificationResult);
 
         // verify
         assertThat(result).isNotNull();
@@ -386,7 +384,7 @@ class DescriptionHandlerTest {
         EasyMock.expect(transformerRegistry.transform(uri, IdsType.class))
                 .andReturn(new TransformResult<>(IdsType.RESOURCE));
 
-        EasyMock.expect(resourceDescriptionRequestHandler.handle(EasyMock.eq(requestHeader), EasyMock.anyObject())).andReturn(response);
+        EasyMock.expect(resourceDescriptionRequestHandler.handle(EasyMock.eq(requestHeader), EasyMock.anyObject(VerificationResult.class), EasyMock.anyObject())).andReturn(response);
 
         MultipartRequest multipartRequest = MultipartRequest.Builder.newInstance()
                 .header(requestHeader)
@@ -406,7 +404,7 @@ class DescriptionHandlerTest {
                 responseHeader);
 
         // invoke
-        var result = descriptionHandler.handleRequest(multipartRequest);
+        var result = descriptionHandler.handleRequest(multipartRequest, verificationResult);
 
         // verify
         assertThat(result).isNotNull();

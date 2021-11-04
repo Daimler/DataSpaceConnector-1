@@ -14,6 +14,15 @@
 
 package org.eclipse.dataspaceconnector.ids.api.multipart.controller;
 
+import java.util.List;
+import java.util.Objects;
+
+import static org.eclipse.dataspaceconnector.ids.api.multipart.util.RejectionMessageUtil.malformedMessage;
+import static org.eclipse.dataspaceconnector.ids.api.multipart.util.RejectionMessageUtil.messageTypeNotSupported;
+import static org.eclipse.dataspaceconnector.ids.api.multipart.util.RejectionMessageUtil.notAuthenticated;
+import static org.eclipse.dataspaceconnector.ids.api.multipart.util.RejectionMessageUtil.notAuthorized;
+import static org.eclipse.dataspaceconnector.ids.api.multipart.util.RejectionMessageUtil.notFound;
+
 import de.fraunhofer.iais.eis.DynamicAttributeToken;
 import de.fraunhofer.iais.eis.RequestMessage;
 import jakarta.ws.rs.Consumes;
@@ -31,15 +40,6 @@ import org.glassfish.jersey.media.multipart.FormDataBodyPart;
 import org.glassfish.jersey.media.multipart.FormDataMultiPart;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.List;
-import java.util.Objects;
-
-import static org.eclipse.dataspaceconnector.ids.api.multipart.util.RejectionMessageUtil.malformedMessage;
-import static org.eclipse.dataspaceconnector.ids.api.multipart.util.RejectionMessageUtil.messageTypeNotSupported;
-import static org.eclipse.dataspaceconnector.ids.api.multipart.util.RejectionMessageUtil.notAuthenticated;
-import static org.eclipse.dataspaceconnector.ids.api.multipart.util.RejectionMessageUtil.notAuthorized;
-import static org.eclipse.dataspaceconnector.ids.api.multipart.util.RejectionMessageUtil.notFound;
 
 @Consumes({ MediaType.MULTIPART_FORM_DATA })
 @Produces({ MediaType.MULTIPART_FORM_DATA })
@@ -106,7 +106,7 @@ public class MultipartController {
                             messageTypeNotSupported(header, multipartControllerSettings.getId()))).build();
         }
 
-        MultipartResponse multipartResponse = handler.handleRequest(multipartRequest);
+        MultipartResponse multipartResponse = handler.handleRequest(multipartRequest, verificationResult);
         if (multipartResponse != null) {
             return Response.ok(
                     createFormDataMultiPart(multipartResponse)).build();

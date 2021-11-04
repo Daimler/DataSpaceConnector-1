@@ -1,5 +1,12 @@
 package org.eclipse.dataspaceconnector.ids.api.multipart.handler.description;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+
+import static org.eclipse.dataspaceconnector.ids.api.multipart.handler.description.DescriptionRequestHandlerMocks.mockDescriptionRequestMessage;
+import static org.eclipse.dataspaceconnector.ids.api.multipart.handler.description.DescriptionRequestHandlerMocks.mockSettingsResolver;
+import static org.eclipse.dataspaceconnector.ids.api.multipart.handler.description.DescriptionRequestHandlerMocks.mockTransformerRegistry;
+
 import de.fraunhofer.iais.eis.DescriptionRequestMessage;
 import de.fraunhofer.iais.eis.ResourceCatalog;
 import org.easymock.EasyMock;
@@ -9,17 +16,11 @@ import org.eclipse.dataspaceconnector.ids.spi.service.DataCatalogService;
 import org.eclipse.dataspaceconnector.ids.spi.transform.TransformResult;
 import org.eclipse.dataspaceconnector.ids.spi.transform.TransformerRegistry;
 import org.eclipse.dataspaceconnector.ids.spi.types.DataCatalog;
+import org.eclipse.dataspaceconnector.spi.iam.VerificationResult;
 import org.eclipse.dataspaceconnector.spi.monitor.Monitor;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import java.net.URI;
-import java.net.URISyntaxException;
-
-import static org.eclipse.dataspaceconnector.ids.api.multipart.handler.description.DescriptionRequestHandlerMocks.mockDescriptionRequestMessage;
-import static org.eclipse.dataspaceconnector.ids.api.multipart.handler.description.DescriptionRequestHandlerMocks.mockSettingsResolver;
-import static org.eclipse.dataspaceconnector.ids.api.multipart.handler.description.DescriptionRequestHandlerMocks.mockTransformerRegistry;
 
 public class DataCatalogDescriptionRequestHandlerTest {
 
@@ -49,7 +50,7 @@ public class DataCatalogDescriptionRequestHandlerTest {
         dataCatalogDescriptionRequestHandlerSettings = settingFactoryResult.getSettings();
 
         dataCatalogService = EasyMock.createMock(DataCatalogService.class);
-        EasyMock.expect(dataCatalogService.getDataCatalog()).andReturn(EasyMock.createMock(DataCatalog.class));
+        EasyMock.expect(dataCatalogService.getDataCatalog(EasyMock.isA(VerificationResult.class))).andReturn(EasyMock.createMock(DataCatalog.class));
         EasyMock.replay(dataCatalogService);
 
         transformerRegistry = mockTransformerRegistry(IdsType.CATALOG);
@@ -80,7 +81,8 @@ public class DataCatalogDescriptionRequestHandlerTest {
 
     @Test
     public void testSimpleSuccessPath() {
-        var result = dataCatalogDescriptionRequestHandler.handle(descriptionRequestMessage, null);
+        VerificationResult verificationResult = EasyMock.createMock(VerificationResult.class);
+        var result = dataCatalogDescriptionRequestHandler.handle(descriptionRequestMessage, verificationResult, null);
 
         Assertions.assertNotNull(result);
         Assertions.assertNotNull(result.getHeader());

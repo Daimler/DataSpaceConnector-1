@@ -1,5 +1,13 @@
 package org.eclipse.dataspaceconnector.ids.api.multipart.handler.description;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+
+import static org.eclipse.dataspaceconnector.ids.api.multipart.handler.description.DescriptionRequestHandlerMocks.mockAssetIndex;
+import static org.eclipse.dataspaceconnector.ids.api.multipart.handler.description.DescriptionRequestHandlerMocks.mockDescriptionRequestMessage;
+import static org.eclipse.dataspaceconnector.ids.api.multipart.handler.description.DescriptionRequestHandlerMocks.mockSettingsResolver;
+import static org.eclipse.dataspaceconnector.ids.api.multipart.handler.description.DescriptionRequestHandlerMocks.mockTransformerRegistry;
+
 import de.fraunhofer.iais.eis.Artifact;
 import de.fraunhofer.iais.eis.DescriptionRequestMessage;
 import org.easymock.EasyMock;
@@ -8,19 +16,12 @@ import org.eclipse.dataspaceconnector.ids.spi.IdsType;
 import org.eclipse.dataspaceconnector.ids.spi.transform.TransformResult;
 import org.eclipse.dataspaceconnector.ids.spi.transform.TransformerRegistry;
 import org.eclipse.dataspaceconnector.spi.asset.AssetIndex;
+import org.eclipse.dataspaceconnector.spi.iam.VerificationResult;
 import org.eclipse.dataspaceconnector.spi.monitor.Monitor;
 import org.eclipse.dataspaceconnector.spi.types.domain.asset.Asset;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import java.net.URI;
-import java.net.URISyntaxException;
-
-import static org.eclipse.dataspaceconnector.ids.api.multipart.handler.description.DescriptionRequestHandlerMocks.mockAssetIndex;
-import static org.eclipse.dataspaceconnector.ids.api.multipart.handler.description.DescriptionRequestHandlerMocks.mockDescriptionRequestMessage;
-import static org.eclipse.dataspaceconnector.ids.api.multipart.handler.description.DescriptionRequestHandlerMocks.mockSettingsResolver;
-import static org.eclipse.dataspaceconnector.ids.api.multipart.handler.description.DescriptionRequestHandlerMocks.mockTransformerRegistry;
 
 public class ArtifactDescriptionRequestHandlerTest {
 
@@ -80,7 +81,8 @@ public class ArtifactDescriptionRequestHandlerTest {
 
     @Test
     public void testSimpleSuccessPath() {
-        var result = artifactDescriptionRequestHandler.handle(descriptionRequestMessage, null);
+        VerificationResult verificationResult = EasyMock.createMock(VerificationResult.class);
+        var result = artifactDescriptionRequestHandler.handle(descriptionRequestMessage, verificationResult, null);
 
         Assertions.assertNotNull(result);
         Assertions.assertNotNull(result.getHeader());

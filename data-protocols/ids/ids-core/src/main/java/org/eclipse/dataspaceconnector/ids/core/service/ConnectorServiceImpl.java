@@ -14,16 +14,17 @@
 
 package org.eclipse.dataspaceconnector.ids.core.service;
 
+import java.util.Collections;
+import java.util.Objects;
+
 import org.eclipse.dataspaceconnector.ids.spi.service.ConnectorService;
 import org.eclipse.dataspaceconnector.ids.spi.service.DataCatalogService;
 import org.eclipse.dataspaceconnector.ids.spi.types.Connector;
 import org.eclipse.dataspaceconnector.ids.spi.types.DataCatalog;
 import org.eclipse.dataspaceconnector.ids.spi.version.ConnectorVersionProvider;
+import org.eclipse.dataspaceconnector.spi.iam.VerificationResult;
 import org.eclipse.dataspaceconnector.spi.monitor.Monitor;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.Collections;
-import java.util.Objects;
 
 public class ConnectorServiceImpl implements ConnectorService {
     private final Monitor monitor;
@@ -43,8 +44,10 @@ public class ConnectorServiceImpl implements ConnectorService {
     }
 
     @NotNull
-    public Connector getConnector() {
-        DataCatalog dataCatalog = dataCatalogService.getDataCatalog();
+    public Connector getConnector(@NotNull VerificationResult verificationResult) {
+        Objects.requireNonNull(verificationResult);
+
+        DataCatalog dataCatalog = dataCatalogService.getDataCatalog(verificationResult);
 
         return Connector.Builder
                 .newInstance()
