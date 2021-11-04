@@ -28,6 +28,7 @@ import org.eclipse.dataspaceconnector.ids.spi.transform.TransformResult;
 import org.eclipse.dataspaceconnector.ids.spi.transform.TransformerRegistry;
 import org.eclipse.dataspaceconnector.ids.spi.types.Connector;
 import org.eclipse.dataspaceconnector.ids.spi.types.DataCatalog;
+import org.eclipse.dataspaceconnector.policy.model.Duty;
 import org.eclipse.dataspaceconnector.policy.model.Operator;
 import org.eclipse.dataspaceconnector.policy.model.Action;
 import org.eclipse.dataspaceconnector.spi.monitor.Monitor;
@@ -78,6 +79,8 @@ class IdsTransformServiceExtensionTest {
                     Arguments.arguments(Connector.class, de.fraunhofer.iais.eis.Connector.class),
 
                     Arguments.arguments(DataCatalog.class, ResourceCatalog.class),
+
+                    Arguments.arguments(Duty.class, de.fraunhofer.iais.eis.Duty.class),
 
                     Arguments.arguments(IdsId.class, URI.class),
 
