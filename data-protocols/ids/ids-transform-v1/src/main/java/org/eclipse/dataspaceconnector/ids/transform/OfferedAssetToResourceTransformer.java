@@ -52,8 +52,8 @@ public class OfferedAssetToResourceTransformer implements IdsTypeTransformer<Off
             return null;
         }
 
-        Representation result = context.transform(object, Representation.class);
-        var offer = context.transform(object.getPolicy(), ContractOffer.class);
+        Representation result = context.transform(object.getAsset(), Representation.class);
+        ContractOffer contractOffer = context.transform(object.getPolicy(), ContractOffer.class);
 
         IdsId id = IdsId.Builder.newInstance()
                 .value(object.getAsset().getId())
@@ -62,7 +62,7 @@ public class OfferedAssetToResourceTransformer implements IdsTypeTransformer<Off
         URI uri = context.transform(id, URI.class);
         ResourceBuilder resourceBuilder = new ResourceBuilder(uri);
         resourceBuilder._representation_(new ArrayList<>(Collections.singletonList(result)));
-        resourceBuilder._contractOffer_(new ArrayList<>(Collections.singletonList(offer)));
+        resourceBuilder._contractOffer_(new ArrayList<>(Collections.singletonList(contractOffer)));
 
         return resourceBuilder.build();
     }
