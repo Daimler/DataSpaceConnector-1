@@ -14,12 +14,12 @@
 
 package org.eclipse.dataspaceconnector.ids.transform;
 
-import java.util.Objects;
-
 import org.eclipse.dataspaceconnector.ids.spi.transform.IdsTypeTransformer;
 import org.eclipse.dataspaceconnector.ids.spi.transform.TransformerContext;
 import org.eclipse.dataspaceconnector.policy.model.Action;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Objects;
 
 public class ActionToActionTransformer implements IdsTypeTransformer<Action, de.fraunhofer.iais.eis.Action> {
 

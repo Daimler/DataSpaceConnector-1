@@ -14,8 +14,6 @@
 
 package org.eclipse.dataspaceconnector.ids.core;
 
-import java.util.Set;
-
 import okhttp3.OkHttpClient;
 import org.eclipse.dataspaceconnector.ids.core.configuration.SettingResolver;
 import org.eclipse.dataspaceconnector.ids.core.daps.DapsServiceImpl;
@@ -49,6 +47,8 @@ import org.eclipse.dataspaceconnector.spi.system.ServiceExtension;
 import org.eclipse.dataspaceconnector.spi.system.ServiceExtensionContext;
 import org.eclipse.dataspaceconnector.spi.transfer.store.TransferProcessStore;
 
+import java.util.Set;
+
 /**
  * Implements the IDS Controller REST API.
  */
@@ -79,7 +79,7 @@ public class IdsCoreServiceExtension implements ServiceExtension {
 
         SettingResolver settingResolver = new SettingResolver(serviceExtensionContext);
 
-        ContractOfferService contextService = serviceExtensionContext.getService(ContractOfferService.class);
+        ContractOfferService contractOfferService = serviceExtensionContext.getService(ContractOfferService.class);
 
         TransformerRegistry transformerRegistry = createTransformerRegistry();
         serviceExtensionContext.registerService(TransformerRegistry.class, transformerRegistry);
@@ -87,7 +87,7 @@ public class IdsCoreServiceExtension implements ServiceExtension {
         ConnectorVersionProvider connectorVersionProvider = createConnectorVersionProvider();
         serviceExtensionContext.registerService(ConnectorVersionProvider.class, connectorVersionProvider);
 
-        DataCatalogService dataCatalogService = createDataCatalogService(settingResolver, contextService);
+        DataCatalogService dataCatalogService = createDataCatalogService(settingResolver, contractOfferService);
         serviceExtensionContext.registerService(DataCatalogService.class, dataCatalogService);
 
         ConnectorService connectorService = createConnectorService(settingResolver, connectorVersionProvider, dataCatalogService);
