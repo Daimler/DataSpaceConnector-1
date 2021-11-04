@@ -14,9 +14,6 @@
 
 package org.eclipse.dataspaceconnector.ids.transform;
 
-import java.net.URI;
-import java.util.Collections;
-
 import org.easymock.EasyMock;
 import org.eclipse.dataspaceconnector.ids.spi.IdsId;
 import org.eclipse.dataspaceconnector.ids.spi.transform.TransformerContext;
@@ -27,6 +24,9 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.net.URI;
+import java.util.Collections;
 
 class DutyToDutyTransformerTest {
 

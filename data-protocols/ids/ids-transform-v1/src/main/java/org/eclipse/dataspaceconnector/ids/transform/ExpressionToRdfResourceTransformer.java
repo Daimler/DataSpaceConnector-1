@@ -14,14 +14,14 @@
 
 package org.eclipse.dataspaceconnector.ids.transform;
 
-import java.util.Objects;
-
 import de.fraunhofer.iais.eis.util.RdfResource;
 import org.eclipse.dataspaceconnector.ids.spi.transform.IdsTypeTransformer;
 import org.eclipse.dataspaceconnector.ids.spi.transform.TransformerContext;
 import org.eclipse.dataspaceconnector.policy.model.Expression;
 import org.eclipse.dataspaceconnector.policy.model.LiteralExpression;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Objects;
 
 public class ExpressionToRdfResourceTransformer implements IdsTypeTransformer<Expression, RdfResource> {
 
@@ -47,6 +47,6 @@ public class ExpressionToRdfResourceTransformer implements IdsTypeTransformer<Ex
             value = ((LiteralExpression) object).getValue();
         }
 
-        return value == null? new RdfResource() : new RdfResource(value);
+        return value == null ? new RdfResource() : new RdfResource(value);
     }
 }

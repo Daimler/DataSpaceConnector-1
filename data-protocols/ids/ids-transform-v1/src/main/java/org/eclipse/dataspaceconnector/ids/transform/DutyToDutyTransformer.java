@@ -14,11 +14,6 @@
 
 package org.eclipse.dataspaceconnector.ids.transform;
 
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Objects;
-
 import de.fraunhofer.iais.eis.Constraint;
 import de.fraunhofer.iais.eis.DutyBuilder;
 import de.fraunhofer.iais.eis.util.ConstraintViolationException;
@@ -28,6 +23,11 @@ import org.eclipse.dataspaceconnector.ids.spi.transform.IdsTypeTransformer;
 import org.eclipse.dataspaceconnector.ids.spi.transform.TransformerContext;
 import org.eclipse.dataspaceconnector.policy.model.Duty;
 import org.jetbrains.annotations.Nullable;
+
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Objects;
 
 public class DutyToDutyTransformer implements IdsTypeTransformer<Duty, de.fraunhofer.iais.eis.Duty> {
 
