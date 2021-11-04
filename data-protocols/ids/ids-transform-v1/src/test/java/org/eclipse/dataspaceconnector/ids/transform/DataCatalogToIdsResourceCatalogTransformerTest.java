@@ -20,7 +20,8 @@ import org.eclipse.dataspaceconnector.ids.spi.IdsId;
 import org.eclipse.dataspaceconnector.ids.spi.IdsType;
 import org.eclipse.dataspaceconnector.ids.spi.transform.TransformerContext;
 import org.eclipse.dataspaceconnector.ids.spi.types.DataCatalog;
-import org.eclipse.dataspaceconnector.spi.types.domain.asset.Asset;
+import org.eclipse.dataspaceconnector.spi.types.domain.contract.ContractOffer;
+import org.eclipse.dataspaceconnector.spi.types.domain.contract.OfferedAsset;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -28,6 +29,7 @@ import org.junit.jupiter.api.Test;
 
 import java.net.URI;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -80,24 +82,28 @@ class DataCatalogToIdsResourceCatalogTransformerTest {
     @Test
     void testSuccessfulSimple() {
         // prepare
-        Asset a1 = EasyMock.createMock(Asset.class);
-        Asset a2 = EasyMock.createMock(Asset.class);
+        ContractOffer c1 = EasyMock.createMock(ContractOffer.class);
+        OfferedAsset oa1 = EasyMock.createMock(OfferedAsset.class);
+        EasyMock.expect(c1.getAssets()).andReturn(Collections.singletonList(oa1));
+        ContractOffer c2 = EasyMock.createMock(ContractOffer.class);
+        OfferedAsset oa2 = EasyMock.createMock(OfferedAsset.class);
+        EasyMock.expect(c2.getAssets()).andReturn(Collections.singletonList(oa2));
         Resource r1 = EasyMock.createMock(Resource.class);
         Resource r2 = EasyMock.createMock(Resource.class);
-        List<Asset> assets = Arrays.asList(a1, a2);
+        List<ContractOffer> contractOffers = Arrays.asList(c1, c2);
         List<Resource> resources = Arrays.asList(r1, r2);
         IdsId id = IdsId.Builder.newInstance().value(CATALOG_ID).type(IdsType.CATALOG).build();
 
         EasyMock.expect(dataCatalog.getId()).andReturn(CATALOG_ID);
-        EasyMock.expect(dataCatalog.getAssets()).andReturn(assets);
+        EasyMock.expect(dataCatalog.getContractOffers()).andReturn(contractOffers);
 
         EasyMock.expect(context.transform(EasyMock.eq(id), EasyMock.eq(URI.class))).andReturn(ID_URI);
 
-        EasyMock.expect(context.transform(EasyMock.eq(a1), EasyMock.eq(Resource.class))).andReturn(r1);
-        EasyMock.expect(context.transform(EasyMock.eq(a2), EasyMock.eq(Resource.class))).andReturn(r2);
+        EasyMock.expect(context.transform(EasyMock.eq(oa1), EasyMock.eq(Resource.class))).andReturn(r1);
+        EasyMock.expect(context.transform(EasyMock.eq(oa2), EasyMock.eq(Resource.class))).andReturn(r2);
 
         // record
-        EasyMock.replay(a1, a2, r1, r2, dataCatalog, context);
+        EasyMock.replay(c1, c2, oa1, oa2, r1, r2, dataCatalog, context);
 
         // invoke
         var result = dataCatalogToIdsResourceCatalogTransformer.transform(dataCatalog, context);
@@ -108,6 +114,8 @@ class DataCatalogToIdsResourceCatalogTransformerTest {
         assertThat(result.getOfferedResource()).hasSize(resources.size());
         assertThat(result.getOfferedResource().get(0)).isEqualTo(r1);
         assertThat(result.getOfferedResource().get(1)).isEqualTo(r2);
+
+        EasyMock.verify(c1, c2, oa1, oa2, r1, r2);
     }
 
     @AfterEach

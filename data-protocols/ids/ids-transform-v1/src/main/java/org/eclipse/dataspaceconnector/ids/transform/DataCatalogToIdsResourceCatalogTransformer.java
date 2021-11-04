@@ -52,7 +52,7 @@ public class DataCatalogToIdsResourceCatalogTransformer implements IdsTypeTransf
         }
 
         List<Resource> resources = new LinkedList<>();
-        List<ContractOffer>  contractOffers = object.getContractOffers();
+        List<ContractOffer> contractOffers = object.getContractOffers();
         if (contractOffers != null) {
             for (ContractOffer contractOffer : contractOffers) {
                 for (OfferedAsset offeredAsset : contractOffer.getAssets()) {

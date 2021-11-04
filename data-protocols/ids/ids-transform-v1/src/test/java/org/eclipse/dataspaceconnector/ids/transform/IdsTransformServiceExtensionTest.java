@@ -15,6 +15,7 @@
 package org.eclipse.dataspaceconnector.ids.transform;
 
 import de.fraunhofer.iais.eis.Artifact;
+import de.fraunhofer.iais.eis.BinaryOperator;
 import de.fraunhofer.iais.eis.ConnectorEndpoint;
 import de.fraunhofer.iais.eis.Representation;
 import de.fraunhofer.iais.eis.Resource;
@@ -27,6 +28,7 @@ import org.eclipse.dataspaceconnector.ids.spi.transform.TransformResult;
 import org.eclipse.dataspaceconnector.ids.spi.transform.TransformerRegistry;
 import org.eclipse.dataspaceconnector.ids.spi.types.Connector;
 import org.eclipse.dataspaceconnector.ids.spi.types.DataCatalog;
+import org.eclipse.dataspaceconnector.policy.model.Operator;
 import org.eclipse.dataspaceconnector.spi.monitor.Monitor;
 import org.eclipse.dataspaceconnector.spi.system.ServiceExtensionContext;
 import org.eclipse.dataspaceconnector.spi.types.domain.asset.Asset;
@@ -77,6 +79,8 @@ class IdsTransformServiceExtensionTest {
                     Arguments.arguments(IdsId.class, URI.class),
 
                     Arguments.arguments(Integer.class, BigInteger.class),
+
+                    Arguments.arguments(Operator.class, BinaryOperator.class),
 
                     Arguments.arguments(String.class, URI.class),
 
