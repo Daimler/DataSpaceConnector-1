@@ -10,6 +10,7 @@ public enum IdsType {
     RESOURCE("resource"),
     MEDIA_TYPE("mediatype"),
     PARTICIPANT("participant"),
+    PERMISSION("permission"),
     MESSAGE("message");
 
     private final String value;

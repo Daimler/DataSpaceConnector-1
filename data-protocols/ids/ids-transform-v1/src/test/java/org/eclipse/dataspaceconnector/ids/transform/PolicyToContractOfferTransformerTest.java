@@ -1,6 +1,7 @@
 package org.eclipse.dataspaceconnector.ids.transform;
 
 import org.easymock.EasyMock;
+import org.eclipse.dataspaceconnector.ids.spi.IdsId;
 import org.eclipse.dataspaceconnector.ids.spi.transform.TransformerContext;
 import org.eclipse.dataspaceconnector.policy.model.Duty;
 import org.eclipse.dataspaceconnector.policy.model.Permission;
@@ -14,6 +15,7 @@ import java.net.URI;
 import java.util.Collections;
 
 public class PolicyToContractOfferTransformerTest {
+    private static final URI OFFER_ID = URI.create("urn:offer:456uz984390236s");
     private static final String ASSIGNER = "https://assigner.com/";
     private static final URI ASSIGNER_URI = URI.create("https://assigner.com/");
 
@@ -78,6 +80,7 @@ public class PolicyToContractOfferTransformerTest {
         EasyMock.expect(context.transform(EasyMock.anyObject(Permission.class), EasyMock.eq(de.fraunhofer.iais.eis.Permission.class))).andReturn(idsPermission);
         EasyMock.expect(context.transform(EasyMock.anyObject(Prohibition.class), EasyMock.eq(de.fraunhofer.iais.eis.Prohibition.class))).andReturn(idsProhibition);
         EasyMock.expect(context.transform(EasyMock.anyObject(Duty.class), EasyMock.eq(de.fraunhofer.iais.eis.Duty.class))).andReturn(idsObligation);
+        EasyMock.expect(context.transform(EasyMock.isA(IdsId.class), EasyMock.eq(URI.class))).andReturn(OFFER_ID);
 
         context.reportProblem(EasyMock.anyString());
         EasyMock.expectLastCall().atLeastOnce();
@@ -90,6 +93,7 @@ public class PolicyToContractOfferTransformerTest {
 
         // verify
         Assertions.assertNotNull(result);
+        Assertions.assertEquals(OFFER_ID, result.getId());
         Assertions.assertEquals(ASSIGNER_URI, result.getProvider());
         Assertions.assertEquals(1, result.getObligation().size());
         Assertions.assertEquals(idsObligation, result.getObligation().get(0));

@@ -5,6 +5,8 @@ import de.fraunhofer.iais.eis.ContractOfferBuilder;
 import de.fraunhofer.iais.eis.Duty;
 import de.fraunhofer.iais.eis.Permission;
 import de.fraunhofer.iais.eis.Prohibition;
+import org.eclipse.dataspaceconnector.ids.spi.IdsId;
+import org.eclipse.dataspaceconnector.ids.spi.IdsType;
 import org.eclipse.dataspaceconnector.ids.spi.transform.IdsTypeTransformer;
 import org.eclipse.dataspaceconnector.ids.spi.transform.TransformerContext;
 import org.eclipse.dataspaceconnector.policy.model.Policy;
@@ -57,7 +59,9 @@ public class PolicyToContractOfferTransformer implements IdsTypeTransformer<Poli
 
         var provider = context.transform(object.getAssigner(), URI.class);
 
-        ContractOfferBuilder contractOfferBuilder = new ContractOfferBuilder(); // TODO Is there are way to not autogenerate the id?
+        var idsId = IdsId.Builder.newInstance().value(object.hashCode()).type(IdsType.CONTRACT_OFFER).build();
+        var id = context.transform(idsId, URI.class);
+        ContractOfferBuilder contractOfferBuilder = new ContractOfferBuilder(id);
 
         contractOfferBuilder._obligation_(idsObligations);
         contractOfferBuilder._prohibition_(idsProhibitions);
