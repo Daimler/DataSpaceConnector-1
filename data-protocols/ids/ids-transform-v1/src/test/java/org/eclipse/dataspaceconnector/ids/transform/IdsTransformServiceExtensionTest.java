@@ -21,6 +21,7 @@ import de.fraunhofer.iais.eis.LeftOperand;
 import de.fraunhofer.iais.eis.Representation;
 import de.fraunhofer.iais.eis.Resource;
 import de.fraunhofer.iais.eis.ResourceCatalog;
+import de.fraunhofer.iais.eis.util.RdfResource;
 import org.easymock.EasyMock;
 import org.eclipse.dataspaceconnector.ids.spi.IdsId;
 import org.eclipse.dataspaceconnector.ids.spi.IdsType;
@@ -85,6 +86,8 @@ class IdsTransformServiceExtensionTest {
                     Arguments.arguments(Duty.class, de.fraunhofer.iais.eis.Duty.class),
 
                     Arguments.arguments(Expression.class, LeftOperand.class),
+
+                    Arguments.arguments(Expression.class, RdfResource.class),
 
                     Arguments.arguments(IdsId.class, URI.class),
 

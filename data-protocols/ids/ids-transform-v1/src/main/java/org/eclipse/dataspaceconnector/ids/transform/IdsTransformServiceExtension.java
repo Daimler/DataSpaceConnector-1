@@ -66,6 +66,7 @@ public class IdsTransformServiceExtension implements ServiceExtension {
                 new DataCatalogToIdsResourceCatalogTransformer(),
                 new DutyToDutyTransformer(),
                 new ExpressionToLeftOperandTransformer(),
+                new ExpressionToRdfResourceTransformer(),
                 new IdsIdToUriTransformer(),
                 new IntegerToBigIntegerTransformer(),
                 new OperatorToBinaryOperatorTransformer(),
