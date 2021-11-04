@@ -29,6 +29,7 @@ import org.eclipse.dataspaceconnector.ids.spi.transform.TransformerRegistry;
 import org.eclipse.dataspaceconnector.ids.spi.types.Connector;
 import org.eclipse.dataspaceconnector.ids.spi.types.DataCatalog;
 import org.eclipse.dataspaceconnector.policy.model.Operator;
+import org.eclipse.dataspaceconnector.policy.model.Action;
 import org.eclipse.dataspaceconnector.spi.monitor.Monitor;
 import org.eclipse.dataspaceconnector.spi.system.ServiceExtensionContext;
 import org.eclipse.dataspaceconnector.spi.types.domain.asset.Asset;
@@ -68,6 +69,8 @@ class IdsTransformServiceExtensionTest {
         @Override
         public Stream<? extends Arguments> provideArguments(ExtensionContext context) {
             return Stream.of(
+                    Arguments.arguments(Action.class, de.fraunhofer.iais.eis.Action.class),
+
                     Arguments.arguments(Asset.class, Artifact.class),
                     Arguments.arguments(Asset.class, Representation.class),
                     Arguments.arguments(Asset.class, Resource.class),
