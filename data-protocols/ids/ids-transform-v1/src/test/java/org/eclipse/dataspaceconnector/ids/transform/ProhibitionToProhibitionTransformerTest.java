@@ -5,8 +5,7 @@ import org.eclipse.dataspaceconnector.ids.spi.IdsId;
 import org.eclipse.dataspaceconnector.ids.spi.transform.TransformerContext;
 import org.eclipse.dataspaceconnector.policy.model.Action;
 import org.eclipse.dataspaceconnector.policy.model.Constraint;
-import org.eclipse.dataspaceconnector.policy.model.Duty;
-import org.eclipse.dataspaceconnector.policy.model.Permission;
+import org.eclipse.dataspaceconnector.policy.model.Prohibition;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,9 +14,9 @@ import org.junit.jupiter.api.Test;
 import java.net.URI;
 import java.util.Collections;
 
-public class PermissionToPermissionTransformerTest {
+public class ProhibitionToProhibitionTransformerTest {
 
-    private static final URI PERMISSION_ID = URI.create("urn:permission:456uz984390236s");
+    private static final URI PROHIBITION_ID = URI.create("urn:prohibition:456uz984390236s");
     private static final String TARGET = "https://target.com";
     private static final URI TARGET_URI = URI.create(TARGET);
     private static final String ASSIGNER = "https://assigner.com";
@@ -26,42 +25,42 @@ public class PermissionToPermissionTransformerTest {
     private static final URI ASSIGNEE_URI = URI.create(ASSIGNEE);
 
     // subject
-    private PermissionToPermissionTransformer permissionToPermissionTransformer;
+    private ProhibitionToProhibitionTransformer prohibitionToProhibitionTransformer;
 
     // mocks
-    private Permission permission;
+    private Prohibition prohibition;
     private TransformerContext context;
 
     @BeforeEach
     void setUp() {
-        permissionToPermissionTransformer = new PermissionToPermissionTransformer();
-        permission = EasyMock.createMock(Permission.class);
+        prohibitionToProhibitionTransformer = new ProhibitionToProhibitionTransformer();
+        prohibition = EasyMock.createMock(Prohibition.class);
         context = EasyMock.createMock(TransformerContext.class);
     }
 
     @Test
     void testThrowsNullPointerExceptionForAll() {
-        EasyMock.replay(permission, context);
+        EasyMock.replay(prohibition, context);
 
         Assertions.assertThrows(NullPointerException.class, () -> {
-            permissionToPermissionTransformer.transform(null, null);
+            prohibitionToProhibitionTransformer.transform(null, null);
         });
     }
 
     @Test
     void testThrowsNullPointerExceptionForContext() {
-        EasyMock.replay(permission, context);
+        EasyMock.replay(prohibition, context);
 
         Assertions.assertThrows(NullPointerException.class, () -> {
-            permissionToPermissionTransformer.transform(permission, null);
+            prohibitionToProhibitionTransformer.transform(prohibition, null);
         });
     }
 
     @Test
     void testReturnsNull() {
-        EasyMock.replay(permission, context);
+        EasyMock.replay(prohibition, context);
 
-        var result = permissionToPermissionTransformer.transform(null, context);
+        var result = prohibitionToProhibitionTransformer.transform(null, context);
 
         Assertions.assertNull(result);
     }
@@ -73,36 +72,29 @@ public class PermissionToPermissionTransformerTest {
         de.fraunhofer.iais.eis.Action idsAction = de.fraunhofer.iais.eis.Action.READ;
         Constraint edcConstraint = EasyMock.createMock(Constraint.class);
         de.fraunhofer.iais.eis.Constraint idsConstraint = EasyMock.createMock(de.fraunhofer.iais.eis.Constraint.class);
-        Duty edcDuty = EasyMock.createMock(Duty.class);
-        de.fraunhofer.iais.eis.Duty idsDuty = EasyMock.createMock(de.fraunhofer.iais.eis.Duty.class);
 
-        EasyMock.expect(permission.getTarget()).andReturn(TARGET);
-        EasyMock.expect(permission.getAssigner()).andReturn(ASSIGNER);
-        EasyMock.expect(permission.getAssignee()).andReturn(ASSIGNEE);
+        EasyMock.expect(prohibition.getTarget()).andReturn(TARGET);
+        EasyMock.expect(prohibition.getAssigner()).andReturn(ASSIGNER);
+        EasyMock.expect(prohibition.getAssignee()).andReturn(ASSIGNEE);
 
-        EasyMock.expect(permission.getConstraints()).andReturn(Collections.singletonList(edcConstraint));
-        EasyMock.expect(permission.getDuty()).andReturn(edcDuty);
-        EasyMock.expect(permission.getAction()).andReturn(edcAction);
+        EasyMock.expect(prohibition.getConstraints()).andReturn(Collections.singletonList(edcConstraint));
+        EasyMock.expect(prohibition.getAction()).andReturn(edcAction);
         EasyMock.expect(context.transform(EasyMock.eq(edcAction), EasyMock.eq(de.fraunhofer.iais.eis.Action.class))).andReturn(idsAction);
         EasyMock.expect(context.transform(EasyMock.eq(edcConstraint), EasyMock.eq(de.fraunhofer.iais.eis.Constraint.class))).andReturn(idsConstraint);
-        EasyMock.expect(context.transform(EasyMock.eq(edcDuty), EasyMock.eq(de.fraunhofer.iais.eis.Duty.class))).andReturn(idsDuty);
         EasyMock.expect(context.transform(EasyMock.eq(TARGET), EasyMock.eq(URI.class))).andReturn(TARGET_URI);
         EasyMock.expect(context.transform(EasyMock.eq(ASSIGNER), EasyMock.eq(URI.class))).andReturn(ASSIGNER_URI);
         EasyMock.expect(context.transform(EasyMock.eq(ASSIGNEE), EasyMock.eq(URI.class))).andReturn(ASSIGNEE_URI);
-        EasyMock.expect(context.transform(EasyMock.isA(IdsId.class), EasyMock.eq(URI.class))).andReturn(PERMISSION_ID);
-
-        context.reportProblem(EasyMock.anyString());
-        EasyMock.expectLastCall().once();
+        EasyMock.expect(context.transform(EasyMock.isA(IdsId.class), EasyMock.eq(URI.class))).andReturn(PROHIBITION_ID);
 
         // record
-        EasyMock.replay(permission, context);
+        EasyMock.replay(prohibition, context);
 
         // invoke
-        var result = permissionToPermissionTransformer.transform(permission, context);
+        var result = prohibitionToProhibitionTransformer.transform(prohibition, context);
 
         // verify
         Assertions.assertNotNull(result);
-        Assertions.assertEquals(PERMISSION_ID, result.getId());
+        Assertions.assertEquals(PROHIBITION_ID, result.getId());
         Assertions.assertEquals(TARGET_URI, result.getTarget());
         Assertions.assertEquals(1, result.getAssigner().size());
         Assertions.assertEquals(ASSIGNER_URI, result.getAssigner().get(0));
@@ -116,6 +108,6 @@ public class PermissionToPermissionTransformerTest {
 
     @AfterEach
     void teardown() {
-        EasyMock.verify(permission, context);
+        EasyMock.verify(prohibition, context);
     }
 }

@@ -12,6 +12,7 @@ public enum IdsType {
     PARTICIPANT("participant"),
     PERMISSION("permission"),
     CONSTRAINT("constraint"),
+    PROHIBITION("prohibition"),
     MESSAGE("message");
 
     private final String value;

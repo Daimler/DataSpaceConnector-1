@@ -40,6 +40,7 @@ public class PermissionToPermissionTransformer implements IdsTypeTransformer<Per
 
         var target = context.transform(object.getTarget(), URI.class);
         var assigner = context.transform(object.getAssigner(), URI.class);
+        var assignee = context.transform(object.getAssignee(), URI.class);
 
         var duty = context.transform(object.getDuty(), de.fraunhofer.iais.eis.Duty.class);
         var action = context.transform(object.getAction(), de.fraunhofer.iais.eis.Action.class);
@@ -51,6 +52,7 @@ public class PermissionToPermissionTransformer implements IdsTypeTransformer<Per
         permissionBuilder._constraint_(idsConstraints);
         permissionBuilder._target_(target);
         permissionBuilder._assigner_(new ArrayList<>(Collections.singletonList(assigner)));
+        permissionBuilder._assignee_(new ArrayList<>(Collections.singletonList(assignee)));
         permissionBuilder._action_(new ArrayList<>(Collections.singletonList(action)));
 
         if (duty != null) {
