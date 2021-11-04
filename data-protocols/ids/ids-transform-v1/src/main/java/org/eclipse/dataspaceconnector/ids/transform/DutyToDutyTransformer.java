@@ -73,7 +73,7 @@ public class DutyToDutyTransformer implements IdsTypeTransformer<Duty, de.fraunh
         try {
             duty = dutyBuilder.build();
         } catch (ConstraintViolationException e) {
-            context.reportProblem("Failed to build IDS duty: " + e.getMessage());
+            context.reportProblem(String.format("Failed to build IDS duty: %s", e.getMessage()));
             duty = null;
         }
 

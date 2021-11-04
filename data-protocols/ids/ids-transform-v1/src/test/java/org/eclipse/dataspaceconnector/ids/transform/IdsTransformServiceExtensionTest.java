@@ -17,6 +17,7 @@ package org.eclipse.dataspaceconnector.ids.transform;
 import de.fraunhofer.iais.eis.Artifact;
 import de.fraunhofer.iais.eis.BinaryOperator;
 import de.fraunhofer.iais.eis.ConnectorEndpoint;
+import de.fraunhofer.iais.eis.LeftOperand;
 import de.fraunhofer.iais.eis.Representation;
 import de.fraunhofer.iais.eis.Resource;
 import de.fraunhofer.iais.eis.ResourceCatalog;
@@ -28,7 +29,10 @@ import org.eclipse.dataspaceconnector.ids.spi.transform.TransformResult;
 import org.eclipse.dataspaceconnector.ids.spi.transform.TransformerRegistry;
 import org.eclipse.dataspaceconnector.ids.spi.types.Connector;
 import org.eclipse.dataspaceconnector.ids.spi.types.DataCatalog;
+import org.eclipse.dataspaceconnector.policy.model.Duty;
+import org.eclipse.dataspaceconnector.policy.model.Expression;
 import org.eclipse.dataspaceconnector.policy.model.Operator;
+import org.eclipse.dataspaceconnector.policy.model.Action;
 import org.eclipse.dataspaceconnector.spi.monitor.Monitor;
 import org.eclipse.dataspaceconnector.spi.system.ServiceExtensionContext;
 import org.eclipse.dataspaceconnector.spi.types.domain.asset.Asset;
@@ -68,6 +72,8 @@ class IdsTransformServiceExtensionTest {
         @Override
         public Stream<? extends Arguments> provideArguments(ExtensionContext context) {
             return Stream.of(
+                    Arguments.arguments(Action.class, de.fraunhofer.iais.eis.Action.class),
+
                     Arguments.arguments(Asset.class, Artifact.class),
                     Arguments.arguments(Asset.class, Representation.class),
                     Arguments.arguments(Asset.class, Resource.class),
@@ -75,6 +81,10 @@ class IdsTransformServiceExtensionTest {
                     Arguments.arguments(Connector.class, de.fraunhofer.iais.eis.Connector.class),
 
                     Arguments.arguments(DataCatalog.class, ResourceCatalog.class),
+
+                    Arguments.arguments(Duty.class, de.fraunhofer.iais.eis.Duty.class),
+
+                    Arguments.arguments(Expression.class, LeftOperand.class),
 
                     Arguments.arguments(IdsId.class, URI.class),
 

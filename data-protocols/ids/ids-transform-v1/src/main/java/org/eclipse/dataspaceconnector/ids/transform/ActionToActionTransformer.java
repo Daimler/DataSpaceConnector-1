@@ -46,7 +46,7 @@ public class ActionToActionTransformer implements IdsTypeTransformer<Action, de.
         try {
             idsAction = de.fraunhofer.iais.eis.Action.valueOf(type);
         } catch (IllegalArgumentException e) {
-            context.reportProblem("Encountered undefined action type: " + type);
+            context.reportProblem(String.format("Encountered undefined action type: %s", type));
             idsAction = null;
         }
 
