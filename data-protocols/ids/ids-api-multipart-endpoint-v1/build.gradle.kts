@@ -25,7 +25,9 @@ dependencies {
     api(project(":data-protocols:ids:ids-core"))
     api(project(":data-protocols:ids:ids-transform-v1"))
 
+    testImplementation("io.rest-assured:rest-assured:4.4.0")
     testImplementation(testFixtures(project(":launchers:junit")))
+    testImplementation(project(":core:protocol:web"))
 
     api("de.fraunhofer.iais.eis.ids.infomodel:java:${infoModelVersion}")
 
