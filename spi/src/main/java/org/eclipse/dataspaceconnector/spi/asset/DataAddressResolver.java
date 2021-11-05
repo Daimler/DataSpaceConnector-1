@@ -7,7 +7,7 @@ import org.eclipse.dataspaceconnector.spi.types.domain.transfer.DataAddress;
  */
 @FunctionalInterface
 public interface DataAddressResolver {
-    String FEATURE = "edc:asset:dataaddress-resolver";
+    String FEATURE = "edc:asset:data-address-resolver";
 
     /**
      * Resolves a {@link DataAddress} for a given {@code Asset}. A {@code DataAddress} can be understood as a pointer into

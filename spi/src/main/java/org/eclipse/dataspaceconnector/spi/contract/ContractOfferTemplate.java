@@ -18,7 +18,7 @@ import org.eclipse.dataspaceconnector.spi.asset.AssetSelectorExpression;
 import org.eclipse.dataspaceconnector.spi.types.domain.asset.Asset;
 import org.eclipse.dataspaceconnector.spi.types.domain.contract.ContractOffer;
 
-import java.util.stream.Stream;
+import java.util.Iterator;
 
 /**
  * The {@link ContractOfferTemplate} resolves {@link ContractOffer}s for a stream of {@link Asset}s.
@@ -26,7 +26,7 @@ import java.util.stream.Stream;
  */
 public interface ContractOfferTemplate {
 
-    Stream<ContractOffer> getTemplatedOffers(Stream<Asset> assets);
+    ContractOffer getTemplatedOffer(Iterable<Asset> assets);
 
     AssetSelectorExpression getSelectorExpression();
 }

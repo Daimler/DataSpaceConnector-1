@@ -18,14 +18,21 @@ import static java.lang.String.format;
  * <p>
  * _Note: other {@link org.eclipse.dataspaceconnector.spi.asset.AssetIndex} implementations might have different converters!
  */
-public class CriterionToPredicateConverter implements CriterionConverter<Predicate<Asset>> {
+class CriterionToPredicateConverter implements CriterionConverter<Predicate<Asset>> {
     @Override
     public Predicate<Asset> convert(Criterion criterion) {
-        if ("=".equals(criterion.getOperator())) {
-            return asset -> Objects.equals(field(criterion.getOperandLeft(), asset), criterion.getOperandRight()) ||
-                    Objects.equals(label(criterion.getOperandLeft(), asset), criterion.getOperandRight());
+        var isEqualsOperator = "=".equals(criterion.getOperator());
+        if (!isEqualsOperator) {
+            throw new IllegalArgumentException(format("Operator [%s] is not supported by this converter!", criterion.getOperator()));
         }
-        throw new IllegalArgumentException(format("Operator [%s] is not supported by this converter!", criterion.getOperator()));
+
+        var isSelectAllCriterion = criterion.getOperandLeft().equals("*") && criterion.getOperandRight().equals("*");
+        if (isSelectAllCriterion) {
+            return asset -> true;
+        }
+
+        return asset -> Objects.equals(field(criterion.getOperandLeft(), asset), criterion.getOperandRight()) ||
+                Objects.equals(label(criterion.getOperandLeft(), asset), criterion.getOperandRight());
     }
 
     private Object field(String fieldName, Asset asset) {

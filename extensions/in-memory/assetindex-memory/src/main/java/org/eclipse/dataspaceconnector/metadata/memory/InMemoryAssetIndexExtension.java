@@ -33,7 +33,8 @@ public class InMemoryAssetIndexExtension implements ServiceExtension {
     public void initialize(ServiceExtensionContext context) {
         monitor = context.getMonitor();
 
-        InMemoryAssetIndex service = new InMemoryAssetIndex(monitor, new CriterionToPredicateConverter());
+        var storage = new InMemoryAssetStorage();
+        var service = new InMemoryAssetIndex(storage, new CriterionToPredicateConverter());
         context.registerService(AssetIndex.class, service);
 
         monitor.info("Initialized In-Memory Asset Index extension");
