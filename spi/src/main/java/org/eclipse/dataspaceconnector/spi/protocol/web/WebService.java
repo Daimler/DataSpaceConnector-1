@@ -19,6 +19,8 @@ package org.eclipse.dataspaceconnector.spi.protocol.web;
  */
 public interface WebService {
 
+    String FEATURE = "edc:webservice";
+
     /**
      * Registers a JAX-RS resource instance, or controller. Extensions may contribute bespoke APIs to the runtime.
      */

@@ -22,6 +22,8 @@ import org.jetbrains.annotations.NotNull;
  */
 public interface DataFlowManager {
 
+    String FEATURE = "edc:transfer:data-flow-manager";
+
     /**
      * Register the controller.
      */

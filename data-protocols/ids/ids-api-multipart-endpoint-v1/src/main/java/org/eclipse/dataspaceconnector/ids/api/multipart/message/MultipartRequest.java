@@ -14,7 +14,7 @@
 
 package org.eclipse.dataspaceconnector.ids.api.multipart.message;
 
-import de.fraunhofer.iais.eis.RequestMessage;
+import de.fraunhofer.iais.eis.Message;
 import org.eclipse.dataspaceconnector.spi.iam.VerificationResult;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -23,18 +23,18 @@ import java.util.Objects;
 
 public class MultipartRequest {
 
-    private final RequestMessage header;
+    private final Message header;
     private final String payload;
     private final VerificationResult verificationResult;
 
-    private MultipartRequest(@NotNull RequestMessage header, @Nullable String payload, @Nullable VerificationResult verificationResult) {
+    private MultipartRequest(@NotNull Message header, @Nullable String payload, @Nullable VerificationResult verificationResult) {
         this.header = Objects.requireNonNull(header);
         this.payload = payload;
         this.verificationResult = verificationResult;
     }
 
     @NotNull
-    public RequestMessage getHeader() {
+    public Message getHeader() {
         return header;
     }
 
@@ -50,7 +50,7 @@ public class MultipartRequest {
 
     public static class Builder {
 
-        private RequestMessage header;
+        private Message header;
         private String payload;
         private VerificationResult verificationResult;
 
@@ -61,7 +61,7 @@ public class MultipartRequest {
             return new Builder();
         }
 
-        public Builder header(@Nullable RequestMessage header) {
+        public Builder header(@Nullable Message header) {
             this.header = header;
             return this;
         }

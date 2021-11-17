@@ -15,6 +15,7 @@
 package org.eclipse.dataspaceconnector.ids.api.multipart;
 
 import org.eclipse.dataspaceconnector.ids.api.multipart.controller.MultipartController;
+import org.eclipse.dataspaceconnector.ids.api.multipart.handler.ArtifactResponseHandler;
 import org.eclipse.dataspaceconnector.ids.api.multipart.handler.DescriptionHandler;
 import org.eclipse.dataspaceconnector.ids.api.multipart.handler.Handler;
 import org.eclipse.dataspaceconnector.ids.api.multipart.handler.description.ArtifactDescriptionRequestHandler;
@@ -107,6 +108,8 @@ public final class IdsMultipartApiServiceExtension implements ServiceExtension {
         ConnectorDescriptionRequestHandler connectorDescriptionRequestHandler = new ConnectorDescriptionRequestHandler(monitor, connectorId, connectorService, transformerRegistry);
 
         // create request handler
+        List<Handler> handlers = new LinkedList<>();
+
         DescriptionHandler descriptionHandler = new DescriptionHandler(
                 monitor,
                 connectorId,
@@ -116,9 +119,10 @@ public final class IdsMultipartApiServiceExtension implements ServiceExtension {
                 representationDescriptionRequestHandler,
                 resourceDescriptionRequestHandler,
                 connectorDescriptionRequestHandler);
-
-        List<Handler> handlers = new LinkedList<>();
         handlers.add(descriptionHandler);
+
+        ArtifactResponseHandler artifactResponseHandler = new ArtifactResponseHandler(monitor, connectorId);
+        handlers.add(artifactResponseHandler);
 
         // create & register controller
         MultipartController multipartController = new MultipartController(connectorId, identityService, handlers);

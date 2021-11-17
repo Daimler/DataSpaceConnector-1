@@ -22,6 +22,8 @@ import org.jetbrains.annotations.NotNull;
  */
 public interface DataFlowController {
 
+    String FEATURE = "edc:transfer:data-flow-controller";
+
     /**
      * Returns true if the manager can handle the data type.
      */

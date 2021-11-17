@@ -25,6 +25,8 @@ import java.util.concurrent.CompletableFuture;
  */
 public interface RemoteMessageDispatcherRegistry {
 
+    String FEATURE = "dataspaceconnector:dispatcher";
+
     /**
      * Registers a dispatcher.
      */

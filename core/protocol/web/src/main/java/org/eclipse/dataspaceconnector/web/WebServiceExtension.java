@@ -38,7 +38,7 @@ public class WebServiceExtension implements ServiceExtension {
 
     @Override
     public Set<String> provides() {
-        return Set.of("edc:webservice");
+        return Set.of(WebService.FEATURE);
     }
 
     @Override

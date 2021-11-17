@@ -15,7 +15,9 @@
 package org.eclipse.dataspaceconnector.ids.api.multipart.controller;
 
 import de.fraunhofer.iais.eis.DynamicAttributeToken;
+import de.fraunhofer.iais.eis.Message;
 import de.fraunhofer.iais.eis.RequestMessage;
+import de.fraunhofer.iais.eis.ResponseMessage;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
@@ -64,7 +66,7 @@ public class MultipartController {
 
     @POST
     public Response request(
-            @FormDataParam("header") RequestMessage header,
+            @FormDataParam("header") Message header,
             @FormDataParam("payload") String payload) {
         if (header == null) {
             return Response.ok(
