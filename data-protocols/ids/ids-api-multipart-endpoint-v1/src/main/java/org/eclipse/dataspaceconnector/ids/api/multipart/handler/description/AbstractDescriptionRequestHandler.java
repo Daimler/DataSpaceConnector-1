@@ -26,6 +26,7 @@ import org.eclipse.dataspaceconnector.spi.monitor.Monitor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.InputStream;
 import java.net.URI;
 import java.util.Objects;
 
@@ -58,7 +59,7 @@ abstract class AbstractDescriptionRequestHandler<T, S> implements DescriptionReq
     public final MultipartResponse handle(
             @NotNull DescriptionRequestMessage descriptionRequestMessage,
             @NotNull VerificationResult verificationResult,
-            @Nullable String payload) {
+            @Nullable InputStream payload) {
         Objects.requireNonNull(descriptionRequestMessage);
 
         URI uri = descriptionRequestMessage.getRequestedElement();

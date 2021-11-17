@@ -1,6 +1,10 @@
 package org.eclipse.dataspaceconnector.memory.dataflow;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import de.fraunhofer.iais.eis.ArtifactResponseMessage;
 import de.fraunhofer.iais.eis.ArtifactResponseMessageBuilder;
 import de.fraunhofer.iais.eis.Message;
@@ -28,6 +32,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.net.URI;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Objects;
@@ -35,15 +41,23 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 public class SampleMessageDispatcher implements RemoteMessageDispatcher {
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
+    {
+        OBJECT_MAPPER.registerModule(new JavaTimeModule()); // configure ISO 8601 time de/serialization
+        OBJECT_MAPPER.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false); // serialize dates in ISO 8601 format
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+        OBJECT_MAPPER.setDateFormat(df);
+        OBJECT_MAPPER.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        SimpleModule module = new SimpleModule();
+        OBJECT_MAPPER.registerModule(module);
+    }
     private final Monitor monitor;
     private final OkHttpClient okHttpClient;
-    private final ObjectMapper objectMapper;
 
     public SampleMessageDispatcher(@NotNull Monitor monitor, @NotNull OkHttpClient okHttpClient) {
         this.monitor = Objects.requireNonNull(monitor);
         this.okHttpClient = Objects.requireNonNull(okHttpClient);
-        objectMapper = new ObjectMapper();
     }
 
     @Override
@@ -62,7 +76,7 @@ public class SampleMessageDispatcher implements RemoteMessageDispatcher {
 
         SampleRemoteMessage sampleRemoteMessage = (SampleRemoteMessage) message;
 
-        ArtifactResponseMessage responseMessage = createArtifactResponseMessage(sampleRemoteMessage.getConnectorId(), sampleRemoteMessage.getCorrelationMessage());
+        ArtifactResponseMessage responseMessage = createArtifactResponseMessage(sampleRemoteMessage.getConnectorId(), null);
 
         try {
             Request request = createRequest(sampleRemoteMessage.getConsumerUrl(), sampleRemoteMessage.getData(), responseMessage);
@@ -134,7 +148,7 @@ public class SampleMessageDispatcher implements RemoteMessageDispatcher {
 
     private static ArtifactResponseMessage createArtifactResponseMessage(
             @Nullable String connectorId,
-            @Nullable Message correlationMessage) {
+            @SuppressWarnings("SameParameterValue") @Nullable Message correlationMessage) {
 
         URI messageId = URI.create(String.join(IdsIdParser.DELIMITER, IdsIdParser.SCHEME, IdsType.MESSAGE.getValue(), UUID.randomUUID().toString()));
         ArtifactResponseMessageBuilder builder = new ArtifactResponseMessageBuilder(messageId);
@@ -152,8 +166,6 @@ public class SampleMessageDispatcher implements RemoteMessageDispatcher {
 
         builder._issuerConnector_(connectorIdUri);
         builder._senderAgent_(connectorIdUri);
-
-        builder._issued_(CalendarUtil.gregorianNow());
 
         if (correlationMessage != null) {
             URI id = correlationMessage.getId();
@@ -176,7 +188,7 @@ public class SampleMessageDispatcher implements RemoteMessageDispatcher {
     }
 
     private String toJson(Message message) throws Exception {
-        return objectMapper.writeValueAsString(message);
+        return OBJECT_MAPPER.writeValueAsString(message);
     }
 
 }

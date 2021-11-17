@@ -6,7 +6,6 @@ import org.eclipse.dataspaceconnector.ids.api.multipart.message.MultipartRequest
 import org.eclipse.dataspaceconnector.ids.api.multipart.message.MultipartResponse;
 import org.eclipse.dataspaceconnector.ids.spi.IdsId;
 import org.eclipse.dataspaceconnector.ids.spi.IdsType;
-import org.eclipse.dataspaceconnector.ids.spi.Protocols;
 import org.eclipse.dataspaceconnector.ids.spi.transform.TransformerRegistry;
 import org.eclipse.dataspaceconnector.spi.asset.DataAddressResolver;
 import org.eclipse.dataspaceconnector.spi.iam.VerificationResult;
@@ -20,9 +19,9 @@ import org.jetbrains.annotations.Nullable;
 
 import java.net.URI;
 import java.util.Objects;
+import java.util.UUID;
 
 import static org.eclipse.dataspaceconnector.ids.api.multipart.util.RejectionMessageUtil.badParameters;
-import static org.eclipse.dataspaceconnector.ids.api.multipart.util.RejectionMessageUtil.messageTypeNotSupported;
 
 public class ArtifactRequestHandler implements Handler {
 
@@ -77,19 +76,25 @@ public class ArtifactRequestHandler implements Handler {
         String assetId = idsId.getValue();
         DataAddress dataAddress = dataAddressResolver.resolveForAsset(assetId);
         DataRequest dataRequest = DataRequest.Builder.newInstance()
-                .id(null)
-                .asset(null)
-                .protocol(Protocols.IDS_MULTIPART)
-                .destinationType()
+                .id(UUID.randomUUID().toString())
+                .asset(null) // TODO remove asset here
+                .protocol("ids-sample") // until it's possible to define a data transfer method in IDS, use ids-sample
                 .dataDestination(dataAddress)
+                .connectorId(connectorId)
+                .connectorAddress(artifactRequestMessage.getIssuerConnector().toString()) // TODO use something else
                 .build();
 
-
         TransferProcess transferProcess = TransferProcess.Builder.newInstance()
+                .id(UUID.randomUUID().toString())
                 .type(TransferProcess.Type.PROVIDER)
-                .
+                .dataRequest(dataRequest)
+                .build();
 
-        return null;
+        transferProcessStore.create(transferProcess);
+
+        return MultipartResponse.Builder.newInstance()
+                .header(ResponseMessageUtil.createDummyResponse(connectorId, artifactRequestMessage))
+                .build();
     }
 
     private MultipartResponse createBadParametersErrorMultipartResponse(Message message) {
@@ -98,9 +103,4 @@ public class ArtifactRequestHandler implements Handler {
                 .build();
     }
 
-    private MultipartResponse createErrorMultipartResponse(Message message) {
-        return MultipartResponse.Builder.newInstance()
-                .header(messageTypeNotSupported(message, connectorId))
-                .build();
-    }
 }

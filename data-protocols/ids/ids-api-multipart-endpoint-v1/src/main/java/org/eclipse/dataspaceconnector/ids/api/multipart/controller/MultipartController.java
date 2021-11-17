@@ -14,10 +14,7 @@
 
 package org.eclipse.dataspaceconnector.ids.api.multipart.controller;
 
-import de.fraunhofer.iais.eis.DynamicAttributeToken;
 import de.fraunhofer.iais.eis.Message;
-import de.fraunhofer.iais.eis.RequestMessage;
-import de.fraunhofer.iais.eis.ResponseMessage;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
@@ -27,6 +24,7 @@ import jakarta.ws.rs.core.Response;
 import org.eclipse.dataspaceconnector.ids.api.multipart.handler.Handler;
 import org.eclipse.dataspaceconnector.ids.api.multipart.message.MultipartRequest;
 import org.eclipse.dataspaceconnector.ids.api.multipart.message.MultipartResponse;
+import org.eclipse.dataspaceconnector.spi.iam.ClaimToken;
 import org.eclipse.dataspaceconnector.spi.iam.IdentityService;
 import org.eclipse.dataspaceconnector.spi.iam.VerificationResult;
 import org.glassfish.jersey.media.multipart.FormDataBodyPart;
@@ -34,13 +32,12 @@ import org.glassfish.jersey.media.multipart.FormDataMultiPart;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.InputStream;
 import java.util.List;
 import java.util.Objects;
 
 import static org.eclipse.dataspaceconnector.ids.api.multipart.util.RejectionMessageUtil.malformedMessage;
 import static org.eclipse.dataspaceconnector.ids.api.multipart.util.RejectionMessageUtil.messageTypeNotSupported;
-import static org.eclipse.dataspaceconnector.ids.api.multipart.util.RejectionMessageUtil.notAuthenticated;
-import static org.eclipse.dataspaceconnector.ids.api.multipart.util.RejectionMessageUtil.notAuthorized;
 import static org.eclipse.dataspaceconnector.ids.api.multipart.util.RejectionMessageUtil.notFound;
 
 @Consumes({ MediaType.MULTIPART_FORM_DATA })
@@ -67,38 +64,38 @@ public class MultipartController {
     @POST
     public Response request(
             @FormDataParam("header") Message header,
-            @FormDataParam("payload") String payload) {
+            @FormDataParam("payload") InputStream payload) {
         if (header == null) {
             return Response.ok(
                     createFormDataMultiPart(
                             malformedMessage(null, connectorId))).build();
         }
 
-        DynamicAttributeToken dynamicAttributeToken = header.getSecurityToken();
-        if (dynamicAttributeToken == null || dynamicAttributeToken.getTokenValue() == null) {
-            return Response.ok(
-                    createFormDataMultiPart(
-                            notAuthenticated(header, connectorId))).build();
-        }
-
-        VerificationResult verificationResult = identityService.verifyJwtToken(
-                dynamicAttributeToken.getTokenValue(), null);
-        if (verificationResult == null) {
-            return Response.ok(
-                    createFormDataMultiPart(
-                            notAuthenticated(header, connectorId))).build();
-        }
-
-        if (!verificationResult.valid()) {
-            return Response.ok(
-                    createFormDataMultiPart(
-                            notAuthorized(header, connectorId))).build();
-        }
+//        DynamicAttributeToken dynamicAttributeToken = header.getSecurityToken();
+//        if (dynamicAttributeToken == null || dynamicAttributeToken.getTokenValue() == null) {
+//            return Response.ok(
+//                    createFormDataMultiPart(
+//                            notAuthenticated(header, connectorId))).build();
+//        }
+//
+//        VerificationResult verificationResult = identityService.verifyJwtToken(
+//                dynamicAttributeToken.getTokenValue(), null);
+//        if (verificationResult == null) {
+//            return Response.ok(
+//                    createFormDataMultiPart(
+//                            notAuthenticated(header, connectorId))).build();
+//        }
+//
+//        if (!verificationResult.valid()) {
+//            return Response.ok(
+//                    createFormDataMultiPart(
+//                            notAuthorized(header, connectorId))).build();
+//        }
 
         MultipartRequest multipartRequest = MultipartRequest.Builder.newInstance()
                 .header(header)
                 .payload(payload)
-                .verificationResult(verificationResult)
+//                .verificationResult(verificationResult)
                 .build();
 
         Handler handler = getRequestHandler(multipartRequest);
@@ -108,7 +105,8 @@ public class MultipartController {
                             messageTypeNotSupported(header, connectorId))).build();
         }
 
-        MultipartResponse multipartResponse = handler.handleRequest(multipartRequest, verificationResult);
+//        MultipartResponse multipartResponse = handler.handleRequest(multipartRequest, verificationResult);
+        MultipartResponse multipartResponse = handler.handleRequest(multipartRequest, new VerificationResult(ClaimToken.Builder.newInstance().build()));
         if (multipartResponse != null) {
             return Response.ok(
                     createFormDataMultiPart(multipartResponse)).build();

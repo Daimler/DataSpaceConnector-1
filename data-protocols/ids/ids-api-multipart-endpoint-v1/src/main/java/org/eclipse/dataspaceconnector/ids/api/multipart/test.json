@@ -1,0 +1,7 @@
+{
+  "@type": "ids:ArtifactRequestMessage",
+  "ids:issuerConnector": "http://localhost:1500/api/ids/multipart",
+  "ids:requestedArtifact": "urn:artifact:hello",
+  "modelVersion": "4.0.0",
+  "@id": "https://w3id.org/idsa/autogen/selfDescriptionResponse/851e3218-2bb7-45f9-8795-7f99c1f19680"
+}

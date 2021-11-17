@@ -20,6 +20,8 @@ import org.eclipse.dataspaceconnector.spi.iam.VerificationResult;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.InputStream;
+
 
 public interface DescriptionRequestHandler {
 
@@ -27,5 +29,5 @@ public interface DescriptionRequestHandler {
     MultipartResponse handle(
             @NotNull DescriptionRequestMessage descriptionRequestMessage,
             @NotNull VerificationResult verificationResult,
-            @Nullable String payload);
+            @Nullable InputStream payload);
 }

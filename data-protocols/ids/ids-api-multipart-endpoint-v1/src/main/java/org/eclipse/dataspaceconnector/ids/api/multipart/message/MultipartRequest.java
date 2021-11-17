@@ -19,15 +19,16 @@ import org.eclipse.dataspaceconnector.spi.iam.VerificationResult;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.InputStream;
 import java.util.Objects;
 
 public class MultipartRequest {
 
     private final Message header;
-    private final String payload;
+    private final InputStream payload;
     private final VerificationResult verificationResult;
 
-    private MultipartRequest(@NotNull Message header, @Nullable String payload, @Nullable VerificationResult verificationResult) {
+    private MultipartRequest(@NotNull Message header, @Nullable InputStream payload, @Nullable VerificationResult verificationResult) {
         this.header = Objects.requireNonNull(header);
         this.payload = payload;
         this.verificationResult = verificationResult;
@@ -39,7 +40,7 @@ public class MultipartRequest {
     }
 
     @Nullable
-    public String getPayload() {
+    public InputStream getPayload() {
         return payload;
     }
 
@@ -51,7 +52,7 @@ public class MultipartRequest {
     public static class Builder {
 
         private Message header;
-        private String payload;
+        private InputStream payload;
         private VerificationResult verificationResult;
 
         private Builder() {
@@ -66,7 +67,7 @@ public class MultipartRequest {
             return this;
         }
 
-        public Builder payload(@Nullable String payload) {
+        public Builder payload(@Nullable InputStream payload) {
             this.payload = payload;
             return this;
         }

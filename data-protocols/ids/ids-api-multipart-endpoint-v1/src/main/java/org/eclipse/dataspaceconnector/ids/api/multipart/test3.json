@@ -1,0 +1,14 @@
+{
+  "@type": "ids:ArtifactResponseMessage",
+  "@id": "urn:message:804e40ff-bbbd-4c35-a0be-21c8acdf071a",
+  "ids:senderAgent": "urn:connector:edc",
+  "ids:issuerConnector": "urn:connector:edc",
+  "ids:modelVersion": "4.0.0",
+  "ids:recipientConnector": null,
+  "ids:securityToken": null,
+  "ids:recipientAgent": null,
+  "ids:correlationMessage": null,
+  "ids:authorizationToken": null,
+  "ids:transferContract": null,
+  "ids:contentVersion": "4.0.0"
+}

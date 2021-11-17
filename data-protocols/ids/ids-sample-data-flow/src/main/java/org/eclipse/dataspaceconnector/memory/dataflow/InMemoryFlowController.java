@@ -1,8 +1,6 @@
 package org.eclipse.dataspaceconnector.memory.dataflow;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import de.fraunhofer.iais.eis.Message;
 import org.eclipse.dataspaceconnector.spi.EdcException;
 import org.eclipse.dataspaceconnector.spi.message.RemoteMessageDispatcherRegistry;
 import org.eclipse.dataspaceconnector.spi.monitor.Monitor;
@@ -37,6 +35,9 @@ public class InMemoryFlowController implements DataFlowController {
     @Override
     public @NotNull DataFlowInitiateResponse initiateFlow(DataRequest dataRequest) {
 
+        var consumerUrl = dataRequest.getConnectorAddress();
+        var connectorId = dataRequest.getConnectorId();
+
         var destination = dataRequest.getDataDestination();
 
         if (!destination.getType().equals(InMemoryDataFlowSchema.TYPE)) {
@@ -48,41 +49,19 @@ public class InMemoryFlowController implements DataFlowController {
             throw new EdcException(String.format("InMemoryFlowController: Missing key attribute (request %s)", dataRequest.getId()));
         }
 
-        var consumerUrl = destination.getProperty(InMemoryDataFlowSchema.ATTRIBUTE_CONSUMER_URL);
-        if (consumerUrl == null || consumerUrl.isEmpty()) {
-            throw new EdcException(String.format("InMemoryFlowController: Missing consumer url attribute (request %s)", dataRequest.getId()));
-        }
-
-        var connectorId = destination.getProperty(InMemoryDataFlowSchema.ATTRIBUTE_CONNECTOR_ID);
-        if (connectorId == null || connectorId.isEmpty()) {
-            throw new EdcException(String.format("InMemoryFlowController: Missing connector id attribute (request %s)", dataRequest.getId()));
-        }
-
-        var correlationMessageJson = destination.getProperty(InMemoryDataFlowSchema.ATTRIBUTE_CORRELATION_MESSAGE);
-        if (correlationMessageJson == null || correlationMessageJson.isEmpty()) {
-            throw new EdcException(String.format("InMemoryFlowController: Missing correlation message attribute (request %s)", dataRequest.getId()));
-        }
-
-        Message correlationMessage;
-        try {
-            correlationMessage = objectMapper.readValue(correlationMessageJson, Message.class);
-        } catch (JsonProcessingException e) {
-            throw new EdcException(e);
-        }
-
         var data = inMemoryDataStore.load(key);
         if (data == null || data.length == 0) {
             throw new EdcException(String.format("InMemoryFlowController: No data found for key %s (request %s)", key, dataRequest.getId()));
         }
 
-        RemoteMessage remoteMessage = createSampleMessage(connectorId, correlationMessage, consumerUrl, data);
+        RemoteMessage remoteMessage = createSampleMessage(connectorId, consumerUrl, data);
         remoteMessageDispatcherRegistry.send(Void.class, remoteMessage, null);
 
         return DataFlowInitiateResponse.OK;
     }
 
-    private RemoteMessage createSampleMessage(String connectorId, Message correlationMessage, String consumerUrl, byte[] data) {
-        return new SampleRemoteMessage(connectorId, correlationMessage, consumerUrl, data);
+    private RemoteMessage createSampleMessage(String connectorId, String consumerUrl, byte[] data) {
+        return new SampleRemoteMessage(connectorId, consumerUrl, data);
     }
 
 }

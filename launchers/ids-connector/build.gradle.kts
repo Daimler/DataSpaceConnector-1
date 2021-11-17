@@ -33,6 +33,7 @@ dependencies {
     implementation(project(":extensions:in-memory:assetindex-memory"))
 
     implementation(project(":data-protocols:ids"))
+    implementation(project(":data-protocols:ids:ids-sample-data-flow"))
 
     //implementation(project(":samples:demo-asset-index"))
     implementation(project(":samples:demo-contract-framework"))

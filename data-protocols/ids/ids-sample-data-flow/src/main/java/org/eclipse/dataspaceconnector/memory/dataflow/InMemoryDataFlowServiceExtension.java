@@ -1,6 +1,7 @@
 package org.eclipse.dataspaceconnector.memory.dataflow;
 
 import okhttp3.OkHttpClient;
+import org.eclipse.dataspaceconnector.spi.asset.AssetIndexLoader;
 import org.eclipse.dataspaceconnector.spi.message.RemoteMessageDispatcherRegistry;
 import org.eclipse.dataspaceconnector.spi.monitor.Monitor;
 import org.eclipse.dataspaceconnector.spi.protocol.web.WebService;
@@ -29,7 +30,8 @@ public class InMemoryDataFlowServiceExtension implements ServiceExtension {
         var schemaRegistry = context.getService(SchemaRegistry.class);
         schemaRegistry.register(new InMemoryDataFlowSchema());
         var webService = context.getService(WebService.class);
-        webService.registerController(new InMemoryDataController(monitor, store));
+        var assetIndexLoader = context.getService(AssetIndexLoader.class);
+        webService.registerController(new InMemoryDataController(monitor, store, assetIndexLoader));
         var okHttpClient = context.getService(OkHttpClient.class);
         var remoteMessageDispatcherRegistry = context.getService(RemoteMessageDispatcherRegistry.class);
         remoteMessageDispatcherRegistry.register(new SampleMessageDispatcher(monitor, okHttpClient));

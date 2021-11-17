@@ -28,6 +28,7 @@ import org.eclipse.dataspaceconnector.spi.monitor.Monitor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.InputStream;
 import java.net.URI;
 import java.util.Objects;
 
@@ -55,7 +56,7 @@ public class ConnectorDescriptionRequestHandler implements DescriptionRequestHan
     @Override
     public MultipartResponse handle(@NotNull DescriptionRequestMessage descriptionRequestMessage,
                                     @NotNull VerificationResult verificationResult,
-                                    @Nullable String payload) {
+                                    @Nullable InputStream payload) {
         Objects.requireNonNull(verificationResult);
         Objects.requireNonNull(descriptionRequestMessage);
 

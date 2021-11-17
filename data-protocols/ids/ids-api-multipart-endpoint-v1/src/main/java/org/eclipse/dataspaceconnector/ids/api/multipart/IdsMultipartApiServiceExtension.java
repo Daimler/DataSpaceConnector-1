@@ -15,6 +15,7 @@
 package org.eclipse.dataspaceconnector.ids.api.multipart;
 
 import org.eclipse.dataspaceconnector.ids.api.multipart.controller.MultipartController;
+import org.eclipse.dataspaceconnector.ids.api.multipart.handler.ArtifactRequestHandler;
 import org.eclipse.dataspaceconnector.ids.api.multipart.handler.ArtifactResponseHandler;
 import org.eclipse.dataspaceconnector.ids.api.multipart.handler.DescriptionHandler;
 import org.eclipse.dataspaceconnector.ids.api.multipart.handler.Handler;
@@ -32,12 +33,14 @@ import org.eclipse.dataspaceconnector.ids.spi.transform.TransformerRegistry;
 import org.eclipse.dataspaceconnector.spi.EdcException;
 import org.eclipse.dataspaceconnector.spi.EdcSetting;
 import org.eclipse.dataspaceconnector.spi.asset.AssetIndex;
+import org.eclipse.dataspaceconnector.spi.asset.DataAddressResolver;
 import org.eclipse.dataspaceconnector.spi.contract.ContractOfferService;
 import org.eclipse.dataspaceconnector.spi.iam.IdentityService;
 import org.eclipse.dataspaceconnector.spi.monitor.Monitor;
 import org.eclipse.dataspaceconnector.spi.protocol.web.WebService;
 import org.eclipse.dataspaceconnector.spi.system.ServiceExtension;
 import org.eclipse.dataspaceconnector.spi.system.ServiceExtensionContext;
+import org.eclipse.dataspaceconnector.spi.transfer.store.TransferProcessStore;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.LinkedList;
@@ -61,6 +64,8 @@ public final class IdsMultipartApiServiceExtension implements ServiceExtension {
     @Override
     public Set<String> requires() {
         return Set.of(IdentityService.FEATURE,
+                TransferProcessStore.FEATURE,
+                DataAddressResolver.FEATURE,
                 "edc:ids:core",
                 "edc:ids:transform:v1");
     }
@@ -123,6 +128,11 @@ public final class IdsMultipartApiServiceExtension implements ServiceExtension {
 
         ArtifactResponseHandler artifactResponseHandler = new ArtifactResponseHandler(monitor, connectorId);
         handlers.add(artifactResponseHandler);
+
+        TransferProcessStore transferProcessStore = serviceExtensionContext.getService(TransferProcessStore.class);
+        DataAddressResolver dataAddressResolver = serviceExtensionContext.getService(DataAddressResolver.class);
+        ArtifactRequestHandler artifactRequestHandler = new ArtifactRequestHandler(monitor, connectorId, transformerRegistry, transferProcessStore, dataAddressResolver);
+        handlers.add(artifactRequestHandler);
 
         // create & register controller
         MultipartController multipartController = new MultipartController(connectorId, identityService, handlers);
