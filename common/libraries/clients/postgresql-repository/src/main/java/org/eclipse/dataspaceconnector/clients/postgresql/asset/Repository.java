@@ -88,7 +88,6 @@ public interface Repository {
      */
     void create(@NotNull ContractDefinition contractDefinition) throws SQLException;
 
-
     /**
      * Stores the contract definition in one transaction
      *

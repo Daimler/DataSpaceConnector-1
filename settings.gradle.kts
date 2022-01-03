@@ -49,6 +49,7 @@ include(":extensions:ion:ion-client")
 // modules for technology- or cloud-provider extensions
 include(":extensions:aws")
 include(":extensions:api:control")
+include(":extensions:api:data-load")
 include(":extensions:aws:s3:provision")
 include(":extensions:aws:s3:s3-schema")
 include(":extensions:aws:aws-test")
@@ -114,6 +115,8 @@ include(":launchers:test")
 include(":launchers:ids-connector")
 include(":launchers:registration-service-app")
 include(":launchers:data-loader-cli")
+include(":launchers:data-loader-cli-new")
+include(":launchers:data-loader-service")
 
 // modules for code samples
 include(":samples:other:commandline:consumer")

@@ -32,7 +32,7 @@ public class DataAddress {
     private static final String KEYNAME = "keyName";
     private final Map<String, String> properties = new HashMap<>();
 
-    private DataAddress() {
+    protected DataAddress() {
     }
 
     @NotNull

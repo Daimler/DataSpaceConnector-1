@@ -1,0 +1,34 @@
+[
+  {
+    "type": "asset",
+    "id": "asset-1",
+    "properties": {
+      "department": "research"
+    },
+    "address": {
+      "type": "file",
+      "path": "/tmp/file1.txt"
+    }
+  },
+  {
+    "type": "contract-definition",
+    "id": "cd-1",
+    "selectors": [
+      {
+        "type": "property",
+        "key": "department",
+        "value": "research"
+      }
+    ],
+    "constraints": [
+      {
+        "type": "geo-location",
+        "location": "eu"
+      },
+      {
+        "type": "event",
+        "name": "quality-alert"
+      }
+    ]
+  }
+]
