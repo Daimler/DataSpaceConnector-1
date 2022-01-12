@@ -18,6 +18,12 @@ plugins {
     `maven-publish`
 }
 
+val h2Version: String by project
+
+dependencies {
+    testImplementation("com.h2database:h2:${h2Version}")
+}
+
 publishing {
     publications {
         create<MavenPublication>("common-sql-lib") {

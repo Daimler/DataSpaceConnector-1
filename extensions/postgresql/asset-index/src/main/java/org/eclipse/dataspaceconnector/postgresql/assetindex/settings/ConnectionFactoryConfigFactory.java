@@ -17,7 +17,7 @@ package org.eclipse.dataspaceconnector.postgresql.assetindex.settings;
 import org.eclipse.dataspaceconnector.spi.EdcException;
 import org.eclipse.dataspaceconnector.spi.monitor.Monitor;
 import org.eclipse.dataspaceconnector.spi.system.ServiceExtensionContext;
-import org.eclipse.dataspaceconnector.sql.connection.postgresql.PostgresqlConnectionFactoryConfig;
+import org.eclipse.dataspaceconnector.sql.postgresql.PostgresqlConnectionFactoryConfig;
 import org.jetbrains.annotations.NotNull;
 
 import java.net.URI;

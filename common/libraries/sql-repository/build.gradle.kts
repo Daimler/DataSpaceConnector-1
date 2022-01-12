@@ -20,17 +20,16 @@ plugins {
 
 val jupiterVersion: String by project
 val testContainersVersion: String by project
+val h2Version: String by project
 
 dependencies {
     implementation(project(":spi"))
     implementation(project(":common:libraries:sql-lib"))
 
-    testFixturesImplementation(project(":common:libraries:sql-pool-commons-lib"))
     testFixturesImplementation(project(":common:libraries:sql-lib"))
-    /* TODO Check License */
-    testFixturesImplementation("com.h2database:h2:1.4.200")
+    testFixturesImplementation(project(":common:libraries:sql-pool-commons-lib"))
+    testFixturesImplementation("com.h2database:h2:${h2Version}")
     testFixturesImplementation("org.junit.jupiter:junit-jupiter-api:${jupiterVersion}")
-    testFixturesImplementation("org.junit.jupiter:junit-jupiter-params:${jupiterVersion}")
 }
 
 publishing {

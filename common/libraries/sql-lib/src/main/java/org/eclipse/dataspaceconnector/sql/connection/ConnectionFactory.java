@@ -19,8 +19,9 @@ import java.sql.SQLException;
 
 /**
  * A ConnectionFactory combines a set of connection configuration
- * parameters that has been defined prior to connection creation.
+ * parameters that have been defined prior to connection creation.
  */
+@FunctionalInterface
 public interface ConnectionFactory {
 
     /**

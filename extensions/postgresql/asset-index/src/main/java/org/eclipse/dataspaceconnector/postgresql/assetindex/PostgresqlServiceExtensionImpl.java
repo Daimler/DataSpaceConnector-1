@@ -20,11 +20,10 @@ import org.eclipse.dataspaceconnector.spi.asset.AssetIndex;
 import org.eclipse.dataspaceconnector.spi.system.Provides;
 import org.eclipse.dataspaceconnector.spi.system.ServiceExtension;
 import org.eclipse.dataspaceconnector.spi.system.ServiceExtensionContext;
-import org.eclipse.dataspaceconnector.sql.SqlClient;
-import org.eclipse.dataspaceconnector.sql.connection.pool.commons.CommonsConnectionPool;
-import org.eclipse.dataspaceconnector.sql.connection.pool.commons.CommonsConnectionPoolConfig;
-import org.eclipse.dataspaceconnector.sql.connection.postgresql.PostgresqlConnectionFactory;
-import org.eclipse.dataspaceconnector.sql.connection.postgresql.PostgresqlConnectionFactoryConfig;
+import org.eclipse.dataspaceconnector.sql.pool.commons.CommonsConnectionPool;
+import org.eclipse.dataspaceconnector.sql.pool.commons.CommonsConnectionPoolConfig;
+import org.eclipse.dataspaceconnector.sql.postgresql.PostgresqlConnectionFactory;
+import org.eclipse.dataspaceconnector.sql.postgresql.PostgresqlConnectionFactoryConfig;
 import org.eclipse.dataspaceconnector.sql.repository.Repository;
 import org.eclipse.dataspaceconnector.sql.repository.RepositoryImpl;
 import org.jetbrains.annotations.NotNull;
@@ -32,15 +31,15 @@ import org.jetbrains.annotations.NotNull;
 @Provides(AssetIndex.class)
 public class PostgresqlServiceExtensionImpl implements ServiceExtension {
 
-    private static final String NAME = "PostgreSql Asset Service Extension";
+    @Override
+    public String name() {
+        return "PostgreSql Asset Service Extension";
+    }
 
     @Override
     public void initialize(ServiceExtensionContext context) {
-
         AssetIndex assetIndex = createAssetIndex(context);
         context.registerService(AssetIndex.class, assetIndex);
-
-        context.getMonitor().info(String.format("Initialized %s", NAME));
     }
 
     @NotNull
@@ -51,8 +50,7 @@ public class PostgresqlServiceExtensionImpl implements ServiceExtension {
         CommonsConnectionPoolConfigFactory commonsConnectionPoolConfigFactory = new CommonsConnectionPoolConfigFactory(context);
         CommonsConnectionPoolConfig commonsConnectionPoolConfig = commonsConnectionPoolConfigFactory.create();
         CommonsConnectionPool connectionPool = new CommonsConnectionPool(connectionFactory, commonsConnectionPoolConfig);
-        SqlClient sqlClient = new SqlClient(connectionPool);
-        Repository repository = new RepositoryImpl(sqlClient);
+        Repository repository = new RepositoryImpl(connectionPool);
         return new PostgresqlAssetIndex(repository);
     }
 }

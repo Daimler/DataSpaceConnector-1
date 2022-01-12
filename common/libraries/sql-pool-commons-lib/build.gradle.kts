@@ -22,6 +22,7 @@ val apacheCommonsPool2Version: String by project
 
 dependencies {
     api(project(":common:libraries:sql-lib"))
+
     implementation("org.apache.commons:commons-pool2:${apacheCommonsPool2Version}")
 }
 

@@ -23,7 +23,6 @@ val testContainersVersion: String by project
 
 dependencies {
     api(project(":spi"))
-    implementation(project(":common:libraries:sql-lib"))
     implementation(project(":common:libraries:sql-pool-commons-lib"))
     implementation(project(":common:libraries:sql-postgresql-lib"))
     implementation(project(":common:libraries:sql-repository"))

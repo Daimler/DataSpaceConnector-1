@@ -24,6 +24,10 @@ include(":common:libraries:sql-repository")
 include(":common:libraries:sql-pool-commons-lib")
 include(":common:libraries:sql-postgresql-lib")
 
+include(":common:libraries:sql-lib")
+include(":common:libraries:sql-pool-commons-lib")
+include(":common:libraries:sql-postgresql-lib")
+
 // EDC core modules
 include(":core")
 include(":core:policy:policy-engine")

@@ -16,10 +16,9 @@ package org.eclipse.dataspaceconnector.sql.repository;
 
 import org.eclipse.dataspaceconnector.spi.asset.Criterion;
 import org.eclipse.dataspaceconnector.spi.types.domain.asset.Asset;
-import org.eclipse.dataspaceconnector.sql.SqlClient;
 import org.eclipse.dataspaceconnector.sql.repository.mapper.ExistsMapper;
 import org.eclipse.dataspaceconnector.sql.repository.mapper.PropertyMapper;
-import org.eclipse.dataspaceconnector.sql.repository.test.RepositoryExtension;
+import org.eclipse.dataspaceconnector.sql.repository.test.MemoryRepositoryExtension;
 import org.eclipse.dataspaceconnector.sql.repository.types.Property;
 import org.eclipse.dataspaceconnector.sql.repository.util.PreparedStatementResourceReader;
 import org.junit.jupiter.api.Assertions;
@@ -27,6 +26,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collections;
@@ -35,17 +35,18 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.eclipse.dataspaceconnector.sql.SqlQueryExecutor.execute;
 
-@ExtendWith(RepositoryExtension.class)
+@ExtendWith(MemoryRepositoryExtension.class)
 class RepositoryTest {
 
     private Repository repository;
-    private SqlClient sqlClient;
+    private Connection connection;
 
     @BeforeEach
-    public void setup(Repository repository, SqlClient sqlClient) {
+    public void setup(Repository repository, Connection connection) {
         this.repository = repository;
-        this.sqlClient = sqlClient;
+        this.connection = connection;
     }
 
     @Test
@@ -58,9 +59,9 @@ class RepositoryTest {
 
         repository.create(asset);
 
-        List<Property> properties = sqlClient.execute(new PropertyMapper(),
+        List<Property> properties = execute(connection, new PropertyMapper(),
                 PreparedStatementResourceReader.readPropertiesSelectByAssetId(), asset.getId());
-        List<Boolean> exists = sqlClient.execute(new ExistsMapper(),
+        List<Boolean> exists = execute(connection, new ExistsMapper(),
                 PreparedStatementResourceReader.readAssetExists(), asset.getId());
 
         Assertions.assertTrue(exists.size() == 1 && exists.get(0));
@@ -157,9 +158,9 @@ class RepositoryTest {
         repository.create(base);
         repository.update(asset);
 
-        List<Property> properties = sqlClient.execute(new PropertyMapper(),
+        List<Property> properties = execute(connection, new PropertyMapper(),
                 PreparedStatementResourceReader.readPropertiesSelectByAssetId(), asset.getId());
-        List<Boolean> exists = sqlClient.execute(new ExistsMapper(),
+        List<Boolean> exists = execute(connection, new ExistsMapper(),
                 PreparedStatementResourceReader.readAssetExists(), asset.getId());
 
         Assertions.assertTrue(exists.size() == 1 && exists.get(0));
@@ -182,9 +183,9 @@ class RepositoryTest {
         repository.create(asset);
         repository.delete(asset);
 
-        List<Property> properties = sqlClient.execute(new PropertyMapper(),
+        List<Property> properties = execute(connection, new PropertyMapper(),
                 PreparedStatementResourceReader.readPropertiesSelectByAssetId(), asset.getId());
-        List<Boolean> exists = sqlClient.execute(new ExistsMapper(),
+        List<Boolean> exists = execute(connection, new ExistsMapper(),
                 PreparedStatementResourceReader.readAssetExists(), asset.getId());
 
         Assertions.assertFalse(exists.size() == 1 && exists.get(0));

@@ -14,13 +14,15 @@
 
 package org.eclipse.dataspaceconnector.sql.repository;
 
-import org.eclipse.dataspaceconnector.sql.repository.operation.CreateOperation;
-import org.eclipse.dataspaceconnector.sql.repository.operation.DeleteOperation;
-import org.eclipse.dataspaceconnector.sql.repository.operation.QueryOperation;
-import org.eclipse.dataspaceconnector.sql.repository.operation.UpdateOperation;
 import org.eclipse.dataspaceconnector.spi.asset.Criterion;
 import org.eclipse.dataspaceconnector.spi.types.domain.asset.Asset;
-import org.eclipse.dataspaceconnector.sql.SqlClient;
+import org.eclipse.dataspaceconnector.sql.pool.ConnectionPool;
+import org.eclipse.dataspaceconnector.sql.repository.connection.ConnectionProvider;
+import org.eclipse.dataspaceconnector.sql.repository.connection.PooledConnectionProvider;
+import org.eclipse.dataspaceconnector.sql.repository.operations.CreateOperation;
+import org.eclipse.dataspaceconnector.sql.repository.operations.DeleteOperation;
+import org.eclipse.dataspaceconnector.sql.repository.operations.QueryOperation;
+import org.eclipse.dataspaceconnector.sql.repository.operations.UpdateOperation;
 import org.jetbrains.annotations.NotNull;
 
 import java.sql.SQLException;
@@ -34,12 +36,18 @@ public class RepositoryImpl implements Repository {
     private final DeleteOperation deleteOperation;
     private final QueryOperation queryOperation;
 
-    public RepositoryImpl(@NotNull SqlClient sqlClient) {
-        Objects.requireNonNull(sqlClient);
-        createOperation = new CreateOperation(sqlClient);
-        updateOperation = new UpdateOperation(sqlClient);
-        deleteOperation = new DeleteOperation(sqlClient);
-        queryOperation = new QueryOperation(sqlClient);
+    /**
+     * The repository will a connection from the pool for each operation.
+     *
+     * @param connectionPool the pool that manages the connections
+     */
+    public RepositoryImpl(@NotNull ConnectionPool connectionPool) {
+        ConnectionProvider connectionProvider = new PooledConnectionProvider(connectionPool));
+
+        this.createOperation = new CreateOperation(connectionProvider);
+        this.updateOperation = new UpdateOperation(connectionProvider);
+        this.deleteOperation = new DeleteOperation(connectionProvider);
+        this.queryOperation = new QueryOperation(connectionProvider);
     }
 
     @NotNull
