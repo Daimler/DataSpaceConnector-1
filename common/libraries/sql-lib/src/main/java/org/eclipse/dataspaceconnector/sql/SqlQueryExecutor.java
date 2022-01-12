@@ -36,7 +36,7 @@ public final class SqlQueryExecutor {
      * Intended for mutating queries.
      *
      * @param sql       the parametrized sql query
-     * @param arguments the parameteres to interpolate with the parametrized sql query
+     * @param arguments the parameters to interpolate with the parametrized sql query
      * @return rowsChanged
      * @throws SQLException if execution of the query was failing
      */
@@ -115,8 +115,9 @@ public final class SqlQueryExecutor {
     }
 
     private interface ArgumentHandler {
+
         /**
-         * Tests whether a argument can used by the current handler
+         * Tests whether an argument can be used by the current handler
          *
          * @param value to be associated with the prepared statement
          * @return true if the current argument handler can act on the given argument
@@ -124,7 +125,7 @@ public final class SqlQueryExecutor {
         boolean accepts(Object value);
 
         /**
-         * Associates an argument with a given sql statement at its specific position
+         * Associates an argument with a given SQL statement at its specific position
          *
          * @param statement to be carrying the argument
          * @param position  to be used for carrying the argument
@@ -135,8 +136,9 @@ public final class SqlQueryExecutor {
     }
 
     private enum ArgumentHandlers implements ArgumentHandler {
+
         /**
-         * Sets an @{code int} argument into its corresponding position of a statement
+         * Sets an {@code int} argument into its corresponding position of a statement
          */
         INT {
             @Override
@@ -150,7 +152,7 @@ public final class SqlQueryExecutor {
             }
         },
         /**
-         * Sets an @{code long} argument into its corresponding position of a statement
+         * Sets an {@code long} argument into its corresponding position of a statement
          */
         LONG {
             @Override
@@ -164,7 +166,7 @@ public final class SqlQueryExecutor {
             }
         },
         /**
-         * Sets an @{code double} argument into its corresponding position of a statement
+         * Sets an {@code double} argument into its corresponding position of a statement
          */
         DOUBLE {
             @Override
@@ -178,7 +180,7 @@ public final class SqlQueryExecutor {
             }
         },
         /**
-         * Sets an @{code float} argument into its corresponding position of a statement
+         * Sets an {@code float} argument into its corresponding position of a statement
          */
         FLOAT {
             @Override
@@ -192,7 +194,7 @@ public final class SqlQueryExecutor {
             }
         },
         /**
-         * Sets an @{code short} argument into its corresponding position of a statement
+         * Sets an {@code short} argument into its corresponding position of a statement
          */
         SHORT {
             @Override
@@ -206,7 +208,7 @@ public final class SqlQueryExecutor {
             }
         },
         /**
-         * Sets an @{code java.math.BigDecimal} argument into its corresponding position of a statement
+         * Sets an {@code java.math.BigDecimal} argument into its corresponding position of a statement
          */
         BIG_DECIMAL {
             @Override
@@ -220,7 +222,7 @@ public final class SqlQueryExecutor {
             }
         },
         /**
-         * Sets an @{code java.lang.String} argument into its corresponding position of a statement
+         * Sets an {@code java.lang.String} argument into its corresponding position of a statement
          */
         STRING {
             @Override
@@ -234,7 +236,7 @@ public final class SqlQueryExecutor {
             }
         },
         /**
-         * Sets an @{code boolean} argument into its corresponding position of a statement
+         * Sets an {@code boolean} argument into its corresponding position of a statement
          */
         BOOLEAN {
             @Override
@@ -248,7 +250,7 @@ public final class SqlQueryExecutor {
             }
         },
         /**
-         * Sets an @{code java.util.Date} argument into its corresponding position of a statement
+         * Sets an {@code java.util.Date} argument into its corresponding position of a statement
          */
         DATE {
             @Override
@@ -262,7 +264,7 @@ public final class SqlQueryExecutor {
             }
         },
         /**
-         * Sets an @{code byte} argument into its corresponding position of a statement
+         * Sets an {@code byte} argument into its corresponding position of a statement
          */
         BYTE {
             @Override
@@ -276,7 +278,7 @@ public final class SqlQueryExecutor {
             }
         },
         /**
-         * Sets an @{code byte[]} array argument into its corresponding position of a statement
+         * Sets an {@code byte[]} array argument into its corresponding position of a statement
          */
         BYTES {
             @Override
@@ -290,7 +292,7 @@ public final class SqlQueryExecutor {
             }
         },
         /**
-         * Sets an @{code java.io.InputStream} argument into its corresponding position of a statement
+         * Sets an {@code java.io.InputStream} argument into its corresponding position of a statement
          */
         INPUT_STREAM {
             @Override
@@ -304,7 +306,7 @@ public final class SqlQueryExecutor {
             }
         },
         /**
-         * Sets an @{code null} argument into its corresponding position of a statement
+         * Sets an {@code null} argument into its corresponding position of a statement
          */
         NULL {
             @Override

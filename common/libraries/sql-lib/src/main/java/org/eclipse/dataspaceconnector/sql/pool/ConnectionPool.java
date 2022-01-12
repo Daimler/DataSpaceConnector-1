@@ -18,8 +18,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 /**
- * The connection pool maintains a cache of database connections,
- * which can be reused when future requests to a database are needed.
+ * The connection pool maintains a cache of reusable database connections.
  */
 public interface ConnectionPool extends AutoCloseable {
 
