@@ -20,17 +20,9 @@ include(":common:util")
 include(":common:libraries:clients:postgresql")
 
 include(":common:libraries:sql-lib")
-include(":common:libraries:sql-repository")
 include(":common:libraries:sql-pool-commons-lib")
 include(":common:libraries:sql-postgresql-lib")
-
-include(":common:libraries:sql-lib")
-include(":common:libraries:sql-pool-commons-lib")
-include(":common:libraries:sql-postgresql-lib")
-
-include(":common:libraries:sql-lib")
-include(":common:libraries:sql-pool-commons-lib")
-include(":common:libraries:sql-postgresql-lib")
+include(":common:libraries:sql-operations-lib")
 
 // EDC core modules
 include(":core")

@@ -19,20 +19,23 @@ plugins {
 }
 
 val jupiterVersion: String by project
+val testContainersVersion: String by project
+val h2Version: String by project
 
 dependencies {
-    api(project(":spi"))
-    implementation(project(":common:libraries:sql-pool-commons-lib"))
-    implementation(project(":common:libraries:sql-postgresql-lib"))
-    implementation(project(":common:libraries:sql-operations-lib"))
+    implementation(project(":spi"))
+    implementation(project(":common:libraries:sql-lib"))
 
-    testImplementation(testFixtures(project(":common:libraries:sql-operations-lib")))
+    testFixturesImplementation(project(":common:libraries:sql-lib"))
+    testFixturesImplementation(project(":common:libraries:sql-pool-commons-lib"))
+    testFixturesImplementation("com.h2database:h2:${h2Version}")
+    testFixturesImplementation("org.junit.jupiter:junit-jupiter-api:${jupiterVersion}")
 }
 
 publishing {
     publications {
-        create<MavenPublication>("postgresql-asset-index") {
-            artifactId = "postgresql-asset-index"
+        create<MavenPublication>("sql-operations-lib") {
+            artifactId = "sql-operations-lib"
             from(components["java"])
         }
     }

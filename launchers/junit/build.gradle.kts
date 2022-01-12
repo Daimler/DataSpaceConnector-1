@@ -18,7 +18,6 @@ plugins {
     `maven-publish`
 }
 
-
 val jupiterVersion: String by project
 
 dependencies {
