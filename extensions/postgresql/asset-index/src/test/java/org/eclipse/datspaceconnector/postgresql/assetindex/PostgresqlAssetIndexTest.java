@@ -15,7 +15,7 @@
 package org.eclipse.datspaceconnector.postgresql.assetindex;
 
 import org.assertj.core.api.Assertions;
-import org.eclipse.dataspaceconnector.clients.postgresql.asset.Repository;
+import org.eclipse.dataspaceconnector.sql.repository.Repository;
 import org.eclipse.dataspaceconnector.postgresql.assetindex.PostgresqlAssetIndex;
 import org.eclipse.dataspaceconnector.spi.asset.AssetIndex;
 import org.eclipse.dataspaceconnector.spi.asset.AssetSelectorExpression;

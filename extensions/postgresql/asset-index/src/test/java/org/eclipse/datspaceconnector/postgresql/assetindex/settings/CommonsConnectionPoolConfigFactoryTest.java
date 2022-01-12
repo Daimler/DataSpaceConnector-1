@@ -15,12 +15,12 @@
 package org.eclipse.datspaceconnector.postgresql.assetindex.settings;
 
 import org.assertj.core.api.Assertions;
-import org.eclipse.dataspaceconnector.clients.postgresql.connection.pool.commons.CommonsConnectionPoolConfig;
 import org.eclipse.dataspaceconnector.postgresql.assetindex.settings.CommonsConnectionPoolConfigFactory;
 import org.eclipse.dataspaceconnector.postgresql.assetindex.settings.SettingKeys;
 import org.eclipse.dataspaceconnector.spi.EdcException;
 import org.eclipse.dataspaceconnector.spi.monitor.Monitor;
 import org.eclipse.dataspaceconnector.spi.system.ServiceExtensionContext;
+import org.eclipse.dataspaceconnector.sql.connection.pool.commons.CommonsConnectionPoolConfig;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

@@ -18,9 +18,9 @@ rootProject.name = "dataspaceconnector"
 
 include(":common:util")
 include(":common:libraries:clients:postgresql")
-include(":common:libraries:clients:postgresql-repository")
 
 include(":common:libraries:sql-lib")
+include(":common:libraries:sql-repository")
 include(":common:libraries:sql-pool-commons-lib")
 include(":common:libraries:sql-postgresql-lib")
 

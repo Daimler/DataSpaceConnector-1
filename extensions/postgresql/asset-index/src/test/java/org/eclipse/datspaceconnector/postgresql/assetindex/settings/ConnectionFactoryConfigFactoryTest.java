@@ -15,12 +15,12 @@
 package org.eclipse.datspaceconnector.postgresql.assetindex.settings;
 
 import org.assertj.core.api.Assertions;
-import org.eclipse.dataspaceconnector.clients.postgresql.connection.ConnectionFactoryConfig;
 import org.eclipse.dataspaceconnector.postgresql.assetindex.settings.ConnectionFactoryConfigFactory;
 import org.eclipse.dataspaceconnector.postgresql.assetindex.settings.SettingKeys;
 import org.eclipse.dataspaceconnector.spi.EdcException;
 import org.eclipse.dataspaceconnector.spi.monitor.Monitor;
 import org.eclipse.dataspaceconnector.spi.system.ServiceExtensionContext;
+import org.eclipse.dataspaceconnector.sql.connection.postgresql.PostgresqlConnectionFactoryConfig;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -193,19 +193,19 @@ public class ConnectionFactoryConfigFactoryTest {
         settingMap.put(SettingKeys.POSTGRESQL_SSL_READONLY, "true");
 
         // invoke
-        ConnectionFactoryConfig config = factory.create();
+        PostgresqlConnectionFactoryConfig config = factory.create();
 
         // verify
         Assertions.assertThat(config.getUri()).isEqualTo(URI.create("https://example.com"));
         Assertions.assertThat(config.getUserName()).isEqualTo("foo");
         Assertions.assertThat(config.getPassword()).isEqualTo("foo");
         Assertions.assertThat(config.getSsl()).isTrue();
-        Assertions.assertThat(config.getSslMode().toString()).isEqualTo(ConnectionFactoryConfig.SslMode.VERIFY_CA.toString());
+        Assertions.assertThat(config.getSslMode().toString()).isEqualTo(PostgresqlConnectionFactoryConfig.SslMode.VERIFY_CA.toString());
         Assertions.assertThat(config.getSslCert()).isEqualTo(Path.of(System.getProperty("user.dir")));
         Assertions.assertThat(config.getSslKey()).isEqualTo(Path.of(System.getProperty("user.dir")));
         Assertions.assertThat(config.getSslRootCert()).isEqualTo(Path.of("foo"));
         Assertions.assertThat(config.getSslHostNameVerifier()).isEqualTo("foo");
-        Assertions.assertThat(config.getLoggerLevel().toString()).isEqualTo(ConnectionFactoryConfig.LoggerLevel.TRACE.toString());
+        Assertions.assertThat(config.getLoggerLevel().toString()).isEqualTo(PostgresqlConnectionFactoryConfig.LoggerLevel.TRACE.toString());
         Assertions.assertThat(config.getLoggerFile()).isEqualTo(Path.of(System.getProperty("user.dir")));
         Assertions.assertThat(config.getLogUnclosedConnection()).isTrue();
         Assertions.assertThat(config.getSocketTimeout()).isEqualTo(1);

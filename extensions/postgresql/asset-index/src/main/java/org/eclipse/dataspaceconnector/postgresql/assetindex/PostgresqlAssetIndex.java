@@ -14,7 +14,7 @@
 
 package org.eclipse.dataspaceconnector.postgresql.assetindex;
 
-import org.eclipse.dataspaceconnector.clients.postgresql.asset.Repository;
+import org.eclipse.dataspaceconnector.sql.repository.Repository;
 import org.eclipse.dataspaceconnector.spi.EdcException;
 import org.eclipse.dataspaceconnector.spi.asset.AssetIndex;
 import org.eclipse.dataspaceconnector.spi.asset.AssetSelectorExpression;

@@ -14,10 +14,10 @@
 
 package org.eclipse.dataspaceconnector.postgresql.assetindex.settings;
 
-import org.eclipse.dataspaceconnector.clients.postgresql.connection.ConnectionFactoryConfig;
 import org.eclipse.dataspaceconnector.spi.EdcException;
 import org.eclipse.dataspaceconnector.spi.monitor.Monitor;
 import org.eclipse.dataspaceconnector.spi.system.ServiceExtensionContext;
+import org.eclipse.dataspaceconnector.sql.connection.postgresql.PostgresqlConnectionFactoryConfig;
 import org.jetbrains.annotations.NotNull;
 
 import java.net.URI;
@@ -47,11 +47,11 @@ public class ConnectionFactoryConfigFactory {
         this.monitor = serviceExtensionContext.getMonitor();
     }
 
-    public ConnectionFactoryConfig create() {
+    public PostgresqlConnectionFactoryConfig create() {
 
         boolean invalidConfiguration = false;
 
-        ConnectionFactoryConfig.Builder builder = ConnectionFactoryConfig.Builder.newInstance();
+        PostgresqlConnectionFactoryConfig.Builder builder = PostgresqlConnectionFactoryConfig.Builder.newInstance();
 
         // URL
         String url = getStringSetting(SettingKeys.POSTGRESQL_URL);
@@ -92,14 +92,14 @@ public class ConnectionFactoryConfigFactory {
         if (sslMode != null) {
             try {
                 builder.sslMode(
-                        Arrays.stream(ConnectionFactoryConfig.SslMode.values())
+                        Arrays.stream(PostgresqlConnectionFactoryConfig.SslMode.values())
                                 .filter(l -> l.toString().equalsIgnoreCase(sslMode))
                                 .findFirst()
                                 .orElseThrow(IllegalArgumentException::new)
                 );
             } catch (IllegalArgumentException ignore) {
-                String enumValues = Arrays.stream(ConnectionFactoryConfig.SslMode.values())
-                        .map(ConnectionFactoryConfig.SslMode::toString)
+                String enumValues = Arrays.stream(PostgresqlConnectionFactoryConfig.SslMode.values())
+                        .map(PostgresqlConnectionFactoryConfig.SslMode::toString)
                         .collect(Collectors.joining(", "));
                 monitor.severe(String.format(LOG_INVALID_ENUM, SettingKeys.POSTGRESQL_SSL_MODE, enumValues));
                 invalidConfiguration = true;
@@ -163,13 +163,13 @@ public class ConnectionFactoryConfigFactory {
         if (loggerLevel != null) {
             try {
                 builder.loggerLevel(
-                        Arrays.stream(ConnectionFactoryConfig.LoggerLevel.values())
+                        Arrays.stream(PostgresqlConnectionFactoryConfig.LoggerLevel.values())
                                 .filter(l -> l.toString().equalsIgnoreCase(loggerLevel))
                                 .findFirst()
                                 .orElseThrow(IllegalArgumentException::new)
                 );
             } catch (IllegalArgumentException ignore) {
-                String enumValues = Arrays.stream(ConnectionFactoryConfig.LoggerLevel.values())
+                String enumValues = Arrays.stream(PostgresqlConnectionFactoryConfig.LoggerLevel.values())
                         .map(Enum::name)
                         .collect(Collectors.joining(", "));
                 monitor.severe(String.format(LOG_INVALID_ENUM, SettingKeys.POSTGRESQL_LOGGER_LEVEL, enumValues));

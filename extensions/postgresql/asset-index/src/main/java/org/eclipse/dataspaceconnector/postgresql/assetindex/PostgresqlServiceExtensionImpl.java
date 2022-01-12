@@ -14,21 +14,18 @@
 
 package org.eclipse.dataspaceconnector.postgresql.assetindex;
 
-import org.eclipse.dataspaceconnector.clients.postgresql.PostgresqlClient;
-import org.eclipse.dataspaceconnector.clients.postgresql.PostgresqlClientImpl;
-import org.eclipse.dataspaceconnector.clients.postgresql.asset.Repository;
-import org.eclipse.dataspaceconnector.clients.postgresql.asset.RepositoryImpl;
-import org.eclipse.dataspaceconnector.clients.postgresql.connection.ConnectionFactory;
-import org.eclipse.dataspaceconnector.clients.postgresql.connection.ConnectionFactoryConfig;
-import org.eclipse.dataspaceconnector.clients.postgresql.connection.ConnectionFactoryImpl;
-import org.eclipse.dataspaceconnector.clients.postgresql.connection.pool.ConnectionPool;
-import org.eclipse.dataspaceconnector.clients.postgresql.connection.pool.commons.CommonsConnectionPool;
-import org.eclipse.dataspaceconnector.clients.postgresql.connection.pool.commons.CommonsConnectionPoolConfig;
 import org.eclipse.dataspaceconnector.postgresql.assetindex.settings.CommonsConnectionPoolConfigFactory;
 import org.eclipse.dataspaceconnector.postgresql.assetindex.settings.ConnectionFactoryConfigFactory;
 import org.eclipse.dataspaceconnector.spi.asset.AssetIndex;
 import org.eclipse.dataspaceconnector.spi.system.ServiceExtension;
 import org.eclipse.dataspaceconnector.spi.system.ServiceExtensionContext;
+import org.eclipse.dataspaceconnector.sql.SqlClient;
+import org.eclipse.dataspaceconnector.sql.connection.pool.commons.CommonsConnectionPool;
+import org.eclipse.dataspaceconnector.sql.connection.pool.commons.CommonsConnectionPoolConfig;
+import org.eclipse.dataspaceconnector.sql.connection.postgresql.PostgresqlConnectionFactory;
+import org.eclipse.dataspaceconnector.sql.connection.postgresql.PostgresqlConnectionFactoryConfig;
+import org.eclipse.dataspaceconnector.sql.repository.Repository;
+import org.eclipse.dataspaceconnector.sql.repository.RepositoryImpl;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
@@ -54,13 +51,13 @@ public class PostgresqlServiceExtensionImpl implements ServiceExtension {
     @NotNull
     private AssetIndex createAssetIndex(ServiceExtensionContext context) {
         ConnectionFactoryConfigFactory connectionFactoryConfigFactory = new ConnectionFactoryConfigFactory(context);
-        ConnectionFactoryConfig connectionFactoryConfig = connectionFactoryConfigFactory.create();
-        ConnectionFactory connectionFactory = new ConnectionFactoryImpl(connectionFactoryConfig);
+        PostgresqlConnectionFactoryConfig connectionFactoryConfig = connectionFactoryConfigFactory.create();
+        PostgresqlConnectionFactory connectionFactory = new PostgresqlConnectionFactory(connectionFactoryConfig);
         CommonsConnectionPoolConfigFactory commonsConnectionPoolConfigFactory = new CommonsConnectionPoolConfigFactory(context);
         CommonsConnectionPoolConfig commonsConnectionPoolConfig = commonsConnectionPoolConfigFactory.create();
-        ConnectionPool connectionPool = new CommonsConnectionPool(connectionFactory, commonsConnectionPoolConfig);
-        PostgresqlClient postgresqlClient = new PostgresqlClientImpl(connectionPool);
-        Repository repository = new RepositoryImpl(postgresqlClient);
+        CommonsConnectionPool connectionPool = new CommonsConnectionPool(connectionFactory, commonsConnectionPoolConfig);
+        SqlClient sqlClient = new SqlClient(connectionPool);
+        Repository repository = new RepositoryImpl(sqlClient);
         return new PostgresqlAssetIndex(repository);
     }
 }
