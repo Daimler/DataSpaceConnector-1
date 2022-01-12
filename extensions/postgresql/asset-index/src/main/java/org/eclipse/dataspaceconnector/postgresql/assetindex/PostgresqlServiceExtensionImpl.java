@@ -17,6 +17,7 @@ package org.eclipse.dataspaceconnector.postgresql.assetindex;
 import org.eclipse.dataspaceconnector.postgresql.assetindex.settings.CommonsConnectionPoolConfigFactory;
 import org.eclipse.dataspaceconnector.postgresql.assetindex.settings.ConnectionFactoryConfigFactory;
 import org.eclipse.dataspaceconnector.spi.asset.AssetIndex;
+import org.eclipse.dataspaceconnector.spi.system.Provides;
 import org.eclipse.dataspaceconnector.spi.system.ServiceExtension;
 import org.eclipse.dataspaceconnector.spi.system.ServiceExtensionContext;
 import org.eclipse.dataspaceconnector.sql.SqlClient;
@@ -28,16 +29,10 @@ import org.eclipse.dataspaceconnector.sql.repository.Repository;
 import org.eclipse.dataspaceconnector.sql.repository.RepositoryImpl;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Set;
-
+@Provides(AssetIndex.class)
 public class PostgresqlServiceExtensionImpl implements ServiceExtension {
 
     private static final String NAME = "PostgreSql Asset Service Extension";
-
-    @Override
-    public Set<String> provides() {
-        return Set.of(AssetIndex.FEATURE);
-    }
 
     @Override
     public void initialize(ServiceExtensionContext context) {
