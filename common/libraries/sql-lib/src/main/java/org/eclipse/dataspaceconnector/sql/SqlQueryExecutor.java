@@ -14,19 +14,18 @@
 
 package org.eclipse.dataspaceconnector.sql;
 
-import java.io.InputStream;
-import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.util.Collections;
-import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * The SqlQueryExecutor is capable of executing parametrized SQL queries
+ */
 public final class SqlQueryExecutor {
 
     private SqlQueryExecutor() {
@@ -40,7 +39,7 @@ public final class SqlQueryExecutor {
      * @return rowsChanged
      * @throws SQLException if execution of the query was failing
      */
-    public static int execute(Connection connection, String sql, Object... arguments) throws SQLException {
+    public static int executeQuery(Connection connection, String sql, Object... arguments) throws SQLException {
         Objects.requireNonNull(connection, "connection");
         Objects.requireNonNull(sql, "sql");
         Objects.requireNonNull(arguments, "arguments");
@@ -62,7 +61,7 @@ public final class SqlQueryExecutor {
      * @throws SQLException if execution of the query or mapping was failing
      */
 
-    public static <T> List<T> execute(Connection connection, ResultSetMapper<T> resultSetMapper, String sql, Object... arguments) throws SQLException {
+    public static <T> List<T> executeQuery(Connection connection, ResultSetMapper<T> resultSetMapper, String sql, Object... arguments) throws SQLException {
         Objects.requireNonNull(connection, "connection");
         Objects.requireNonNull(resultSetMapper, "resultSetMapper");
         Objects.requireNonNull(sql, "sql");
@@ -112,212 +111,5 @@ public final class SqlQueryExecutor {
         }
 
         return results;
-    }
-
-    private interface ArgumentHandler {
-
-        /**
-         * Tests whether an argument can be used by the current handler
-         *
-         * @param value to be associated with the prepared statement
-         * @return true if the current argument handler can act on the given argument
-         */
-        boolean accepts(Object value);
-
-        /**
-         * Associates an argument with a given SQL statement at its specific position
-         *
-         * @param statement to be carrying the argument
-         * @param position  to be used for carrying the argument
-         * @param argument  to be used together with the statement
-         * @throws SQLException if something went wrong
-         */
-        void handle(PreparedStatement statement, int position, Object argument) throws SQLException;
-    }
-
-    private enum ArgumentHandlers implements ArgumentHandler {
-
-        /**
-         * Sets an {@code int} argument into its corresponding position of a statement
-         */
-        INT {
-            @Override
-            public boolean accepts(Object value) {
-                return value instanceof Integer;
-            }
-
-            @Override
-            public void handle(PreparedStatement statement, int position, Object argument) throws SQLException {
-                statement.setInt(position, (int) argument);
-            }
-        },
-        /**
-         * Sets an {@code long} argument into its corresponding position of a statement
-         */
-        LONG {
-            @Override
-            public boolean accepts(Object value) {
-                return value instanceof Long;
-            }
-
-            @Override
-            public void handle(PreparedStatement statement, int position, Object argument) throws SQLException {
-                statement.setLong(position, (long) argument);
-            }
-        },
-        /**
-         * Sets an {@code double} argument into its corresponding position of a statement
-         */
-        DOUBLE {
-            @Override
-            public boolean accepts(Object value) {
-                return value instanceof Double;
-            }
-
-            @Override
-            public void handle(PreparedStatement statement, int position, Object argument) throws SQLException {
-                statement.setDouble(position, (double) argument);
-            }
-        },
-        /**
-         * Sets an {@code float} argument into its corresponding position of a statement
-         */
-        FLOAT {
-            @Override
-            public boolean accepts(Object value) {
-                return value instanceof Float;
-            }
-
-            @Override
-            public void handle(PreparedStatement statement, int position, Object argument) throws SQLException {
-                statement.setFloat(position, (float) argument);
-            }
-        },
-        /**
-         * Sets an {@code short} argument into its corresponding position of a statement
-         */
-        SHORT {
-            @Override
-            public boolean accepts(Object value) {
-                return value instanceof Short;
-            }
-
-            @Override
-            public void handle(PreparedStatement statement, int position, Object argument) throws SQLException {
-                statement.setShort(position, (short) argument);
-            }
-        },
-        /**
-         * Sets an {@code java.math.BigDecimal} argument into its corresponding position of a statement
-         */
-        BIG_DECIMAL {
-            @Override
-            public boolean accepts(Object value) {
-                return value instanceof BigDecimal;
-            }
-
-            @Override
-            public void handle(PreparedStatement statement, int position, Object argument) throws SQLException {
-                statement.setBigDecimal(position, (BigDecimal) argument);
-            }
-        },
-        /**
-         * Sets an {@code java.lang.String} argument into its corresponding position of a statement
-         */
-        STRING {
-            @Override
-            public boolean accepts(Object value) {
-                return value instanceof String;
-            }
-
-            @Override
-            public void handle(PreparedStatement statement, int position, Object argument) throws SQLException {
-                statement.setString(position, (String) argument);
-            }
-        },
-        /**
-         * Sets an {@code boolean} argument into its corresponding position of a statement
-         */
-        BOOLEAN {
-            @Override
-            public boolean accepts(Object value) {
-                return value instanceof Boolean;
-            }
-
-            @Override
-            public void handle(PreparedStatement statement, int position, Object argument) throws SQLException {
-                statement.setBoolean(position, (Boolean) argument);
-            }
-        },
-        /**
-         * Sets an {@code java.util.Date} argument into its corresponding position of a statement
-         */
-        DATE {
-            @Override
-            public boolean accepts(Object value) {
-                return value instanceof Date;
-            }
-
-            @Override
-            public void handle(PreparedStatement statement, int position, Object argument) throws SQLException {
-                statement.setTimestamp(position, new Timestamp(((Date) argument).getTime()));
-            }
-        },
-        /**
-         * Sets an {@code byte} argument into its corresponding position of a statement
-         */
-        BYTE {
-            @Override
-            public boolean accepts(Object value) {
-                return value instanceof Byte;
-            }
-
-            @Override
-            public void handle(PreparedStatement statement, int position, Object argument) throws SQLException {
-                statement.setByte(position, (Byte) argument);
-            }
-        },
-        /**
-         * Sets an {@code byte[]} array argument into its corresponding position of a statement
-         */
-        BYTES {
-            @Override
-            public boolean accepts(Object value) {
-                return value instanceof byte[];
-            }
-
-            @Override
-            public void handle(PreparedStatement statement, int position, Object argument) throws SQLException {
-                statement.setBytes(position, (byte[]) argument);
-            }
-        },
-        /**
-         * Sets an {@code java.io.InputStream} argument into its corresponding position of a statement
-         */
-        INPUT_STREAM {
-            @Override
-            public boolean accepts(Object value) {
-                return value instanceof InputStream;
-            }
-
-            @Override
-            public void handle(PreparedStatement statement, int position, Object argument) throws SQLException {
-                statement.setBlob(position, (InputStream) argument);
-            }
-        },
-        /**
-         * Sets an {@code null} argument into its corresponding position of a statement
-         */
-        NULL {
-            @Override
-            public boolean accepts(Object value) {
-                return value == null;
-            }
-
-            @Override
-            public void handle(PreparedStatement statement, int position, Object argument) throws SQLException {
-                statement.setNull(position, java.sql.Types.NULL);
-            }
-        }
     }
 }

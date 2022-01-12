@@ -45,7 +45,7 @@ class SqlQueryExecutorTest {
         Mockito.when(preparedStatement.execute()).thenReturn(false);
         Mockito.when(preparedStatement.getUpdateCount()).thenReturn(12345);
 
-        Integer result = SqlQueryExecutor.execute(connection, DUMMY_SQL);
+        Integer result = SqlQueryExecutor.executeQuery(connection, DUMMY_SQL);
 
         Assertions.assertNotNull(result);
         Assertions.assertEquals(12345, result);
@@ -58,7 +58,7 @@ class SqlQueryExecutorTest {
         Mockito.when(connection.prepareStatement(DUMMY_SQL, Statement.RETURN_GENERATED_KEYS)).thenReturn(preparedStatement);
         Mockito.when(preparedStatement.execute()).thenReturn(true);
 
-        Integer result = SqlQueryExecutor.execute(connection, DUMMY_SQL);
+        Integer result = SqlQueryExecutor.executeQuery(connection, DUMMY_SQL);
 
         Assertions.assertNotNull(result);
         Assertions.assertEquals(0, result);
@@ -73,7 +73,7 @@ class SqlQueryExecutorTest {
         Mockito.when(preparedStatement.getUpdateCount()).thenReturn(12345);
         ResultSetMapper<?> mapper = Mockito.mock(ResultSetMapper.class);
 
-        List<?> result = SqlQueryExecutor.execute(connection, mapper, DUMMY_SQL);
+        List<?> result = SqlQueryExecutor.executeQuery(connection, mapper, DUMMY_SQL);
 
         Assertions.assertNotNull(result);
     }
@@ -86,7 +86,7 @@ class SqlQueryExecutorTest {
         Mockito.when(preparedStatement.execute()).thenReturn(true);
         ResultSetMapper<?> mapper = Mockito.mock(ResultSetMapper.class);
 
-        List<?> result = SqlQueryExecutor.execute(connection, mapper, DUMMY_SQL);
+        List<?> result = SqlQueryExecutor.executeQuery(connection, mapper, DUMMY_SQL);
 
         Assertions.assertNotNull(result);
     }
@@ -99,7 +99,7 @@ class SqlQueryExecutorTest {
         Mockito.when(connection.prepareStatement(DUMMY_SQL, Statement.RETURN_GENERATED_KEYS)).thenReturn(preparedStatement);
         Mockito.when(preparedStatement.execute()).thenReturn(true);
 
-        Integer result = SqlQueryExecutor.execute(connection, DUMMY_SQL, argument);
+        Integer result = SqlQueryExecutor.executeQuery(connection, DUMMY_SQL, argument);
 
         verification.verify(preparedStatement);
 

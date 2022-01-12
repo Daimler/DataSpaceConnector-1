@@ -22,7 +22,20 @@ import java.sql.SQLException;
  */
 public interface ConnectionPool extends AutoCloseable {
 
+    /**
+     * Retrieves a connection managed by the pool.
+     *
+     * @return connection to be exclusively used until returned to the pool
+     * @throws SQLException if an errors was encountered while retrieving the connection
+     */
     Connection getConnection() throws SQLException;
 
+    /**
+     * Returns a provided connection back to the pool and thus makes
+     * it available to be used by other consumers.
+     *
+     * @param connection to be returned to the pool
+     * @throws SQLException if an errors was encountered while returning the connection
+     */
     void returnConnection(Connection connection) throws SQLException;
 }

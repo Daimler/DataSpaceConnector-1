@@ -49,12 +49,12 @@ public class SqlQueryExecutorIntegrationTest {
 
     @Test
     void testExecute() throws SQLException {
-        SqlQueryExecutor.execute(connection, "SELECT 1;");
+        SqlQueryExecutor.executeQuery(connection, "SELECT 1;");
     }
 
     @Test
     void testExecuteWithRowMapping() throws SQLException {
-        List<Long> result = SqlQueryExecutor.execute(connection, (rs) -> rs.getLong(1), "SELECT 1;");
+        List<Long> result = SqlQueryExecutor.executeQuery(connection, (rs) -> rs.getLong(1), "SELECT 1;");
 
         Assertions.assertNotNull(result);
         Assertions.assertEquals(1, result.size());
@@ -63,7 +63,7 @@ public class SqlQueryExecutorIntegrationTest {
 
     @Test
     void testTransaction() throws SQLException {
-        SqlQueryExecutor.execute(connection, "SELECT COUNT(c), COUNT(*) FROM (VALUES (1), (NULL)) t(c);");
+        SqlQueryExecutor.executeQuery(connection, "SELECT COUNT(c), COUNT(*) FROM (VALUES (1), (NULL)) t(c);");
 
         connection.commit();
     }
@@ -74,18 +74,18 @@ public class SqlQueryExecutorIntegrationTest {
         String schema = getTableSchema(table);
         Kv kv = new Kv(UUID.randomUUID().toString(), UUID.randomUUID().toString());
 
-        SqlQueryExecutor.execute(connection, schema);
-        SqlQueryExecutor.execute(connection, String.format("INSERT INTO %s (k, v) values (?, ?)", table), kv.key, kv.value);
+        SqlQueryExecutor.executeQuery(connection, schema);
+        SqlQueryExecutor.executeQuery(connection, String.format("INSERT INTO %s (k, v) values (?, ?)", table), kv.key, kv.value);
 
         connection.commit();
 
-        List<Long> countResult = SqlQueryExecutor.execute(connection, (rs) -> rs.getLong(1), String.format("SELECT COUNT(*) FROM %s", table));
+        List<Long> countResult = SqlQueryExecutor.executeQuery(connection, (rs) -> rs.getLong(1), String.format("SELECT COUNT(*) FROM %s", table));
 
         Assertions.assertNotNull(countResult);
         Assertions.assertEquals(1, countResult.size());
         Assertions.assertEquals(1, countResult.iterator().next());
 
-        List<Kv> kvs = SqlQueryExecutor.execute(connection, (rs) -> new Kv(rs.getString(1), rs.getString(2)), String.format("SELECT * FROM %s", table));
+        List<Kv> kvs = SqlQueryExecutor.executeQuery(connection, (rs) -> new Kv(rs.getString(1), rs.getString(2)), String.format("SELECT * FROM %s", table));
 
         Assertions.assertNotNull(kvs);
         Assertions.assertEquals(1, kvs.size());
@@ -94,7 +94,7 @@ public class SqlQueryExecutorIntegrationTest {
 
     @Test
     void testInvalidSql() {
-        Assertions.assertThrows(SQLException.class, () -> SqlQueryExecutor.execute(connection, "Lorem ipsum dolor sit amet"));
+        Assertions.assertThrows(SQLException.class, () -> SqlQueryExecutor.executeQuery(connection, "Lorem ipsum dolor sit amet"));
     }
 
     private String getTableSchema(String tableName) {

@@ -24,13 +24,20 @@ import java.util.Objects;
 import java.util.Properties;
 
 /**
- * A ConnectionFactory implementation that utilizes the ConnectionFactoryConfig for connection creation.
+ * A ConnectionFactory implementation that utilizes the {@code ConnectionFactoryConfig}
+ * for creating connections towards postgres databases.
  */
 public class PostgresqlConnectionFactory implements ConnectionFactory {
     private final String jdbcUrl;
     private final Properties properties;
     private final boolean autoCommit;
 
+    /**
+     * Constructs a new PostgresqlConnectionFactory for obtaining {@code java.sql.Connection}s
+     * directed towards a configured postgres database.
+     *
+     * @param postgresqlConnectionFactoryConfig containing connection parameters required for obtaining {@code java.sql.Connection}s
+     */
     public PostgresqlConnectionFactory(@NotNull PostgresqlConnectionFactoryConfig postgresqlConnectionFactoryConfig) {
         Objects.requireNonNull(postgresqlConnectionFactoryConfig, "connectionFactoryConfig");
 
@@ -40,7 +47,7 @@ public class PostgresqlConnectionFactory implements ConnectionFactory {
     }
 
     /**
-     * Constructs a map containing postgreSQL jdbc connection parameters to obtain a connection.
+     * Constructs a map containing postgreSQL jdbc connection parameters to obtain a {@code java.sql.Connection}.
      *
      * @param postgresqlConnectionFactoryConfig container object containing set of connection configuration parameters
      * @return properties to be used by the {@link DriverManager}
