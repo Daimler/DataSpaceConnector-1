@@ -51,16 +51,14 @@ import org.eclipse.dataspaceconnector.transfer.inline.spi.DataOperatorRegistry;
  * Provides core data transfer services to the system.
  */
 @CoreExtension
-@Provides({ StatusCheckerRegistry.class, RemoteMessageDispatcherRegistry.class, ResourceManifestGenerator.class, TransferProcessManager.class,
-        TransferProcessObservable.class, DataProxyManager.class, ProxyEntryHandlerRegistry.class, DataOperatorRegistry.class, DataFlowManager.class })
+@Provides({StatusCheckerRegistry.class, RemoteMessageDispatcherRegistry.class, ResourceManifestGenerator.class, TransferProcessManager.class,
+        TransferProcessObservable.class, DataProxyManager.class, ProxyEntryHandlerRegistry.class, DataOperatorRegistry.class, DataFlowManager.class})
 public class CoreTransferExtension implements ServiceExtension {
     private static final long DEFAULT_ITERATION_WAIT = 5000; // millis
 
-    private ProvisionManagerImpl provisionManager;
     private DelegatingTransferProcessManager processManager;
     @Inject
     private TransferProcessStore transferProcessStore;
-    private AsyncTransferProcessManager asyncMgr;
 
     @Override
     public String name() {
@@ -78,8 +76,11 @@ public class CoreTransferExtension implements ServiceExtension {
         var dataFlowManager = new DataFlowManagerImpl();
         context.registerService(DataFlowManager.class, dataFlowManager);
 
-        var dispatcherRegistry = new RemoteMessageDispatcherRegistryImpl();
-        context.registerService(RemoteMessageDispatcherRegistry.class, dispatcherRegistry);
+        RemoteMessageDispatcherRegistry dispatcherRegistry = context.getService(RemoteMessageDispatcherRegistry.class, true);
+        if (dispatcherRegistry == null) {
+            dispatcherRegistry = new RemoteMessageDispatcherRegistryImpl();
+            context.registerService(RemoteMessageDispatcherRegistry.class, dispatcherRegistry);
+        }
 
         var manifestGenerator = new ResourceManifestGeneratorImpl();
         context.registerService(ResourceManifestGenerator.class, manifestGenerator);
@@ -92,7 +93,7 @@ public class CoreTransferExtension implements ServiceExtension {
 
         var vault = context.getService(Vault.class);
 
-        provisionManager = new ProvisionManagerImpl();
+        var provisionManager = new ProvisionManagerImpl(monitor);
         context.registerService(ProvisionManager.class, provisionManager);
 
         var waitStrategy = context.hasService(TransferWaitStrategy.class) ? context.getService(TransferWaitStrategy.class) : new ExponentialWaitStrategy(DEFAULT_ITERATION_WAIT);
@@ -100,8 +101,7 @@ public class CoreTransferExtension implements ServiceExtension {
         var dataProxyRegistry = new DataProxyManagerImpl();
         context.registerService(DataProxyManager.class, dataProxyRegistry);
 
-
-        asyncMgr = AsyncTransferProcessManager.Builder.newInstance()
+        var asyncMgr = AsyncTransferProcessManager.Builder.newInstance()
                 .waitStrategy(waitStrategy)
                 .manifestGenerator(manifestGenerator)
                 .dataFlowManager(dataFlowManager)
@@ -127,9 +127,6 @@ public class CoreTransferExtension implements ServiceExtension {
 
     @Override
     public void start() {
-
-
-        provisionManager.start(asyncMgr.createProvisionContext());
         processManager.start(transferProcessStore);
     }
 
