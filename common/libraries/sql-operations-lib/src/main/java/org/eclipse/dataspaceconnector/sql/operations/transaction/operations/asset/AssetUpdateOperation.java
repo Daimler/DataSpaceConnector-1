@@ -17,7 +17,7 @@ package org.eclipse.dataspaceconnector.sql.operations.transaction.operations.ass
 import org.eclipse.dataspaceconnector.spi.types.domain.asset.Asset;
 import org.eclipse.dataspaceconnector.sql.operations.mapper.ExistsMapper;
 import org.eclipse.dataspaceconnector.sql.operations.mapper.PropertyMapper;
-import org.eclipse.dataspaceconnector.sql.operations.serializer.EnvelopePacker;
+import org.eclipse.dataspaceconnector.sql.operations.serialization.EnvelopePacker;
 import org.eclipse.dataspaceconnector.sql.operations.transaction.operations.TransactionOperation;
 import org.eclipse.dataspaceconnector.sql.operations.types.Property;
 import org.eclipse.dataspaceconnector.sql.operations.util.PreparedStatementResourceReader;

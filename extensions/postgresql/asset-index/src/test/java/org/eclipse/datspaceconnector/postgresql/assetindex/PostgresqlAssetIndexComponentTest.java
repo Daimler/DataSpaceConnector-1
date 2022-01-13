@@ -22,7 +22,7 @@ import org.eclipse.dataspaceconnector.spi.asset.Criterion;
 import org.eclipse.dataspaceconnector.spi.types.domain.asset.Asset;
 import org.eclipse.dataspaceconnector.sql.operations.SqlConnectionExtension;
 import org.eclipse.dataspaceconnector.sql.operations.TransactionBuilder;
-import org.eclipse.dataspaceconnector.sql.operations.transaction.Transaction;
+import org.eclipse.dataspaceconnector.sql.operations.transaction.TransactionImpl;
 import org.eclipse.dataspaceconnector.sql.pool.ConnectionPool;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -87,7 +87,7 @@ public class PostgresqlAssetIndexComponentTest {
     }
 
     private void createAsset(Asset asset) throws SQLException {
-        Transaction transaction = new TransactionBuilder(connectionPool)
+        TransactionImpl transaction = new TransactionBuilder(connectionPool)
                 .create(asset)
                 .build();
         transaction.execute();

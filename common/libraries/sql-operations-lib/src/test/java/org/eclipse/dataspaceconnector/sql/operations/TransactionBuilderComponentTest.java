@@ -4,7 +4,6 @@ import org.eclipse.dataspaceconnector.spi.types.domain.asset.Asset;
 import org.eclipse.dataspaceconnector.sql.pool.ConnectionPool;
 import org.eclipse.dataspaceconnector.sql.operations.mapper.ExistsMapper;
 import org.eclipse.dataspaceconnector.sql.operations.mapper.PropertyMapper;
-import org.eclipse.dataspaceconnector.sql.operations.transaction.Transaction;
 import org.eclipse.dataspaceconnector.sql.operations.types.Property;
 import org.eclipse.dataspaceconnector.sql.operations.util.PreparedStatementResourceReader;
 import org.junit.jupiter.api.Assertions;

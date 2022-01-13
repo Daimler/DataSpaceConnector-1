@@ -12,7 +12,7 @@
  *
  */
 
-package org.eclipse.dataspaceconnector.sql.operations.serializer;
+package org.eclipse.dataspaceconnector.sql.operations.serialization;
 
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Assertions;

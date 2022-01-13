@@ -1,23 +1,22 @@
 package org.eclipse.dataspaceconnector.sql.operations;
 
 import org.eclipse.dataspaceconnector.spi.types.domain.asset.Asset;
-import org.eclipse.dataspaceconnector.sql.operations.query.Query;
+import org.eclipse.dataspaceconnector.sql.operations.query.QueryImpl;
 import org.eclipse.dataspaceconnector.sql.operations.query.operations.AssetQueryOperation;
-import org.eclipse.dataspaceconnector.sql.operations.query.operations.QueryOperation;
 import org.eclipse.dataspaceconnector.sql.pool.ConnectionPool;
 
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * The Query Builder creates an executable {@link Query} for domain objects. A query consists of the target domain objects and filters.
+ * The QueryImpl Builder creates an executable {@link QueryImpl} for domain objects. A query consists of the target domain objects and filters.
  */
 public class QueryBuilder {
 
     private final ConnectionPool connectionPool;
 
     /**
-     * Constructor of the Query Builder
+     * Constructor of the QueryImpl Builder
      *
      * @param connectionPool that provides a connection for the query
      */
@@ -26,7 +25,7 @@ public class QueryBuilder {
     }
 
     /**
-     * Query for asset objects
+     * QueryImpl for asset objects
      *
      * @return builder for query filters
      */
@@ -35,9 +34,9 @@ public class QueryBuilder {
     }
 
     /**
-     * The Filter Builder enriches a query for a certain type of domain objects with filters.
+     * The Filter Builder enriches a query with filters.
      *
-     * @param <T> query target class
+     * @param <T> query target
      */
     public abstract static class FilterBuilder<T> {
 
@@ -78,9 +77,7 @@ public class QueryBuilder {
 
         @Override
         public Query<Asset> build() {
-            Map<String, Object> properties = getProperties();
-            QueryOperation<Asset> operation = new AssetQueryOperation(properties);
-            return new Query<>(connectionPool, operation);
+            return new QueryImpl<>(connectionPool, new AssetQueryOperation(getProperties()));
         }
     }
 }

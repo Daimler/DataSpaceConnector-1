@@ -14,7 +14,7 @@
 
 package org.eclipse.dataspaceconnector.sql.operations.mapper;
 
-import org.eclipse.dataspaceconnector.sql.operations.serializer.EnvelopePacker;
+import org.eclipse.dataspaceconnector.sql.operations.serialization.EnvelopePacker;
 import org.eclipse.dataspaceconnector.sql.operations.types.Property;
 import org.eclipse.dataspaceconnector.sql.ResultSetMapper;
 

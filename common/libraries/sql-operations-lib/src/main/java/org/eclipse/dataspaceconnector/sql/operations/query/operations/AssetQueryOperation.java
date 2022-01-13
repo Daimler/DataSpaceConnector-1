@@ -17,7 +17,7 @@ package org.eclipse.dataspaceconnector.sql.operations.query.operations;
 import org.eclipse.dataspaceconnector.spi.types.domain.asset.Asset;
 import org.eclipse.dataspaceconnector.sql.operations.mapper.IdMapper;
 import org.eclipse.dataspaceconnector.sql.operations.mapper.PropertyMapper;
-import org.eclipse.dataspaceconnector.sql.operations.serializer.EnvelopePacker;
+import org.eclipse.dataspaceconnector.sql.operations.serialization.EnvelopePacker;
 import org.eclipse.dataspaceconnector.sql.operations.types.Property;
 import org.eclipse.dataspaceconnector.sql.operations.util.PreparedStatementResourceReader;
 import org.jetbrains.annotations.NotNull;

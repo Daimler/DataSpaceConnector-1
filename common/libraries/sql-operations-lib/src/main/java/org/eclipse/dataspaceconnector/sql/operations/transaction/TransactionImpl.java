@@ -1,5 +1,6 @@
 package org.eclipse.dataspaceconnector.sql.operations.transaction;
 
+import org.eclipse.dataspaceconnector.sql.operations.Transaction;
 import org.eclipse.dataspaceconnector.sql.pool.ConnectionPool;
 import org.eclipse.dataspaceconnector.sql.operations.transaction.operations.TransactionOperation;
 
@@ -7,16 +8,17 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 
-public class Transaction {
+public class TransactionImpl implements Transaction {
     private final ConnectionPool connectionPool;
 
     private final List<TransactionOperation> transactionOperations;
 
-    public Transaction(ConnectionPool connectionPool, List<TransactionOperation> transactionOperations) {
+    public TransactionImpl(ConnectionPool connectionPool, List<TransactionOperation> transactionOperations) {
         this.connectionPool = connectionPool;
         this.transactionOperations = transactionOperations;
     }
 
+    @Override
     public void execute() throws SQLException {
         Connection connection = connectionPool.getConnection();
         try {

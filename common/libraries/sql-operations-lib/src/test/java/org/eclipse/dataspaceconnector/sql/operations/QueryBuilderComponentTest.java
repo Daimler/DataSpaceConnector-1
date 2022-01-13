@@ -2,8 +2,6 @@ package org.eclipse.dataspaceconnector.sql.operations;
 
 import org.eclipse.dataspaceconnector.spi.types.domain.asset.Asset;
 import org.eclipse.dataspaceconnector.sql.pool.ConnectionPool;
-import org.eclipse.dataspaceconnector.sql.operations.query.Query;
-import org.eclipse.dataspaceconnector.sql.operations.transaction.Transaction;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -40,6 +38,8 @@ public class QueryBuilderComponentTest {
                 .create(asset2)
                 .build();
         transaction.execute();
+
+        // TODO Wait until its verified how an select all looks like
 
         Query<Asset> query = new QueryBuilder(connectionPool)
                 .assets()

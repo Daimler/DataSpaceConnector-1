@@ -14,7 +14,7 @@
 package org.eclipse.dataspaceconnector.sql.operations.transaction.operations.asset;
 
 import org.eclipse.dataspaceconnector.spi.types.domain.asset.Asset;
-import org.eclipse.dataspaceconnector.sql.operations.serializer.EnvelopePacker;
+import org.eclipse.dataspaceconnector.sql.operations.serialization.EnvelopePacker;
 import org.eclipse.dataspaceconnector.sql.operations.transaction.operations.TransactionOperation;
 import org.eclipse.dataspaceconnector.sql.operations.util.PreparedStatementResourceReader;
 import org.jetbrains.annotations.NotNull;

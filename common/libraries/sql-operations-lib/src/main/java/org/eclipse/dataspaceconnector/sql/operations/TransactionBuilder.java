@@ -1,7 +1,7 @@
 package org.eclipse.dataspaceconnector.sql.operations;
 
 import org.eclipse.dataspaceconnector.spi.types.domain.asset.Asset;
-import org.eclipse.dataspaceconnector.sql.operations.transaction.Transaction;
+import org.eclipse.dataspaceconnector.sql.operations.transaction.TransactionImpl;
 import org.eclipse.dataspaceconnector.sql.operations.transaction.operations.TransactionOperation;
 import org.eclipse.dataspaceconnector.sql.operations.transaction.operations.asset.AssetCreateOperation;
 import org.eclipse.dataspaceconnector.sql.operations.transaction.operations.asset.AssetDeleteOperation;
@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * The Transaction Builder creates an executable {@link Transaction} for one or many operations.
+ * The TransactionImpl Builder creates an executable {@link TransactionImpl} for one or many operations.
  */
 public class TransactionBuilder {
 
@@ -20,7 +20,7 @@ public class TransactionBuilder {
     private final List<TransactionOperation> transactionOperations;
 
     /**
-     * Constructor of the Transaction Builder
+     * Constructor of the TransactionImpl Builder
      *
      * @param connectionPool that provides a connection for the query
      */
@@ -30,7 +30,7 @@ public class TransactionBuilder {
     }
 
     /**
-     * Adds an {@link Asset} create operation to the {@link Transaction}
+     * Adds an {@link Asset} create operation to the {@link TransactionImpl}
      *
      * @param asset object to create
      * @return builder instance
@@ -41,7 +41,7 @@ public class TransactionBuilder {
     }
 
     /**
-     * Adds an {@link Asset} delete operation to the {@link Transaction}
+     * Adds an {@link Asset} delete operation to the {@link TransactionImpl}
      *
      * @param asset object to delete
      * @return builder instance
@@ -52,7 +52,7 @@ public class TransactionBuilder {
     }
 
     /**
-     * Adds an {@link Asset} update operation to the {@link Transaction}
+     * Adds an {@link Asset} update operation to the {@link TransactionImpl}
      *
      * @param asset object to update
      * @return builder instance
@@ -66,7 +66,7 @@ public class TransactionBuilder {
      * @return transaction
      */
     public Transaction build() {
-        return new Transaction(connectionPool, transactionOperations);
+        return new TransactionImpl(connectionPool, transactionOperations);
     }
 
 

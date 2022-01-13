@@ -1,5 +1,6 @@
 package org.eclipse.dataspaceconnector.sql.operations.query;
 
+import org.eclipse.dataspaceconnector.sql.operations.Query;
 import org.eclipse.dataspaceconnector.sql.pool.ConnectionPool;
 import org.eclipse.dataspaceconnector.sql.operations.query.operations.QueryOperation;
 
@@ -7,12 +8,12 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 
-public class Query<T> {
+public class QueryImpl<T> implements Query<T> {
 
     private final QueryOperation<T> queryOperation;
     private final ConnectionPool connectionPool;
 
-    public Query(ConnectionPool connectionPool, QueryOperation<T> queryOperation) {
+    public QueryImpl(ConnectionPool connectionPool, QueryOperation<T> queryOperation) {
         this.connectionPool = connectionPool;
         this.queryOperation = queryOperation;
     }

@@ -10,7 +10,7 @@ filters.
 ### Usage
 
 ```java
-class Queries {
+class Examples {
 
     public List<Asset> findAsset(String assetId) throws SQLException {
         Query<Asset> query = new QueryBuilder(connectionPool)
@@ -30,7 +30,7 @@ The `TransactionBuilder` creates an executable `Transaction` for one or many ope
 ### Usage
 
 ```java
-class Transactions {
+class Examples {
 
     public void create(Asset asset) throws SQLException {
         Transaction transaction = new TransactionBuilder(connectionPool)

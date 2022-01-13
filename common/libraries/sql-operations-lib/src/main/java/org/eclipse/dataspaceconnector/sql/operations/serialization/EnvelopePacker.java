@@ -12,7 +12,7 @@
  *
  */
 
-package org.eclipse.dataspaceconnector.sql.operations.serializer;
+package org.eclipse.dataspaceconnector.sql.operations.serialization;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
