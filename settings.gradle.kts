@@ -49,6 +49,11 @@ include(":extensions:ion:ion-client")
 
 // modules for technology- or cloud-provider extensions
 include(":extensions:aws")
+include(":extensions:transaction:tx-spi")
+include(":extensions:transaction:tx-core")
+include(":extensions:transaction:tx-sql")
+include(":extensions:transaction:tx-pool-commons")
+include(":extensions:transaction:tx-connection-psql")
 include(":extensions:api:control")
 include(":extensions:api:observability")
 include(":extensions:aws:s3:provision")
@@ -106,7 +111,7 @@ include(":extensions:policy:ids-policy")
 include(":extensions:jdk-logger-monitor")
 include(":extensions:inline-data-transfer:inline-data-transfer-core")
 include(":extensions:inline-data-transfer:inline-data-transfer-spi")
-include(":extensions:postgresql:asset-index")
+include(":extensions:sql:asset-index")
 
 // modules for launchers, i.e. runnable compositions of the app
 include(":launchers:basic")
