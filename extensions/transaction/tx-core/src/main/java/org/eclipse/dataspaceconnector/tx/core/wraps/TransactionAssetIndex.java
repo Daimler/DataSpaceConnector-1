@@ -6,6 +6,7 @@ import org.eclipse.dataspaceconnector.spi.asset.Criterion;
 import org.eclipse.dataspaceconnector.spi.types.domain.asset.Asset;
 import org.eclipse.dataspaceconnector.transaction.tx.TransactionContext;
 import org.eclipse.dataspaceconnector.transaction.tx.TransactionManager;
+import org.eclipse.dataspaceconnector.transaction.tx.Transactional;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -13,6 +14,7 @@ import java.util.stream.Stream;
 
 // or aspect J
 
+@Transactional(key = "asset")
 class TransactionAssetIndex implements AssetIndex {
     private final AssetIndex delegate;
     private final TransactionManager transactionManager;

@@ -34,13 +34,13 @@ public class TransactionalPoolDecorator implements ConnectionPool {
 
     @Override
     public Connection getConnection() {
-        SqlTransactionContext context = transactionManager.beginTransaction();
-        return new MyConnection(context.getConnection());
+        SqlTransactionContext context = transactionManager.beginTransaction(); // increment
+        return new MyConnection(context);
     }
 
     @Override
     public void returnConnection(Connection connection) throws SQLException {
-        SqlTransactionContext context = transactionManager.beginTransaction();
+        SqlTransactionContext context = transactionManager.beginTransaction(); // decrement
         if (context.isOngoing()) {
             return;
         }
@@ -60,9 +60,21 @@ public class TransactionalPoolDecorator implements ConnectionPool {
     private static class MyConnection implements Connection {
 
         private final Connection delegate;
+        private final SqlTransactionContext sqlTransactionContext;
 
-        private MyConnection(Connection delegate) {
-            this.delegate = delegate;
+        private MyConnection(SqlTransactionContext sqlTransactionContext) {
+            this.delegate = sqlTransactionContext.getConnection();
+            this.sqlTransactionContext = sqlTransactionContext;
+        }
+
+        @Override
+        public void commit() throws SQLException {
+            sqlTransactionContext.commit(); // commit happens only if it's the transaction with commit counter==1
+        }
+
+        @Override
+        public void rollback() throws SQLException {
+            sqlTransactionContext.rollback();
         }
 
         @Override
@@ -93,16 +105,6 @@ public class TransactionalPoolDecorator implements ConnectionPool {
         @Override
         public boolean getAutoCommit() throws SQLException {
             return false;
-        }
-
-        @Override
-        public void commit() throws SQLException {
-            // do in transaction
-        }
-
-        @Override
-        public void rollback() throws SQLException {
-            // do in transaction
         }
 
         @Override

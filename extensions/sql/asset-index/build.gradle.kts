@@ -26,7 +26,6 @@ dependencies {
     implementation(project(":common:libraries:sql-postgresql-lib"))
     implementation(project(":common:libraries:sql-operations-lib"))
     implementation(project(":extensions:transaction:tx-spi"))
-    implementation(project(":extensions:transaction:tx-sql"))
 
     testImplementation(testFixtures(project(":common:libraries:sql-operations-lib")))
 }

@@ -21,8 +21,8 @@ import org.eclipse.dataspaceconnector.spi.asset.Criterion;
 import org.eclipse.dataspaceconnector.spi.types.domain.asset.Asset;
 import org.eclipse.dataspaceconnector.sql.operations.Query;
 import org.eclipse.dataspaceconnector.sql.operations.QueryBuilder;
-import org.eclipse.dataspaceconnector.sql.operations.query.QueryImpl;
 import org.eclipse.dataspaceconnector.sql.pool.ConnectionPool;
+import org.eclipse.dataspaceconnector.transaction.tx.Transactional;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -31,7 +31,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
 
-//@Transactional("asset")
 public class PostgresqlAssetIndex implements AssetIndex {
 
     private final ConnectionPool connectionPool;
