@@ -17,6 +17,7 @@ rootProject.name = "dataspaceconnector"
 // modules for common/util code
 
 include(":common:util")
+include(":common:sql-lib")
 
 // EDC core modules
 include(":core")
@@ -38,6 +39,8 @@ include(":extensions:ion:ion-core")
 include(":extensions:ion:ion-client")
 
 // modules for technology- or cloud-provider extensions
+include(":extensions:transaction:tx-core")
+include(":extensions:transaction:tx-spi")
 include(":extensions:aws")
 include(":extensions:api:control")
 include(":extensions:api:observability")
