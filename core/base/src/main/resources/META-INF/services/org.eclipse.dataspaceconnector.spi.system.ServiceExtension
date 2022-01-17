@@ -14,4 +14,3 @@
 
 org.eclipse.dataspaceconnector.core.schema.SchemaExtension
 org.eclipse.dataspaceconnector.core.system.CoreServicesExtension
-org.eclipse.dataspaceconnector.core.protocol.web.WebServiceExtension

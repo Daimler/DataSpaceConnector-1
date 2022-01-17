@@ -28,6 +28,7 @@ dependencies {
     implementation(project(":extensions:aws:s3:s3-schema"))
     implementation(project(":extensions:inline-data-transfer:inline-data-transfer-spi"))
     implementation(project(":extensions:inline-data-transfer:inline-data-transfer-core"))
+    implementation(project(":extensions:http"))
 
 
     implementation(platform("software.amazon.awssdk:bom:${awsVersion}"))
@@ -39,7 +40,6 @@ dependencies {
     implementation("jakarta.ws.rs:jakarta.ws.rs-api:${rsApi}")
 
     implementation(project(":data-protocols:ids"))
-    implementation(project(":extensions:in-memory:policy-registry-memory"))
     implementation(project(":extensions:in-memory:assetindex-memory"))
     implementation(project(":extensions:in-memory:transfer-store-memory"))
     implementation(project(":extensions:iam:iam-mock"))
@@ -48,8 +48,7 @@ dependencies {
 }
 
 application {
-    @Suppress("DEPRECATION")
-    mainClassName = "org.eclipse.dataspaceconnector.core.system.runtime.BaseRuntime"
+    mainClass.set("org.eclipse.dataspaceconnector.core.system.runtime.BaseRuntime")
 }
 
 tasks.withType<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar> {

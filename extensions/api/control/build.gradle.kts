@@ -23,14 +23,15 @@ plugins {
 
 dependencies {
     api(project(":spi"))
+    api(project(":common:util"))
+    api(project(":extensions:http"))
 
     implementation("jakarta.ws.rs:jakarta.ws.rs-api:${rsApi}")
 
-    testImplementation(project(":extensions:in-memory:assetindex-memory"))
     testImplementation(project(":core:"))
+    testImplementation(project(":extensions:in-memory:assetindex-memory"))
     testImplementation(project(":extensions:in-memory:transfer-store-memory"))
     testImplementation(project(":extensions:in-memory:contractdefinition-store-memory"))
-    testImplementation(project(":extensions:in-memory:policy-registry-memory"))
     testImplementation(project(":extensions:in-memory:assetindex-memory"))
     testImplementation(project(":data-protocols:ids"))
     testImplementation(project(":extensions:iam:iam-mock"))
@@ -41,7 +42,6 @@ dependencies {
 
     testImplementation(project(":extensions:in-memory:negotiation-store-memory"))
 
-    implementation(project(":common:util"))
 }
 
 publishing {
