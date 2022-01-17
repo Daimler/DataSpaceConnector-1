@@ -49,11 +49,6 @@ include(":extensions:ion:ion-client")
 
 // modules for technology- or cloud-provider extensions
 include(":extensions:aws")
-include(":extensions:transaction:tx-spi")
-include(":extensions:transaction:tx-core")
-include(":extensions:transaction:tx-sql")
-include(":extensions:transaction:tx-pool-commons")
-include(":extensions:transaction:tx-connection-psql")
 include(":extensions:api:control")
 include(":extensions:api:observability")
 include(":extensions:aws:s3:provision")
