@@ -21,6 +21,7 @@ plugins {
 val h2Version: String by project
 
 dependencies {
+    api(project(":extensions:transaction:tx-spi"))
     testImplementation("com.h2database:h2:${h2Version}")
 }
 

@@ -22,7 +22,6 @@ import org.eclipse.dataspaceconnector.spi.types.domain.asset.Asset;
 import org.eclipse.dataspaceconnector.sql.operations.Query;
 import org.eclipse.dataspaceconnector.sql.operations.QueryBuilder;
 import org.eclipse.dataspaceconnector.sql.pool.ConnectionPool;
-import org.eclipse.dataspaceconnector.transaction.tx.Transactional;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

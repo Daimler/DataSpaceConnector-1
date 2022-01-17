@@ -21,7 +21,8 @@ import org.apache.commons.pool2.impl.DefaultPooledObject;
 import org.apache.commons.pool2.impl.GenericObjectPool;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.eclipse.dataspaceconnector.sql.connection.ConnectionFactory;
-import org.eclipse.dataspaceconnector.sql.pool.ConnectionPool;
+import org.eclipse.dataspaceconnector.sql.pool.ConnectionPoolBase;
+import org.eclipse.dataspaceconnector.transaction.spi.TransactionManager;
 import org.jetbrains.annotations.NotNull;
 
 import java.sql.Connection;
@@ -29,8 +30,19 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Objects;
 
-public final class CommonsConnectionPool implements ConnectionPool, AutoCloseable {
+public final class CommonsConnectionPool extends ConnectionPoolBase implements AutoCloseable {
     private final GenericObjectPool<Connection> connectionObjectPool;
+
+    public CommonsConnectionPool(TransactionManager transactionManager, ConnectionFactory connectionFactory, CommonsConnectionPoolConfig commonsConnectionPoolConfig) {
+        super(transactionManager);
+
+        Objects.requireNonNull(connectionFactory, "connectionFactory");
+        Objects.requireNonNull(commonsConnectionPoolConfig, "commonsConnectionPoolConfig");
+
+        this.connectionObjectPool = new GenericObjectPool<>(
+                new PooledConnectionObjectFactory(connectionFactory, commonsConnectionPoolConfig.getTestQuery()),
+                getGenericObjectPoolConfig(commonsConnectionPoolConfig));
+    }
 
     public CommonsConnectionPool(ConnectionFactory connectionFactory, CommonsConnectionPoolConfig commonsConnectionPoolConfig) {
         Objects.requireNonNull(connectionFactory, "connectionFactory");
@@ -60,7 +72,7 @@ public final class CommonsConnectionPool implements ConnectionPool, AutoCloseabl
     }
 
     @Override
-    public Connection getConnection() throws SQLException {
+    public Connection getConnectionInternal() throws SQLException {
         try {
             return connectionObjectPool.borrowObject();
         } catch (SQLException sqlException) {
@@ -71,7 +83,7 @@ public final class CommonsConnectionPool implements ConnectionPool, AutoCloseabl
     }
 
     @Override
-    public void returnConnection(Connection connection) {
+    public void returnConnectionInternal(Connection connection) {
         Objects.requireNonNull(connection, "connection");
 
         connectionObjectPool.returnObject(connection);

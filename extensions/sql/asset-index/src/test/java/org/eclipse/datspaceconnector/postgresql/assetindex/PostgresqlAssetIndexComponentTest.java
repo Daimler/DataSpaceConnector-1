@@ -20,11 +20,15 @@ import org.eclipse.dataspaceconnector.spi.asset.AssetIndex;
 import org.eclipse.dataspaceconnector.spi.asset.AssetSelectorExpression;
 import org.eclipse.dataspaceconnector.spi.asset.Criterion;
 import org.eclipse.dataspaceconnector.spi.types.domain.asset.Asset;
+import org.eclipse.dataspaceconnector.sql.operations.Query;
+import org.eclipse.dataspaceconnector.sql.operations.QueryBuilder;
 import org.eclipse.dataspaceconnector.sql.operations.SqlConnectionExtension;
+import org.eclipse.dataspaceconnector.sql.operations.Transaction;
 import org.eclipse.dataspaceconnector.sql.operations.TransactionBuilder;
-import org.eclipse.dataspaceconnector.sql.operations.transaction.TransactionImpl;
 import org.eclipse.dataspaceconnector.sql.pool.ConnectionPool;
+import org.eclipse.dataspaceconnector.transaction.spi.TransactionManager;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -38,11 +42,43 @@ import java.util.stream.Stream;
 public class PostgresqlAssetIndexComponentTest {
     private AssetIndex assetIndex;
     private ConnectionPool connectionPool;
+    private TransactionManager transactionManager;
 
     @BeforeEach
-    public void setup(ConnectionPool connectionPool) {
+    public void setup(ConnectionPool connectionPool, TransactionManager transactionManager) {
         this.connectionPool = connectionPool;
+        this.transactionManager = transactionManager;
         this.assetIndex = new PostgresqlAssetIndex(connectionPool);
+    }
+
+    @Test
+    public void MyTest() throws SQLException {
+//        TransactionContext context = transactionManager.beginTransaction();
+
+//        Transaction transaction = new TransactionBuilder(connectionPool)
+//                .create(Asset.Builder.newInstance().id("trans-asset").build())
+//                .build();
+//
+//        transaction.execute(); // no commit
+
+//        context.rollback(); // rollback
+//        context.commit(); // rollback
+
+        // This one increments a transaction, so the transaction is never commited
+        Query<Asset> query = new QueryBuilder(connectionPool) // here is a transaction opened?
+                .assets()
+                .with(Asset.PROPERTY_ID, "trans-asset")
+                .build();
+
+        List<Asset> assets = query.execute();
+
+        Transaction transaction = new TransactionBuilder(connectionPool)
+                .create(Asset.Builder.newInstance().id("trans-asset").build())
+                .build();
+
+        transaction.execute(); // no commit
+
+//        Assertions.assertThat(assets).size().isEqualTo(1);
     }
 
     @Test
@@ -62,6 +98,7 @@ public class PostgresqlAssetIndexComponentTest {
     }
 
     @Test
+    @Disabled
     public void testQueryCriteria() throws SQLException {
         List<Criterion> criteria = new ArrayList<>();
         criteria.add(new Criterion("foo", "=", "bar"));
@@ -76,6 +113,7 @@ public class PostgresqlAssetIndexComponentTest {
     }
 
     @Test
+    @Disabled
     public void testQueryId() throws SQLException {
         Asset asset = Asset.Builder.newInstance().build();
         createAsset(asset);
@@ -87,7 +125,7 @@ public class PostgresqlAssetIndexComponentTest {
     }
 
     private void createAsset(Asset asset) throws SQLException {
-        TransactionImpl transaction = new TransactionBuilder(connectionPool)
+        Transaction transaction = new TransactionBuilder(connectionPool)
                 .create(asset)
                 .build();
         transaction.execute();

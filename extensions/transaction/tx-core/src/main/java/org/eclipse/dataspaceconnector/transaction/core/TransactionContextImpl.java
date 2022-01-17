@@ -4,11 +4,13 @@ import org.eclipse.dataspaceconnector.transaction.spi.TransactionContext;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class TransactionContextImpl implements TransactionContext {
 
     private final AtomicInteger commitCounter = new AtomicInteger();
+    private final AtomicBoolean isRolledBack = new AtomicBoolean(false);
 
     private final List<Runnable> onBeforeCommit = new ArrayList<>();
     private final List<Runnable> onCommit = new ArrayList<>();
@@ -49,16 +51,30 @@ public class TransactionContextImpl implements TransactionContext {
 
     @Override
     public void commit() {
+        if (isRolledBack.get()) {
+            throw new IllegalStateException("isRolledBack");
+        }
         // TODO Check state
-        if (commitCounter.get() == 1) {
-            onBeforeCommit.forEach(Runnable::run);
-            onCommit.forEach(Runnable::run);
-            onAfterCommit.forEach(Runnable::run);
+        try {
+            if (commitCounter.get() <= 1) {
+                onBeforeCommit.forEach(Runnable::run);
+                onCommit.forEach(Runnable::run);
+                onAfterCommit.forEach(Runnable::run);
+            }
+        } finally {
+            if (commitCounter.get() > 0) {
+                commitCounter.decrementAndGet();
+            }
         }
     }
 
     @Override
     public void rollback() {
+        if (isRolledBack.get()) {
+            throw new IllegalStateException("isRolledBack");
+        }
+
+        isRolledBack.set(true);
         onBeforeRollback.forEach(Runnable::run);
         onRollback.forEach(Runnable::run);
         onAfterRollback.forEach(Runnable::run);
