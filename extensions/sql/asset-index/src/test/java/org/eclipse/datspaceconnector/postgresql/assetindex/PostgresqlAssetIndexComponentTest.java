@@ -26,6 +26,7 @@ import org.eclipse.dataspaceconnector.sql.operations.SqlConnectionExtension;
 import org.eclipse.dataspaceconnector.sql.operations.Transaction;
 import org.eclipse.dataspaceconnector.sql.operations.TransactionBuilder;
 import org.eclipse.dataspaceconnector.sql.pool.ConnectionPool;
+import org.eclipse.dataspaceconnector.transaction.spi.TransactionContext;
 import org.eclipse.dataspaceconnector.transaction.spi.TransactionManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -64,21 +65,28 @@ public class PostgresqlAssetIndexComponentTest {
 //        context.rollback(); // rollback
 //        context.commit(); // rollback
 
-        // This one increments a transaction, so the transaction is never commited
-        Query<Asset> query = new QueryBuilder(connectionPool) // here is a transaction opened?
+        Query<Asset> query = new QueryBuilder(connectionPool)
                 .assets()
                 .with(Asset.PROPERTY_ID, "trans-asset")
                 .build();
 
         List<Asset> assets = query.execute();
 
+        TransactionContext t1 = transactionManager.beginTransaction();
+        TransactionContext t2 = transactionManager.beginTransaction();
+
         Transaction transaction = new TransactionBuilder(connectionPool)
                 .create(Asset.Builder.newInstance().id("trans-asset").build())
                 .build();
 
-        transaction.execute(); // no commit
+        transaction.execute(); // commit on connection
 
-//        Assertions.assertThat(assets).size().isEqualTo(1);
+        t2.commit();
+        t1.commit();
+
+        assets = query.execute();
+
+        Assertions.assertThat(assets).size().isEqualTo(1);
     }
 
     @Test

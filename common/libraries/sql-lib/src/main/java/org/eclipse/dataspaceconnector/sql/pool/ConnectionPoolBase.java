@@ -1,16 +1,13 @@
 package org.eclipse.dataspaceconnector.sql.pool;
 
-import org.eclipse.dataspaceconnector.transaction.spi.TransactionContext;
 import org.eclipse.dataspaceconnector.transaction.spi.TransactionManager;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 public abstract class ConnectionPoolBase implements ConnectionPool {
 
-    private Map<TransactionContext, Connection> transactionConnections;
+    private final ThreadLocal<Connection> transactionConnection = ThreadLocal.withInitial(() -> null);
     private TransactionManager transactionManager;
 
     public ConnectionPoolBase() {
@@ -18,73 +15,66 @@ public abstract class ConnectionPoolBase implements ConnectionPool {
 
     public ConnectionPoolBase(TransactionManager transactionManager) {
         this.transactionManager = transactionManager;
-        this.transactionConnections = new ConcurrentHashMap<>();
+
+        registerListener(transactionManager);
     }
 
     @Override
-    public Connection getConnection() throws SQLException {
-        if (transactionManager == null) {
-            return getConnectionInternal();
+    public Connection getConnection() {
+        if (transactionConnection.get() == null) {
+            try {
+                return getConnectionInternal();
+            } catch (SQLException e) {
+                // TODO
+                e.printStackTrace();
+            }
         }
 
-        TransactionContext context = transactionManager.beginTransaction();
-        if (transactionConnections.containsKey(context)) {
-            return new TransactionalConnection(context, transactionConnections.get(context));
-        }
-
-        Connection connection = getConnectionInternal();
-        transactionConnections.put(context, connection);
-
-        registerListener(context, connection);
-
-        return new TransactionalConnection(context, connection);
+        return new TransactionalConnection(transactionManager, transactionConnection.get());
     }
 
     @Override
-    public void returnConnection(Connection connection) throws SQLException {
-        if (transactionManager == null) {
-            returnConnectionInternal(connection);
+    public void returnConnection(Connection connection) {
+        if (transactionConnection.get() == null) {
+            try {
+                returnConnectionInternal(connection);
+            } catch (SQLException e) {
+                // TODO
+                e.printStackTrace();
+            }
         }
     }
 
-    private void registerListener(TransactionContext context, Connection connection) {
-        context.onCommit(() -> {
-            try {
-                connection.commit();
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
-            }
-        });
-        context.onAfterCommit(() -> {
-            try {
-                transactionalReturn(context, connection);
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
-            }
-        });
-        context.onRollback(() -> {
-            try {
-                connection.rollback();
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
-            }
-        });
-        context.onAfterRollback(() -> {
-            try {
-                transactionalReturn(context, connection);
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
-            }
-        });
-    }
+    private void registerListener(TransactionManager transactionManager) {
 
-    private void transactionalReturn(TransactionContext context, Connection connection) throws SQLException {
-        try {
-            connection.rollback();
-        } finally {
-            transactionConnections.remove(context);
-            returnConnectionInternal(connection);
-        }
+        transactionManager.onStatusChanged(status ->
+        {
+            Connection connection = transactionConnection.get();
+
+            try {
+                switch (status) {
+                    case NEW:
+                        break;
+                    case ACTIVE:
+                        transactionConnection.set(getConnectionInternal());
+                        break;
+                    case ROLLBACK:
+                        connection.rollback();
+                        break;
+                    case COMMIT:
+                        connection.commit();
+                        break;
+                    case ROLLBACK_COMPLETE:
+                    case COMMIT_COMPLETE:
+                        returnConnectionInternal(connection);
+                        transactionConnection.set(null);
+                        break;
+                }
+            } catch (SQLException e) {
+                // TODO
+                e.printStackTrace();
+            }
+        });
     }
 
     protected abstract Connection getConnectionInternal() throws SQLException;

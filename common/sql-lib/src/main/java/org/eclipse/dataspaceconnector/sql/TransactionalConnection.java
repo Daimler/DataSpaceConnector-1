@@ -1,6 +1,6 @@
 package org.eclipse.dataspaceconnector.sql;
 
-import org.eclipse.dataspaceconnector.transaction.spi.TransactionContext;
+import org.eclipse.dataspaceconnector.transaction.spi.TransactionManager;
 
 import java.sql.Array;
 import java.sql.Blob;
@@ -23,11 +23,11 @@ import java.util.concurrent.Executor;
 
 public class TransactionalConnection implements Connection {
 
-    private final TransactionContext context;
+    private final TransactionManager transactionManager;
     private final Connection delegate;
 
-    public TransactionalConnection(TransactionContext context, Connection delegate) {
-        this.context = context;
+    public TransactionalConnection(TransactionManager transactionManager, Connection delegate) {
+        this.transactionManager = transactionManager;
         this.delegate = delegate;
     }
 
@@ -63,12 +63,12 @@ public class TransactionalConnection implements Connection {
 
     @Override
     public void commit() throws SQLException {
-        context.commit();
+        // do nothing until transaction is commited
     }
 
     @Override
     public void rollback() throws SQLException {
-        context.rollback();
+        transactionManager.rollback(); // or mark as rollback
     }
 
     @Override

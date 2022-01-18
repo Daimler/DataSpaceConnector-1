@@ -1,86 +1,57 @@
 package org.eclipse.dataspaceconnector.transaction.core;
 
 import org.eclipse.dataspaceconnector.transaction.spi.TransactionContext;
+import org.eclipse.dataspaceconnector.transaction.spi.TransactionStatus;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class TransactionContextImpl implements TransactionContext {
 
     private final AtomicInteger commitCounter = new AtomicInteger();
-    private final AtomicBoolean isRolledBack = new AtomicBoolean(false);
 
-    private final List<Runnable> onBeforeCommit = new ArrayList<>();
-    private final List<Runnable> onCommit = new ArrayList<>();
-    private final List<Runnable> onAfterCommit = new ArrayList<>();
-    private final List<Runnable> onBeforeRollback = new ArrayList<>();
-    private final List<Runnable> onRollback = new ArrayList<>();
-    private final List<Runnable> onAfterRollback = new ArrayList<>();
+    private TransactionStatus status;
+    private final Runnable commitCallback;
+    private final Runnable rollbackCallback;
 
-    @Override
-    public void onBeforeCommit(Runnable run) {
-        onBeforeCommit.add(run);
-    }
-
-    @Override
-    public void onCommit(Runnable run) {
-        onCommit.add(run);
-    }
-
-    @Override
-    public void onAfterCommit(Runnable run) {
-        onAfterCommit.add(run);
-    }
-
-    @Override
-    public void onBeforeRollback(Runnable run) {
-        onBeforeRollback.add(run);
-    }
-
-    @Override
-    public void onRollback(Runnable run) {
-        onRollback.add(run);
-    }
-
-    @Override
-    public void onAfterRollback(Runnable run) {
-        onAfterRollback.add(run);
+    public TransactionContextImpl(Runnable commitCallback, Runnable rollbackCallback) {
+        this.status = TransactionStatus.NEW;
+        this.commitCallback = commitCallback;
+        this.rollbackCallback = rollbackCallback;
     }
 
     @Override
     public void commit() {
-        if (isRolledBack.get()) {
-            throw new IllegalStateException("isRolledBack");
+        if (status != TransactionStatus.ACTIVE) {
+            throw new IllegalStateException();
         }
-        // TODO Check state
-        try {
-            if (commitCounter.get() <= 1) {
-                onBeforeCommit.forEach(Runnable::run);
-                onCommit.forEach(Runnable::run);
-                onAfterCommit.forEach(Runnable::run);
-            }
-        } finally {
-            if (commitCounter.get() > 0) {
-                commitCounter.decrementAndGet();
-            }
+        if (commitCounter.get() <= 1) {
+            commitCallback.run();
         }
     }
 
     @Override
     public void rollback() {
-        if (isRolledBack.get()) {
-            throw new IllegalStateException("isRolledBack");
+        if (status != TransactionStatus.ACTIVE) {
+            throw new IllegalStateException();
         }
+        rollbackCallback.run();
+    }
 
-        isRolledBack.set(true);
-        onBeforeRollback.forEach(Runnable::run);
-        onRollback.forEach(Runnable::run);
-        onAfterRollback.forEach(Runnable::run);
+    @Override
+    public TransactionStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(TransactionStatus status) {
+        this.status = status;
     }
 
     public void incrementCounter() {
         commitCounter.incrementAndGet();
     }
+
+    public void decrementCounter() {
+        commitCounter.decrementAndGet();
+    }
+
 }
