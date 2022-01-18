@@ -38,6 +38,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
+import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -59,11 +60,11 @@ public class PostgresqlAndKafkaAssetIndexComponentTest {
         this.assetIndex = new PostgresqlAssetIndex(connectionPool);
 
         Properties kafkaProperties = new Properties();
-        kafkaProperties.setProperty("bootstrap.servers", "localhost:9092");
-        kafkaProperties.setProperty("zookeeper.connect", "zookeeper:2181");
-        kafkaProperties.setProperty("producer.type", "async");
-        kafkaProperties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.ByteArraySerializer");
-        kafkaProperties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.ByteArraySerializer");
+        kafkaProperties.setProperty("bootstrap.servers", "127.0.0.1:9092");
+        kafkaProperties.setProperty("zookeeper.connect", "127.0.0.1:2181");
+        kafkaProperties.setProperty("producer.type", "sync");
+        kafkaProperties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer");
+        kafkaProperties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer");
         //kafkaProperties.setProperty("transactional.id", "testproducer");
 
         KafkaProducer<Object, Object> kafkaProducerDelegate = new KafkaProducer<>(kafkaProperties);
@@ -73,7 +74,7 @@ public class PostgresqlAndKafkaAssetIndexComponentTest {
     }
 
     @Test
-    public void myTest() throws SQLException {
+    public void myTest() throws SQLException, InterruptedException {
 //        TransactionContext context = transactionManager.beginTransaction();
 
 //        Transaction transaction = new TransactionBuilder(connectionPool)
@@ -84,41 +85,42 @@ public class PostgresqlAndKafkaAssetIndexComponentTest {
 
 //        context.rollback(); // rollback
 //        context.commit(); // rollback
-//
-//        Query<Asset> query = new QueryBuilder(connectionPool)
-//                .assets()
-//                .with(Asset.PROPERTY_ID, "trans-asset")
-//                .build();
-//
-//        List<Asset> assets = query.execute();
-//
-//        TransactionContext t1 = transactionManager.beginTransaction();
-//
-//
-//
-//        TransactionContext t2 = transactionManager.beginTransaction();
-//
-//        Transaction transaction = new TransactionBuilder(connectionPool)
-//                .create(Asset.Builder.newInstance().id("trans-asset").build())
-//                .build();
-//
-//        transaction.execute(); // commit on connection
-//
-//        t2.commit();
 
+        Query<Asset> query = new QueryBuilder(connectionPool)
+                .assets()
+                .with(Asset.PROPERTY_ID, "trans-asset")
+                .build();
+
+        List<Asset> assets = query.execute();
+
+        TransactionContext t1 = transactionManager.beginTransaction();
+
+        TransactionContext t2 = transactionManager.beginTransaction();
+        Transaction transaction = new TransactionBuilder(connectionPool)
+                .create(Asset.Builder.newInstance().id("trans-asset").build())
+                .build();
+
+        transaction.execute(); // commit on connection
+        /*t2*/transactionManager.commit();
 
         TransactionContext t3 = transactionManager.beginTransaction();
-        var record = new ProducerRecord<String, String>("hallo", null, "welt");
-        kafkaProducer.send(record);
-        t3.commit();
+        kafkaProducer.send(new ProducerRecord<String, String>("test", null, "welt1"));
+        kafkaProducer.send(new ProducerRecord<String, String>("test", null, "welt2"));
+        kafkaProducer.send(new ProducerRecord<String, String>("test", null, "welt3"));
+        kafkaProducer.send(new ProducerRecord<String, String>("test", null, "welt4"));
+        kafkaProducer.send(new ProducerRecord<String, String>("test", null, "welt5"));
+        kafkaProducer.send(new ProducerRecord<String, String>("test", null, "welt6"));
+        kafkaProducer.send(new ProducerRecord<String, String>("test", null, "welt7"));
+        kafkaProducer.send(new ProducerRecord<String, String>("test", null, "welt8"));
+        kafkaProducer.send(new ProducerRecord<String, String>("test", null, "welt9"));
+        kafkaProducer.send(new ProducerRecord<String, String>("test", null, "welt10"));
+        /*t3*/transactionManager.commit();
 
-//
-//
-//        t1.commit();
-//
-//        assets = query.execute();
-//
-//        Assertions.assertThat(assets).size().isEqualTo(1);
+        /*t1*/transactionManager.commit();
+
+        assets = query.execute();
+
+        Assertions.assertThat(assets).size().isEqualTo(1);
     }
 
     @Test

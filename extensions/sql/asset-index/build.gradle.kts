@@ -29,6 +29,7 @@ dependencies {
     implementation(project(":common:libraries:kafka-lib"))
     implementation("org.apache.kafka:kafka-clients:3.0.0")
 
+    implementation("ch.qos.logback:logback-classic:1.2.10")
     implementation(project(":extensions:transaction:tx-spi"))
 
     testImplementation(testFixtures(project(":common:libraries:sql-operations-lib")))

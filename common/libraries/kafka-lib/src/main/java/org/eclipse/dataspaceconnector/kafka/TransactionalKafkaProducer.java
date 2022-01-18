@@ -8,15 +8,15 @@ import org.eclipse.dataspaceconnector.kafka.util.FutureUtil;
 import org.eclipse.dataspaceconnector.transaction.spi.TransactionManager;
 import org.eclipse.dataspaceconnector.transaction.spi.TransactionStatus;
 
+import java.util.LinkedList;
 import java.util.Objects;
-import java.util.Stack;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 
 public class TransactionalKafkaProducer<K, V> extends AbstractTransactionalKafkaProducer<K, V> {
     private final KafkaProducer<K, V> kafkaProducer;
     private final TransactionManager transactionManager;
-    private final ThreadLocal<Stack<CompletableProducerRecord<K, V>>> messages;
+    private final ThreadLocal<LinkedList<CompletableProducerRecord<K, V>>> messages;
 
     public TransactionalKafkaProducer(KafkaProducer<K, V> kafkaProducer) {
         this(null, Objects.requireNonNull(kafkaProducer));
@@ -27,7 +27,7 @@ public class TransactionalKafkaProducer<K, V> extends AbstractTransactionalKafka
 
         this.transactionManager = transactionManager;
         this.kafkaProducer = Objects.requireNonNull(kafkaProducer);
-        this.messages = ThreadLocal.withInitial(Stack::new);
+        this.messages = ThreadLocal.withInitial(LinkedList::new);
 
         if (transactionManager != null) {
             //kafkaProducer.initTransactions();
@@ -58,13 +58,13 @@ public class TransactionalKafkaProducer<K, V> extends AbstractTransactionalKafka
 
     // since no kafka transactiokn is running, no message has been sent, so it's sufficient to clear the stack
     private void rollback() {
-        Stack<CompletableProducerRecord<K, V>> stack = messages.get();
-        if (stack == null) {
+        LinkedList<CompletableProducerRecord<K, V>> list = messages.get();
+        if (list == null) {
             return;
         }
 
-        while (!stack.isEmpty()) {
-            stack.pop().future.completeExceptionally(new TransactionRollbackException("rolled back"));
+        while (!list.isEmpty()) {
+            list.removeFirst().future.completeExceptionally(new TransactionRollbackException("rolled back"));
         }
     }
 
@@ -89,20 +89,20 @@ public class TransactionalKafkaProducer<K, V> extends AbstractTransactionalKafka
     }
 
     private void sendEnqueuedMessages() {
-        Stack<CompletableProducerRecord<K, V>> stack = messages.get();
-        if (stack == null) {
+        LinkedList<CompletableProducerRecord<K, V>> list = messages.get();
+        if (list == null || list.isEmpty()) {
             return;
         }
 
         try {
             //kafkaProducer.beginTransaction();
 
-            while (!stack.isEmpty()) {
-                sendMessage(stack.pop());
+            while (!list.isEmpty()) {
+                sendMessage(list.removeFirst());
             }
         } catch (Exception ex) {
-            while (!stack.isEmpty()) {
-                stack.pop().future.completeExceptionally(ex);
+            while (!list.isEmpty()) {
+                list.removeFirst().future.completeExceptionally(ex);
             }
 
             //kafkaProducer.abortTransaction();
