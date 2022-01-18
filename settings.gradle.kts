@@ -23,7 +23,7 @@ include(":common:libraries:sql-lib")
 include(":common:libraries:sql-pool-commons-lib")
 include(":common:libraries:sql-postgresql-lib")
 include(":common:libraries:sql-operations-lib")
-include(":common:sql-lib")
+include(":common:libraries:kafka-lib")
 
 // EDC core modules
 include(":core")

@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2021 Microsoft Corporation
+ *  Copyright (c) 2021 Daimler TSS GmbH
  *
  *  This program and the accompanying materials are made available under the
  *  terms of the Apache License, Version 2.0 which is available at
@@ -8,26 +8,26 @@
  *  SPDX-License-Identifier: Apache-2.0
  *
  *  Contributors:
- *       Microsoft Corporation - initial API and implementation
+ *       Daimler TSS GmbH - initial build file
  *
  */
 
 plugins {
     `java-library`
+    `java-test-fixtures`
+    `maven-publish`
 }
 
-val okHttpVersion: String by project
-
-
 dependencies {
-    api(project(":spi"))
     api(project(":extensions:transaction:tx-spi"))
+
+    implementation("org.apache.kafka:kafka-clients:3.0.0")
 }
 
 publishing {
     publications {
-        create<MavenPublication>("sql-lib") {
-            artifactId = "sql-lib"
+        create<MavenPublication>("common-kafka-lib") {
+            artifactId = "common-kafka-lib"
             from(components["java"])
         }
     }
