@@ -43,6 +43,9 @@ include(":data-protocols:ids:ids-api-rest-endpoint-v1")
 include(":data-protocols:ids:ids-api-rest-dispatcher-v1")
 include(":data-protocols:ids:ids-transform-v1")
 
+include(":extensions:data-mgt:dm-core")
+include(":extensions:data-mgt:dm-spi")
+
 include(":extensions:ion:ion-core")
 include(":extensions:ion:ion-client")
 
