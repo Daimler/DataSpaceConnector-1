@@ -12,7 +12,7 @@
 *
 */
 
-val rsApi: String by project
+val slf4jVersion: String by project
 
 plugins {
     `java-library`
@@ -22,14 +22,12 @@ plugins {
 dependencies {
     api(project(":spi"))
     api(project(":extensions:data-mgt:dm-spi"))
-
-    implementation("jakarta.ws.rs:jakarta.ws.rs-api:${rsApi}")
 }
 
 publishing {
     publications {
-        create<MavenPublication>("data-mgmt-core") {
-            artifactId = "data-mgmt-core"
+        create<MavenPublication>("data-mgmt-client") {
+            artifactId = "data-mgmt-client"
             from(components["java"])
         }
     }

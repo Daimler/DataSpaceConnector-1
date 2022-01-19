@@ -14,18 +14,16 @@
 
 package org.eclipse.dataspaceconnector.datamgt.spi;
 
+import org.eclipse.dataspaceconnector.datamgt.spi.exceptions.IdentifierAlreadyExistsException;
+import org.eclipse.dataspaceconnector.datamgt.spi.exceptions.NotFoundException;
 import org.eclipse.dataspaceconnector.spi.asset.Criterion;
 import org.eclipse.dataspaceconnector.spi.types.domain.asset.Asset;
-import org.eclipse.dataspaceconnector.spi.types.domain.contract.offer.ContractDefinition;
-import org.eclipse.dataspaceconnector.spi.types.domain.transfer.DataAddress;
 import org.jetbrains.annotations.NotNull;
 
-import java.sql.SQLException;
-import java.util.Collection;
 import java.util.List;
 
 /**
- * PostgreSQL Asset ContractDefinitionRepository. Query, Read and Write operations are directly done in an PostgreSQL instance.
+ * Repository to create, read, update and delete assets.
  */
 public interface AssetRepository {
 
@@ -37,103 +35,32 @@ public interface AssetRepository {
      * or
      * - the left operand must be a string and represents the key of a {@link Asset} property
      * - the operator must either be "=" or "eq"
-     * - the right operand can be an object and represents the value of a {@link Asset} property
+     * - the right operand can be an object, representing the value of a {@link Asset} property
      *
      * @param criteria to select items
      * @return list of assets
-     * @throws SQLException exception
      */
-    @NotNull List<Asset> queryAssets(@NotNull List<Criterion> criteria) throws SQLException;
-
-    /**
-     * Query the repository using one or many {@link Criterion}.
-     * <p>
-     * Please note when using criteria:
-     * - to select all assets use only one {@link Criterion} and "*" as left and right operand and "=" as operator
-     * or
-     * - to select the data address of a specific asset use only one {@link Criterion} and  "asset_id" as left, as right operand the {@link Asset} id and "=" as operator
-     * or
-     * - the left operand must be a and represents the key of a {@link DataAddress} property
-     * - the operator must either be "=" or "eq"
-     * - the right operand must be a and represents the value of a {@link DataAddress} property
-     *
-     * @param criteria to select items
-     * @return list of data address
-     * @throws SQLException exception
-     */
-    @NotNull List<DataAddress> queryAddress(@NotNull List<Criterion> criteria) throws SQLException;
-
-    /**
-     * Query the repository for all contract definitions.
-     *
-     * @return all contract definitions
-     * @throws SQLException exception
-     */
-    @NotNull List<ContractDefinition> queryAllContractDefinitions() throws SQLException;
+    @NotNull List<Asset> queryAssets(@NotNull List<Criterion> criteria);
 
     /**
      * Stores the asset and its corresponding data address.
      *
-     * @param asset       asset to store
-     * @param dataAddress address to store
-     * @throws SQLException exception
+     * @param asset asset to store
      */
-    void create(@NotNull Asset asset, @NotNull DataAddress dataAddress) throws SQLException;
-
-    /**
-     * Stores the contract definition.
-     *
-     * @param contractDefinition definition to store
-     * @throws SQLException exception
-     */
-    void create(@NotNull ContractDefinition contractDefinition) throws SQLException;
-
-    /**
-     * Stores the contract definition in one transaction
-     *
-     * @param contractDefinitions definitions to store
-     * @throws SQLException exception
-     */
-    void create(@NotNull Collection<ContractDefinition> contractDefinitions) throws SQLException;
+    void create(@NotNull Asset asset) throws IdentifierAlreadyExistsException;
 
     /**
      * Updates the asset.
      *
      * @param asset asset to update
-     * @throws SQLException exception
      */
-    void update(@NotNull Asset asset) throws SQLException;
-
-    /**
-     * Updates the address.
-     *
-     * @param asset       corresponding asset
-     * @param dataAddress address to update
-     * @throws SQLException exception
-     */
-    void update(@NotNull Asset asset, @NotNull DataAddress dataAddress) throws SQLException;
-
-    /**
-     * Updates the contract definition.
-     *
-     * @param contractDefinition contract definition to update
-     * @throws SQLException exception
-     */
-    void update(@NotNull ContractDefinition contractDefinition) throws SQLException;
+    void update(@NotNull Asset asset) throws NotFoundException;
 
     /**
      * Deletes the asset and its corresponding data address.
      *
-     * @param asset asset to delete
-     * @throws SQLException exception
+     * @param assetId id of the asset to delete
      */
-    void delete(@NotNull Asset asset) throws SQLException;
+    void delete(@NotNull String assetId) throws NotFoundException;
 
-    /**
-     * Deletes the contrat definition.
-     *
-     * @param contractDefinition contract definition to delete
-     * @throws SQLException exception
-     */
-    void delete(@NotNull ContractDefinition contractDefinition) throws SQLException;
 }
