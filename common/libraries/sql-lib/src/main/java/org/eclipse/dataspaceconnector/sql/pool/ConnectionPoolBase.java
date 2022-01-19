@@ -46,9 +46,7 @@ public abstract class ConnectionPoolBase implements ConnectionPool {
     }
 
     private void registerListener(TransactionManager transactionManager) {
-
-        transactionManager.onStatusChanged(status ->
-        {
+        transactionManager.onStatusChanged(status -> {
             Connection connection = transactionConnection.get();
 
             try {
@@ -71,8 +69,14 @@ public abstract class ConnectionPoolBase implements ConnectionPool {
                         break;
                 }
             } catch (SQLException e) {
-                // TODO
-                e.printStackTrace();
+                try {
+                    if(connection!=null) {
+                        connection.rollback();
+                    }
+                } catch (SQLException ignored) {
+                }
+
+                throw new RuntimeException(e);
             }
         });
     }

@@ -10,7 +10,7 @@ import java.util.List;
 
 public class TransactionManagerImpl implements TransactionManager {
 
-    private final ThreadLocal<TransactionContextImpl> contextThreadLocal = ThreadLocal.withInitial(() -> null);
+    private final ThreadLocal<TransactionContextImpl> contextThreadLocal = new ThreadLocal<>();
     private final ThreadLocal<List<StatusChangedListener>> statusChangedListenerList = ThreadLocal.withInitial(ArrayList::new);
 
     @Override
@@ -23,6 +23,17 @@ public class TransactionManagerImpl implements TransactionManager {
         TransactionContextImpl context = contextThreadLocal.get();
         context.incrementCounter();
         return context;
+    }
+
+    @Override
+    public TransactionStatus getTransactionStatus() {
+        TransactionContextImpl context = contextThreadLocal.get();
+
+        if(context == null) {
+            return TransactionStatus.INACTIVE;
+        }
+
+        return context.getStatus();
     }
 
     @Override

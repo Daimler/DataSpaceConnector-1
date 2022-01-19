@@ -6,6 +6,8 @@ public interface TransactionManager {
 
     TransactionContext beginTransaction();
 
+    TransactionStatus getTransactionStatus();
+
     void commit();
 
     void rollback();
