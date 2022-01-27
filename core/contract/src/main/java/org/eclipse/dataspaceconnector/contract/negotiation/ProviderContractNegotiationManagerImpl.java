@@ -408,6 +408,13 @@ public class ProviderContractNegotiationManagerImpl extends ContractNegotiationO
                     .correlationId(negotiation.getCorrelationId())
                     .build();
 
+
+            negotiation.transitionConfirmed();
+            negotiationStore.save(negotiation);
+//            invokeForEach(l -> l.confirmed(negotiation));
+            monitor.debug(String.format("[Provider] ContractNegotiation %s is now in state %s.",
+                        negotiation.getId(), ContractNegotiationStates.from(negotiation.getState())));
+
             //TODO protocol-independent response type?
             dispatcherRegistry.send(Object.class, request, () -> null)
                     .whenComplete(onAgreementSent(negotiation.getId(), agreement));
@@ -427,7 +434,7 @@ public class ProviderContractNegotiationManagerImpl extends ContractNegotiationO
 
             if (throwable == null) {
                 negotiation.setContractAgreement(agreement);
-                negotiation.transitionConfirmed();
+//                negotiation.transitionConfirmed();
                 negotiationStore.save(negotiation);
                 invokeForEach(l -> l.confirmed(negotiation));
                 monitor.debug(String.format("[Provider] ContractNegotiation %s is now in state %s.",

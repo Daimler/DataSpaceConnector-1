@@ -11,7 +11,7 @@ public class IdsIdParser {
         if (urn == null) {
             throw new IllegalArgumentException("urn must not be null");
         }
-        String[] parts = urn.split(DELIMITER, 3);
+        String[] parts = urn.split(DELIMITER);
 
         String scheme = parts[0];
         if (parts.length < 3 || !scheme.equalsIgnoreCase(SCHEME)) {
@@ -20,7 +20,9 @@ public class IdsIdParser {
         String typeString = parts[1];
         IdsType type = IdsType.fromValue(typeString);
 
-        String idValue = parts[2];
+        String[] idValues = new String[parts.length - 2];
+        System.arraycopy(parts, 2, idValues, 0, parts.length - 2);
+        String idValue = String.join(":", idValues);
 
         return IdsId.Builder.newInstance().type(type).value(idValue).build();
     }

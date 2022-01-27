@@ -6,6 +6,7 @@ import org.eclipse.dataspaceconnector.aws.s3.operator.S3BucketWriter;
 import org.eclipse.dataspaceconnector.azure.blob.operator.BlobStoreReader;
 import org.eclipse.dataspaceconnector.azure.blob.operator.BlobStoreWriter;
 import org.eclipse.dataspaceconnector.common.azure.BlobStoreApi;
+import org.eclipse.dataspaceconnector.common.azure.BlobStoreApiImpl;
 import org.eclipse.dataspaceconnector.dataloading.AssetLoader;
 import org.eclipse.dataspaceconnector.spi.asset.DataAddressResolver;
 import org.eclipse.dataspaceconnector.spi.security.Vault;
@@ -26,7 +27,6 @@ public class CloudTransferExtension implements ServiceExtension {
     private DataFlowManager dataFlowMgr;
     @Inject
     private DataAddressResolver dataAddressResolver;
-    @Inject
     private BlobStoreApi blobStoreApi;
     @Inject
     private DataOperatorRegistry dataOperatorRegistry;
@@ -38,6 +38,10 @@ public class CloudTransferExtension implements ServiceExtension {
 
     @Override
     public void initialize(ServiceExtensionContext context) {
+
+        Vault vault = context.getService(Vault.class);
+        blobStoreApi = new BlobStoreApiImpl(vault, null);
+
         registerFlowController(context);
         registerDataEntries(context);
     }
