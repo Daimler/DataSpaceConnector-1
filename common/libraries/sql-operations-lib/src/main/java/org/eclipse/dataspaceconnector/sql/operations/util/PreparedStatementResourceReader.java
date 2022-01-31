@@ -44,6 +44,10 @@ public class PreparedStatementResourceReader {
     private static final String ADDRESS_PROPERTY_UPDATE = "address_property_update.sql";
     private static final String ADDRESS_PROPERTIES_SELECT_BY_K_V = "address_properties_select_by_address_id.sql";
     private static final String ADDRESS_PROPERTIES_SELECT_BY_ADDRESS_ID = "address_properties_select_by_address_id.sql";
+    private static final String CONTRACT_DEFINITION_CREATE = "contract_definition_create.sql";
+    private static final String CONTRACT_DEFINITION_DELETE = "contract_definition_delete.sql";
+    private static final String CONTRACT_DEFINITION_SELECT_ALL = "contract_definition_select_all.sql";
+    private static final String CONTRACT_DEFINITION_UPDATE = "contract_definition_update.sql";
 
     public static String readAssetCreate() {
         return readContent(ASSET_CREATE);
@@ -125,6 +129,22 @@ public class PreparedStatementResourceReader {
         return readContent(ADDRESS_PROPERTIES_SELECT_BY_ADDRESS_ID);
     }
 
+
+    public static String readContractDefinitionCreate() {
+        return readContent(CONTRACT_DEFINITION_CREATE);
+    }
+
+    public static String readContractDefinitionDelete() {
+        return readContent(CONTRACT_DEFINITION_DELETE);
+    }
+
+    public static String readContractDefinitionSelectAll() {
+        return readContent(CONTRACT_DEFINITION_SELECT_ALL);
+    }
+
+    public static String readContractDefinitionUpdate() {
+        return readContent(CONTRACT_DEFINITION_UPDATE);
+    }
 
     private static String readContent(String resourceName) {
         try (InputStream inputStream = PreparedStatementResourceReader.class.getClassLoader().getResourceAsStream(resourceName)) {
