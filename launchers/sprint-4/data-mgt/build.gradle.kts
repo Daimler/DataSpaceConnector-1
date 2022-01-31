@@ -9,7 +9,6 @@
  *
  *  Contributors:
  *       Microsoft Corporation - initial API and implementation
- *       Fraunhofer Institute for Software and Systems Engineering - added dependencies
  *
  */
 
@@ -20,33 +19,35 @@ plugins {
 }
 
 val jupiterVersion: String by project
-val rsApi: String by project
 
 dependencies {
-    implementation(project(":core"))
-
-    implementation(project(":extensions:in-memory:transfer-store-memory"))
-    implementation(project(":extensions:in-memory:negotiation-store-memory"))
+    implementation(project(":core:boot"))
+    implementation(project(":core:base"))
 
     implementation(project(":extensions:filesystem:configuration-fs"))
-    implementation(project(":extensions:iam:iam-mock"))
 
-    implementation(project(":extensions:api:control"))
-
-    implementation(project(":data-protocols:ids"))
-
-    implementation(project(":extensions:sql:asset-index"))
     implementation(project(":extensions:sql:asset-loader"))
+    implementation(project(":extensions:sql:contract-definition-loader"))
 
-    implementation(project(":samples:04.0-file-transfer:api"))
+    testImplementation(testFixtures(project(":common:util")))
 }
 
 application {
-    mainClass.set("org.eclipse.dataspaceconnector.boot.system.runtime.BaseRuntime")
+    mainClass.set("org.eclipse.dataspaceconnector.dataloader.cli.DataMgtRuntime")
 }
 
 tasks.withType<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar> {
     exclude("**/pom.properties", "**/pom.xm")
     mergeServiceFiles()
-    archiveFileName.set("consumer.jar")
+    archiveFileName.set("dataloader.jar")
 }
+
+publishing {
+    publications {
+        create<MavenPublication>("dataloader-cli") {
+            artifactId = "dataloader-cli"
+            from(components["java"])
+        }
+    }
+}
+

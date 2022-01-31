@@ -165,3 +165,7 @@ include(":samples:05-file-transfer-cloud:provider")
 include(":samples:05-file-transfer-cloud:api")
 include(":samples:05-file-transfer-cloud:data-seeder")
 include(":samples:05-file-transfer-cloud:transfer-file")
+
+include(":launchers:sprint-4:connector")
+include(":launchers:sprint-4:datasource")
+include (":launchers:sprint-4:fake-extensions")

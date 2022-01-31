@@ -22,11 +22,12 @@ import org.eclipse.dataspaceconnector.spi.system.Requires;
 import org.eclipse.dataspaceconnector.spi.system.ServiceExtension;
 import org.eclipse.dataspaceconnector.spi.system.ServiceExtensionContext;
 import org.eclipse.dataspaceconnector.spi.transaction.datasource.DataSourceRegistry;
+import org.eclipse.dataspaceconnector.spi.types.domain.asset.Asset;
 
 import javax.sql.DataSource;
 
 @Provides(AssetIndex.class)
-@Requires(DataSourceRegistry.class)
+@Requires({DataSourceRegistry.class, Asset.class})
 public class SqlAssetIndexServiceExtension implements ServiceExtension {
 
     @EdcSetting

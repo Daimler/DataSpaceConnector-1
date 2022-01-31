@@ -22,10 +22,11 @@ val rsApi: String by project
 
 dependencies {
     api(project(":spi"))
-    implementation(project(":extensions:in-memory:assetindex-memory"))
-    api(project(":extensions:dataloading:dataloading-asset"))
     api(project(":extensions:inline-data-transfer:inline-data-transfer-spi"))
     api(project(":extensions:inline-data-transfer:inline-data-transfer-core"))
+
+    implementation(project(":extensions:sql:asset-index"))
+    implementation(project(":extensions:sql:asset-loader"))
 
     implementation("jakarta.ws.rs:jakarta.ws.rs-api:${rsApi}")
 }

@@ -13,14 +13,18 @@
  */
 package org.eclipse.dataspaceconnector.transaction.local;
 
+import org.eclipse.dataspaceconnector.spi.system.Provides;
+import org.eclipse.dataspaceconnector.spi.system.Requires;
 import org.eclipse.dataspaceconnector.spi.system.ServiceExtension;
 import org.eclipse.dataspaceconnector.spi.system.ServiceExtensionContext;
 import org.eclipse.dataspaceconnector.spi.transaction.TransactionContext;
 import org.eclipse.dataspaceconnector.spi.transaction.datasource.DataSourceRegistry;
+import org.eclipse.dataspaceconnector.spi.types.domain.asset.Asset;
 
 /**
  * Support for transaction context backed by one or more local resources, including a {@link DataSourceRegistry}.
  */
+@Provides({ DataSourceRegistry.class, TransactionContext.class })
 public class LocalTransactionExtension implements ServiceExtension {
     @Override
     public String name() {

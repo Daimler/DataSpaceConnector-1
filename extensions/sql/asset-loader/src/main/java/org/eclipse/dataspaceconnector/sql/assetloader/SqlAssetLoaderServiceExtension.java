@@ -23,11 +23,12 @@ import org.eclipse.dataspaceconnector.spi.system.ServiceExtension;
 import org.eclipse.dataspaceconnector.spi.system.ServiceExtensionContext;
 import org.eclipse.dataspaceconnector.spi.transaction.TransactionContext;
 import org.eclipse.dataspaceconnector.spi.transaction.datasource.DataSourceRegistry;
+import org.eclipse.dataspaceconnector.spi.types.domain.asset.Asset;
 
 import javax.sql.DataSource;
 
 @Provides(AssetLoader.class)
-@Requires(TransactionContext.class)
+@Requires({ TransactionContext.class, Asset.class })
 public class SqlAssetLoaderServiceExtension implements ServiceExtension {
 
     @EdcSetting
@@ -52,6 +53,6 @@ public class SqlAssetLoaderServiceExtension implements ServiceExtension {
         }
 
         SqlAssetLoader assetLoader = new SqlAssetLoader(dataSource, transactionContext);
-        context.registerService(SqlAssetLoader.class, assetLoader);
+        context.registerService(AssetLoader.class, assetLoader);
     }
 }
