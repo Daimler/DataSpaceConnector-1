@@ -12,4 +12,4 @@
 #
 #
 
-org.eclipse.dataspaceconnector.postgresql.assetloader.PostgresqlServiceExtensionImpl
+org.eclipse.dataspaceconnector.sql.contractdefinitionloader.SqlContractDefinitionLoaderServiceExtension

@@ -22,22 +22,18 @@ val jupiterVersion: String by project
 val testContainersVersion: String by project
 
 dependencies {
-    implementation(project(":spi"))
+    api(project(":spi"))
     implementation(project(":common:libraries:clients:postgresql"))
+    implementation(project(":common:libraries:clients:postgresql-repository"))
 
-    testImplementation(testFixtures(project(":common:util")))
-    testImplementation("ch.qos.logback:logback-classic:1.2.6")
-    testImplementation("org.testcontainers:postgresql:${testContainersVersion}")
-    testImplementation("org.testcontainers:junit-jupiter:${testContainersVersion}")
-
-    testFixturesImplementation("org.junit.jupiter:junit-jupiter-api:${jupiterVersion}")
-    testFixturesRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${jupiterVersion}")
+    implementation(project(":extensions:dataloading:dataloading-contractdef"))
+    implementation("junit:junit:4.13.1")
 }
 
 publishing {
     publications {
-        create<MavenPublication>("postgresql-repository") {
-            artifactId = "postgresql-repository"
+        create<MavenPublication>("postgresql-contract-definition-loader") {
+            artifactId = "postgresql-contract-definition-loader"
             from(components["java"])
         }
     }
