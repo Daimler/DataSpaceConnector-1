@@ -18,6 +18,11 @@ rootProject.name = "dataspaceconnector"
 
 include(":common:util")
 
+include(":common:libraries:sql-lib")
+include(":common:libraries:sql-pool-commons-lib")
+include(":common:libraries:sql-postgresql-lib")
+include(":common:libraries:sql-operations-lib")
+
 // EDC core modules
 include(":core")
 include(":core:policy:policy-engine")
@@ -97,6 +102,7 @@ include(":extensions:http:jersey")
 include(":extensions:http:jetty")
 include(":extensions:inline-data-transfer:inline-data-transfer-core")
 include(":extensions:inline-data-transfer:inline-data-transfer-spi")
+include(":extensions:sql:asset-index")
 include(":extensions:transaction")
 include(":extensions:transaction:transaction-spi")
 include(":extensions:transaction:transaction-local")
