@@ -30,4 +30,16 @@ CREATE TABLE IF NOT EXISTS properties
 
 ---
 
+
+CREATE TABLE IF NOT EXISTS contract_definitions
+(
+    id                        VARCHAR(255) NOT NULL,
+    access_policy             VARCHAR(65535) NOT NULL,
+    contract_policy           VARCHAR(65535) NOT NULL,
+    asset_selector_expression VARCHAR(65535) NOT NULL,
+    PRIMARY KEY(id)
+);
+
+---
+
 CREATE INDEX IF NOT EXISTS kv_index ON properties(k, v);

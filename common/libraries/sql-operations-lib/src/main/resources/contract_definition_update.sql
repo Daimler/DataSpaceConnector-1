@@ -11,8 +11,6 @@
 --       Daimler TSS GmbH - Initial SQL Query
 --
 
-DROP TABLE IF EXISTS properties;
-
-DROP TABLE IF EXISTS assets;
-
-DROP TABLE IF EXISTS contract_definitions;
+UPDATE contract_definitions
+SET asset_selector_expression=?, access_policy=?, contract_policy=?
+WHERE id=?
