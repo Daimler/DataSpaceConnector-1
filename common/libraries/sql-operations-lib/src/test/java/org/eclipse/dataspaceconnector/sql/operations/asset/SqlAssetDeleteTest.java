@@ -60,7 +60,7 @@ public class SqlAssetDeleteTest {
         int rowsDeleted = delete.execute(asset.getId());
 
         List<Property> properties = executeQuery(connection, new PropertyMapper(),
-                PreparedStatementResourceReader.readPropertiesSelectByAssetId(), asset.getId());
+                PreparedStatementResourceReader.readAssetPropertiesSelectByAssetId(), asset.getId());
         List<Boolean> exists = executeQuery(connection, new ExistsMapper(),
                 PreparedStatementResourceReader.readAssetExists(), asset.getId());
 

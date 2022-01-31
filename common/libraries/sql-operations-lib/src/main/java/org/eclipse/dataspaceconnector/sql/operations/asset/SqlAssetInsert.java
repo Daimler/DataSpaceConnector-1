@@ -45,7 +45,7 @@ public class SqlAssetInsert {
         Objects.requireNonNull(asset);
 
         String sqlCreateAsset = PreparedStatementResourceReader.readAssetCreate();
-        String sqlCreateProperty = PreparedStatementResourceReader.readPropertyCreate();
+        String sqlCreateProperty = PreparedStatementResourceReader.readAssetPropertyCreate();
 
         rowsChanged += executeQuery(connection, sqlCreateAsset, asset.getId());
 
