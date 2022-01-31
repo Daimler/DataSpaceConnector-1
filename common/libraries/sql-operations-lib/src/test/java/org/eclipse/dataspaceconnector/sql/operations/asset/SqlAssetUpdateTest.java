@@ -69,7 +69,7 @@ public class SqlAssetUpdateTest {
         int rowsUpdated = update.execute(asset);
 
         List<Property> properties = executeQuery(connection, new PropertyMapper(),
-                PreparedStatementResourceReader.readPropertiesSelectByAssetId(), asset.getId());
+                PreparedStatementResourceReader.readAssetPropertiesSelectByAssetId(), asset.getId());
         List<Boolean> exists = executeQuery(connection, new ExistsMapper(),
                 PreparedStatementResourceReader.readAssetExists(), asset.getId());
 

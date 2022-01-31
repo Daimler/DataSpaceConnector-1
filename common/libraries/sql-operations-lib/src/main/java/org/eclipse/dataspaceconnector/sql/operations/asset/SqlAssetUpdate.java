@@ -50,10 +50,10 @@ public class SqlAssetUpdate {
         int rowsChanged = 0;
         Objects.requireNonNull(asset);
 
-        String sqlProperties = PreparedStatementResourceReader.readPropertiesSelectByAssetId();
-        String sqlPropertyCreate = PreparedStatementResourceReader.readPropertyCreate();
-        String sqlPropertyDelete = PreparedStatementResourceReader.readPropertyDelete();
-        String sqlPropertyUpdate = PreparedStatementResourceReader.readPropertyUpdate();
+        String sqlProperties = PreparedStatementResourceReader.readAssetPropertiesSelectByAssetId();
+        String sqlPropertyCreate = PreparedStatementResourceReader.readAssetPropertyCreate();
+        String sqlPropertyDelete = PreparedStatementResourceReader.readAssetPropertyDelete();
+        String sqlPropertyUpdate = PreparedStatementResourceReader.readAssetPropertyUpdate();
         String sqlAssetExists = PreparedStatementResourceReader.readAssetExists();
 
         boolean assetExists = executeQuery(connection, new ExistsMapper(), sqlAssetExists, asset.getId())

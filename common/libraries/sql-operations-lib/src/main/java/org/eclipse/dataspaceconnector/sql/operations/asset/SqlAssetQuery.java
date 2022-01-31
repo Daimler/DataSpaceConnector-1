@@ -66,8 +66,8 @@ public class SqlAssetQuery {
         Objects.requireNonNull(filters);
 
         String sqlQueryTemplate = PreparedStatementResourceReader.readAssetQuery();
-        String sqlPropertiesByKv = PreparedStatementResourceReader.readPropertiesSelectByKv();
-        String sqlPropertiesByAssetId = PreparedStatementResourceReader.readPropertiesSelectByAssetId();
+        String sqlPropertiesByKv = PreparedStatementResourceReader.readAssetPropertiesSelectByKv();
+        String sqlPropertiesByAssetId = PreparedStatementResourceReader.readAssetPropertiesSelectByAssetId();
         String sqlAssetsAll = PreparedStatementResourceReader.readAssetSelectAll();
 
         List<String> targetAssetIds;
