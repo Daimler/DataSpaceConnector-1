@@ -14,6 +14,7 @@
 
 package org.eclipse.dataspaceconnector.contractdefinition.store.memory;
 
+import org.eclipse.dataspaceconnector.dataloading.ContractDefinitionLoader;
 import org.eclipse.dataspaceconnector.spi.contract.offer.store.ContractDefinitionStore;
 import org.eclipse.dataspaceconnector.spi.types.domain.contract.offer.ContractDefinition;
 import org.jetbrains.annotations.NotNull;
@@ -26,7 +27,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * The default store implementation used when no extension is configured in a runtime. {@link ContractDefinition}s are stored ephemerally in memory.
  */
-public class InMemoryContractDefinitionStore implements ContractDefinitionStore {
+public class InMemoryContractDefinitionStore implements ContractDefinitionStore, ContractDefinitionLoader {
     private final Map<String, ContractDefinition> cache = new ConcurrentHashMap<>();
 
     @Override
@@ -57,5 +58,10 @@ public class InMemoryContractDefinitionStore implements ContractDefinitionStore 
     @Override
     public void reload() {
         // no-op
+    }
+
+    @Override
+    public void accept(ContractDefinition item) {
+        cache.put(item.getId(), item);
     }
 }

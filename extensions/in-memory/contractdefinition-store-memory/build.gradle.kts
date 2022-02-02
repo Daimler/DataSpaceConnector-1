@@ -18,6 +18,7 @@ plugins {
 
 dependencies {
     api(project(":spi"))
+    implementation(project(":extensions:dataloading:dataloading-contractdef"))
 }
 
 publishing {

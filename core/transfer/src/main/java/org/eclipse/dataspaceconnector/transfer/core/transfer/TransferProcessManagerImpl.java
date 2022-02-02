@@ -126,7 +126,7 @@ public class TransferProcessManagerImpl extends TransferProcessObservable implem
 
     /**
      * Initiate a consumer request TransferProcess.
-     *
+     * <p>
      * If the request is sync, instead of inserting a {@link TransferProcess} into - and having it traverse through -
      * it returns immediately (= "synchronously"). The {@link TransferProcess} is created in the
      * {@link TransferProcessStates#COMPLETED} state.
@@ -146,7 +146,7 @@ public class TransferProcessManagerImpl extends TransferProcessObservable implem
 
     /**
      * Initiate a provider request TransferProcess.
-     *
+     * <p>
      * If the request is sync, instead of inserting a {@link TransferProcess} into - and having it traverse through -
      * it returns immediately (= "synchronously"). The {@link TransferProcess} is created in the
      * {@link TransferProcessStates#COMPLETED} state.
@@ -276,8 +276,8 @@ public class TransferProcessManagerImpl extends TransferProcessObservable implem
                 .thenApply(proxyEntry -> {
                     String type = proxyEntry.getType();
                     return Optional.ofNullable(proxyEntryHandlers.get(type))
-                                    .map(handler -> handler.accept(dataRequest, proxyEntry))
-                                    .orElse(proxyEntry);
+                            .map(handler -> handler.accept(dataRequest, proxyEntry))
+                            .orElse(proxyEntry);
                 });
 
         try {
@@ -463,13 +463,15 @@ public class TransferProcessManagerImpl extends TransferProcessObservable implem
 
         for (var process : processesInProgress.stream().filter(p -> p.getType() == CONSUMER).collect(toList())) {
             if (process.getDataRequest().isManagedResources()) {
-                var resources = process.getProvisionedResourceSet().getResources();
-                var checker = statusCheckerRegistry.resolve(process.getDataRequest().getDestinationType());
-                if (checker == null) {
-                    monitor.info(format("No checker found for process %s. The process will not advance to the COMPLETED state.", process.getId()));
-                } else if (checker.isComplete(process, resources)) {
-                    // checker passed, transition the process to the COMPLETED state
-                    transitionToCompleted(process);
+                if (process.getProvisionedResourceSet() != null) {
+                    var resources = process.getProvisionedResourceSet().getResources();
+                    var checker = statusCheckerRegistry.resolve(process.getDataRequest().getDestinationType());
+                    if (checker == null) {
+                        monitor.info(format("No checker found for process %s. The process will not advance to the COMPLETED state.", process.getId()));
+                    } else if (checker.isComplete(process, resources)) {
+                        // checker passed, transition the process to the COMPLETED state
+                        transitionToCompleted(process);
+                    }
                 }
             } else {
                 var checker = statusCheckerRegistry.resolve(process.getDataRequest().getDestinationType());

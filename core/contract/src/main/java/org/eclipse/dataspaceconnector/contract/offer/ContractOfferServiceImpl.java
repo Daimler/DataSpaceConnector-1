@@ -15,6 +15,10 @@
 package org.eclipse.dataspaceconnector.contract.offer;
 
 import org.eclipse.dataspaceconnector.contract.common.ContractId;
+import org.eclipse.dataspaceconnector.policy.model.Duty;
+import org.eclipse.dataspaceconnector.policy.model.Permission;
+import org.eclipse.dataspaceconnector.policy.model.Policy;
+import org.eclipse.dataspaceconnector.policy.model.Prohibition;
 import org.eclipse.dataspaceconnector.spi.asset.AssetIndex;
 import org.eclipse.dataspaceconnector.spi.contract.agent.ParticipantAgentService;
 import org.eclipse.dataspaceconnector.spi.contract.offer.ContractDefinitionService;
@@ -50,10 +54,91 @@ public class ContractOfferServiceImpl implements ContractOfferService {
             var assets = assetIndex.queryAssets(definition.getSelectorExpression());
             return assets.map(asset -> ContractOffer.Builder.newInstance()
                     .id(ContractId.createContractId(definition.getId()))
-                    .policy(definition.getContractPolicy())
+                    .policy(createTargetedPolicy(definition.getContractPolicy(), asset.getId()))
                     .asset(asset)
                     .build());
         });
     }
 
+    private Policy createTargetedPolicy(Policy p, String targetId) {
+
+        Policy.Builder policyBuilder = Policy.Builder.newInstance();
+        policyBuilder.id(p.getUid());
+        policyBuilder.target(targetId);
+        policyBuilder.assignee(p.getAssignee());
+        policyBuilder.assigner(p.getAssigner());
+        policyBuilder.extensibleProperties(p.getExtensibleProperties());
+        policyBuilder.type(p.getType());
+
+        if (p.getPermissions() != null) {
+            for (Permission permission : p.getPermissions()) {
+                policyBuilder.permission(createTargetedPermission(permission, targetId));
+            }
+        }
+
+        if (p.getObligations() != null) {
+            for (Duty d : p.getObligations()) {
+                policyBuilder.duty(createTargetedDuty(d, targetId));
+            }
+        }
+
+        if (p.getProhibitions() != null) {
+            for (Prohibition prohibition : p.getProhibitions()) {
+                policyBuilder.prohibition(createTargetedProhibition(prohibition, targetId));
+            }
+        }
+
+        return policyBuilder.build();
+    }
+
+    private Prohibition createTargetedProhibition(Prohibition p, String targetId) {
+        Prohibition.Builder prohibitionBuilder = Prohibition.Builder.newInstance();
+        prohibitionBuilder.target(targetId);
+        prohibitionBuilder.action(p.getAction());
+        prohibitionBuilder.assignee(p.getAssignee());
+        prohibitionBuilder.assigner(p.getAssigner());
+
+        if (p.getConstraints() != null) {
+            prohibitionBuilder.constraints(p.getConstraints());
+        }
+
+        return prohibitionBuilder.build();
+    }
+
+    private Permission createTargetedPermission(Permission p, String targetId) {
+        Permission.Builder permissionBuilder = Permission.Builder.newInstance();
+        permissionBuilder.target(targetId);
+        permissionBuilder.uid(p.getUid());
+        permissionBuilder.action(p.getAction());
+        permissionBuilder.assignee(p.getAssignee());
+        permissionBuilder.assigner(p.getAssigner());
+
+        if (p.getDuties() != null) {
+            for (Duty d : p.getDuties()) {
+                permissionBuilder.duty(createTargetedDuty(d, targetId));
+            }
+        }
+
+        if (p.getConstraints() != null) {
+            permissionBuilder.constraints(p.getConstraints());
+        }
+
+        return permissionBuilder.build();
+    }
+
+    private Duty createTargetedDuty(Duty d, String targetId) {
+        Duty.Builder dutyBuilder = Duty.Builder.newInstance();
+        dutyBuilder.uid(d.getUid());
+        dutyBuilder.target(targetId);
+        dutyBuilder.parentPermission(d.getParentPermission());
+        dutyBuilder.assignee(d.getAssignee());
+        dutyBuilder.assigner(d.getAssigner());
+        dutyBuilder.action(d.getAction());
+
+        if (d.getConsequence() != null) {
+            dutyBuilder.consequence(createTargetedDuty(d.getConsequence(), targetId));
+        }
+
+        return dutyBuilder.build();
+    }
 }
