@@ -17,6 +17,8 @@ rootProject.name = "dataspaceconnector"
 // modules for common/util code
 
 include(":common:util")
+include(":common:libraries:clients:postgresql")
+include(":common:libraries:clients:postgresql-repository")
 
 // EDC core modules
 include(":core")
@@ -119,6 +121,9 @@ include(":extensions:token:token-validation")
 include(":extensions:sql:common")
 include(":extensions:sql:pool:apache-commons-pool")
 include(":extensions:http-receiver")
+include(":extensions:sql:asset:schema")
+include(":extensions:sql:asset:index")
+include(":extensions:sql:asset:loader")
 
 // modules for launchers, i.e. runnable compositions of the app
 include(":launchers:basic")
