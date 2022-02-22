@@ -18,10 +18,20 @@ plugins {
     `maven-publish`
 }
 
+val flywayVersion: String by project
+
 dependencies {
-    implementation(project(":spi"))
-    implementation("org.flywaydb:flyway-core:8.5.0") // TODO add version to gradle.properties
+    api(project(":spi"))
     api(project(":extensions:transaction:transaction-datasource-spi"))
+    api(project(":extensions:transaction:transaction-spi"))
+
+    implementation("org.flywaydb:flyway-core:${flywayVersion}")
+
+    testImplementation(testFixtures(project(":launchers:junit")))
+    testImplementation(project(":core:base"))
+    testImplementation(project(":extensions:sql:pool:apache-commons-pool"))
+    testImplementation(project(":extensions:transaction:transaction-local"))
+    testImplementation("com.h2database:h2:2.1.210")
 }
 
 publishing {
