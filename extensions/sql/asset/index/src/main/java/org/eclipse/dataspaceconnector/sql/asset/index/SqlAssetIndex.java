@@ -36,21 +36,21 @@ public class SqlAssetIndex implements AssetIndex, DataAddressResolver {
 
     @Override
     public Stream<Asset> queryAssets(AssetSelectorExpression expression) {
-        return null;
+        throw new RuntimeException("Not implemented");
     }
 
     @Override
     public Stream<Asset> queryAssets(QuerySpec querySpec) {
-        return null;
+        throw new RuntimeException("Not implemented");
     }
 
     @Override
     public @Nullable Asset findById(String assetId) {
-        return null;
+        throw new RuntimeException("Not implemented");
     }
 
     @Override
     public DataAddress resolveForAsset(String assetId) {
-        return null;
+        throw new RuntimeException("Not implemented");
     }
 }

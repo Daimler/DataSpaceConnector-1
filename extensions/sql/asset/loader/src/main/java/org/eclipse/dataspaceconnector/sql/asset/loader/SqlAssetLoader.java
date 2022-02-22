@@ -16,6 +16,7 @@ package org.eclipse.dataspaceconnector.sql.asset.loader;
 
 import org.eclipse.dataspaceconnector.dataloading.AssetEntry;
 import org.eclipse.dataspaceconnector.dataloading.AssetLoader;
+import org.eclipse.dataspaceconnector.spi.transaction.TransactionContext;
 import org.eclipse.dataspaceconnector.spi.types.domain.DataAddress;
 import org.eclipse.dataspaceconnector.spi.types.domain.asset.Asset;
 
@@ -25,18 +26,20 @@ import javax.sql.DataSource;
 public class SqlAssetLoader implements AssetLoader {
 
     private final DataSource dataSource;
+    private final TransactionContext transactionContext;
 
-    public SqlAssetLoader(DataSource dataSource) {
+    public SqlAssetLoader(DataSource dataSource, TransactionContext transactionContext) {
         this.dataSource = Objects.requireNonNull(dataSource);
+        this.transactionContext = Objects.requireNonNull(transactionContext);
     }
 
     @Override
-    public void accept(AssetEntry item) {
+    public final void accept(AssetEntry item) {
         accept(item.getAsset(), item.getDataAddress());
     }
 
     @Override
     public void accept(Asset asset, DataAddress dataAddress) {
-
+        throw new RuntimeException("Not implemented");
     }
 }
