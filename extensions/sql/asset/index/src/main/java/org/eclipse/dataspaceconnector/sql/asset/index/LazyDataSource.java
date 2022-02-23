@@ -25,15 +25,7 @@ import javax.sql.DataSource;
 
 class LazyDataSource implements DataSource {
     private final Supplier<DataSource> dataSourceSupplier;
-
     private DataSource instance = null;
-
-    protected synchronized DataSource getDataSource() {
-        if (instance == null) {
-            instance = dataSourceSupplier.get();
-        }
-        return instance;
-    }
 
     public LazyDataSource(Supplier<DataSource> dataSourceSupplier) {
         this.dataSourceSupplier = Objects.requireNonNull(dataSourceSupplier);
@@ -60,16 +52,6 @@ class LazyDataSource implements DataSource {
     }
 
     @Override
-    public void setLoginTimeout(int i) throws SQLException {
-        getDataSource().setLoginTimeout(i);
-    }
-
-    @Override
-    public int getLoginTimeout() throws SQLException {
-        return getDataSource().getLoginTimeout();
-    }
-
-    @Override
     public Logger getParentLogger() throws SQLFeatureNotSupportedException {
         return getDataSource().getParentLogger();
     }
@@ -82,5 +64,24 @@ class LazyDataSource implements DataSource {
     @Override
     public boolean isWrapperFor(Class<?> aClass) throws SQLException {
         return getDataSource().isWrapperFor(aClass);
+    }    @Override
+    public void setLoginTimeout(int i) throws SQLException {
+        getDataSource().setLoginTimeout(i);
     }
+
+    protected synchronized DataSource getDataSource() {
+        if (instance == null) {
+            instance = dataSourceSupplier.get();
+        }
+        return instance;
+    }
+
+    @Override
+    public int getLoginTimeout() throws SQLException {
+        return getDataSource().getLoginTimeout();
+    }
+
+
+
+
 }

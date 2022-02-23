@@ -29,6 +29,7 @@ dependencies {
     testImplementation(project(":core:base"))
     testImplementation(project(":extensions:sql:pool:apache-commons-pool"))
     testImplementation(project(":extensions:transaction:transaction-local"))
+    testImplementation(project(":extensions:sql:asset:loader"))
     testImplementation("com.h2database:h2:2.1.210")
 }
 

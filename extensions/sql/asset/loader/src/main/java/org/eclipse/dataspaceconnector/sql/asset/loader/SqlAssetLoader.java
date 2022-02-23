@@ -18,15 +18,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.eclipse.dataspaceconnector.dataloading.AssetEntry;
 import org.eclipse.dataspaceconnector.dataloading.AssetLoader;
 import org.eclipse.dataspaceconnector.spi.EdcException;
+import org.eclipse.dataspaceconnector.spi.persistence.EdcPersistenceException;
 import org.eclipse.dataspaceconnector.spi.transaction.TransactionContext;
 import org.eclipse.dataspaceconnector.spi.types.domain.DataAddress;
 import org.eclipse.dataspaceconnector.spi.types.domain.asset.Asset;
 import org.eclipse.dataspaceconnector.sql.asset.schema.SqlAssetTables;
 
-import javax.sql.DataSource;
 import java.sql.Connection;
 import java.util.Map;
 import java.util.Objects;
+import javax.sql.DataSource;
 
 import static org.eclipse.dataspaceconnector.sql.SqlQueryExecutor.executeQuery;
 
@@ -64,7 +65,7 @@ public class SqlAssetLoader implements AssetLoader {
                     executeQuery(connection, String.format("INSERT INTO %s (asset_id, k, v) VALUES (?, ?, ?)", SqlAssetTables.assetPropertiesTable), asset.getId(), property.getKey(), writeObject(property.getValue()));
                 }
             } catch (Exception exception) {
-                throw new RuntimeException(exception);
+                throw new EdcPersistenceException(exception);
             }
         });
 

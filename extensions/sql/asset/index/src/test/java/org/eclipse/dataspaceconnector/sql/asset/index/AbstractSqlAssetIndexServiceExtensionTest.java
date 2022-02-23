@@ -1,7 +1,9 @@
 package org.eclipse.dataspaceconnector.sql.asset.index;
 
+import org.eclipse.dataspaceconnector.dataloading.AssetLoader;
 import org.eclipse.dataspaceconnector.junit.launcher.EdcExtension;
 import org.eclipse.dataspaceconnector.spi.asset.AssetIndex;
+import org.eclipse.dataspaceconnector.spi.asset.DataAddressResolver;
 import org.eclipse.dataspaceconnector.spi.system.ServiceExtension;
 import org.eclipse.dataspaceconnector.spi.system.ServiceExtensionContext;
 import org.eclipse.dataspaceconnector.spi.transaction.TransactionContext;
@@ -24,6 +26,7 @@ public class AbstractSqlAssetIndexServiceExtensionTest {
                 contextRef.set(context);
             }
         });
+
     }
 
     @AfterEach
@@ -39,7 +42,15 @@ public class AbstractSqlAssetIndexServiceExtensionTest {
         return contextRef.get().getService(TransactionContext.class);
     }
 
-    protected SqlAssetIndex getSqlAssetIndex() {
-        return contextRef.get().getService(SqlAssetIndex.class);
+    protected AssetLoader getAssetLoader() {
+        return contextRef.get().getService(AssetLoader.class);
+    }
+
+    protected DataAddressResolver getDataAddressResolver() {
+        return contextRef.get().getService(DataAddressResolver.class);
+    }
+
+    protected AssetIndex getAssetIndex() {
+        return contextRef.get().getService(AssetIndex.class);
     }
 }

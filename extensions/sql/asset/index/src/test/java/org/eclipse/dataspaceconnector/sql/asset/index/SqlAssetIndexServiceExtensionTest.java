@@ -1,6 +1,10 @@
 package org.eclipse.dataspaceconnector.sql.asset.index;
 
+import org.eclipse.dataspaceconnector.dataloading.AssetEntry;
+import org.eclipse.dataspaceconnector.spi.types.domain.DataAddress;
+import org.eclipse.dataspaceconnector.spi.types.domain.asset.Asset;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -36,6 +40,7 @@ class SqlAssetIndexServiceExtensionTest extends AbstractSqlAssetIndexServiceExte
     @Test
     @DisplayName("Context Loads, tables exist")
     void contextLoads() throws SQLException {
+        String clz = Queries.ASSET_SELECT_ALL;
         executeQuery(getDataSourceRegistry().resolve(DATASOURCE_NAME).getConnection(), "SELECT 1 FROM edc_assets");
         executeQuery(getDataSourceRegistry().resolve(DATASOURCE_NAME).getConnection(), "SELECT 1 FROM edc_asset_properties");
         executeQuery(getDataSourceRegistry().resolve(DATASOURCE_NAME).getConnection(), "SELECT 1 FROM edc_asset_dataaddress");
@@ -54,8 +59,43 @@ class SqlAssetIndexServiceExtensionTest extends AbstractSqlAssetIndexServiceExte
     }
 
     @Test
+    @DisplayName("Finds asset by given id")
     void testFindById() {
-        // TODO: implement
-        //getSqlAssetIndex().findById()
+        AssetEntry assetEntry = createAssetEntry();
+
+        getAssetLoader().accept(assetEntry);
+
+        Asset asset = getAssetIndex().findById(assetEntry.getAsset().getId());
+
+        Assertions.assertNotNull(asset);
+
+        Assertions.assertEquals(assetEntry.getAsset().getProperties(), asset.getProperties());
+    }
+
+    @Test
+    @DisplayName("Finds data address by given asset id")
+    void resolveForAsset() {
+        AssetEntry assetEntry = createAssetEntry();
+
+        getAssetLoader().accept(assetEntry);
+
+        DataAddress dataAddress = getDataAddressResolver().resolveForAsset(assetEntry.getAsset().getId());
+
+        Assertions.assertNotNull(dataAddress);
+
+        Assertions.assertEquals(assetEntry.getDataAddress().getProperties(), dataAddress.getProperties());
+    }
+
+    private AssetEntry createAssetEntry() {
+        Asset asset = Asset.Builder.newInstance()
+                .id("1")
+                .name("a1")
+                .contentType("t1")
+                .build();
+        DataAddress dataAddress = DataAddress.Builder.newInstance()
+                .type("t1")
+                .build();
+
+        return new AssetEntry(asset, dataAddress);
     }
 }

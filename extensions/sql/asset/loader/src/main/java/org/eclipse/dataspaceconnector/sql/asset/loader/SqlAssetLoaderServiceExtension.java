@@ -21,8 +21,8 @@ import org.eclipse.dataspaceconnector.spi.system.ServiceExtensionContext;
 import org.eclipse.dataspaceconnector.spi.transaction.TransactionContext;
 import org.eclipse.dataspaceconnector.spi.transaction.datasource.DataSourceRegistry;
 
-import javax.sql.DataSource;
 import java.util.Objects;
+import javax.sql.DataSource;
 
 public class SqlAssetLoaderServiceExtension implements ServiceExtension {
 

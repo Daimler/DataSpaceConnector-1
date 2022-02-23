@@ -62,11 +62,17 @@ class FlywayDataSourceConnection implements Connection {
     }
 
     @Override
+    public <T> T unwrap(Class<T> iface) throws SQLException {
+        return connection.unwrap(iface);
+    }    @Override
     public void setAutoCommit(boolean autoCommit) throws SQLException {
         //connection.setAutoCommit(autoCommit);
     }
 
     @Override
+    public boolean isWrapperFor(Class<?> iface) throws SQLException {
+        return connection.isWrapperFor(iface);
+    }    @Override
     public boolean getAutoCommit() throws SQLException {
         return connection.getAutoCommit();
     }
@@ -301,13 +307,7 @@ class FlywayDataSourceConnection implements Connection {
         return connection.getNetworkTimeout();
     }
 
-    @Override
-    public <T> T unwrap(Class<T> iface) throws SQLException {
-        return connection.unwrap(iface);
-    }
 
-    @Override
-    public boolean isWrapperFor(Class<?> iface) throws SQLException {
-        return connection.isWrapperFor(iface);
-    }
+
+
 }

@@ -50,27 +50,27 @@ class FlywayDataSource implements DataSource {
     }
 
     @Override
+    public Logger getParentLogger() throws SQLFeatureNotSupportedException {
+        return delegate.getParentLogger();
+    }    @Override
     public void setLoginTimeout(int i) throws SQLException {
         delegate.setLoginTimeout(i);
     }
 
     @Override
-    public int getLoginTimeout() throws SQLException {
-        return delegate.getLoginTimeout();
-    }
-
-    @Override
-    public Logger getParentLogger() throws SQLFeatureNotSupportedException {
-        return delegate.getParentLogger();
-    }
-
-    @Override
     public <T> T unwrap(Class<T> aClass) throws SQLException {
         return delegate.unwrap(aClass);
+    }    @Override
+    public int getLoginTimeout() throws SQLException {
+        return delegate.getLoginTimeout();
     }
 
     @Override
     public boolean isWrapperFor(Class<?> aClass) throws SQLException {
         return delegate.isWrapperFor(aClass);
     }
+
+
+
+
 }

@@ -14,7 +14,6 @@
 
 package org.eclipse.dataspaceconnector.sql.asset.loader;
 
-import javax.sql.DataSource;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -22,24 +21,14 @@ import java.sql.SQLFeatureNotSupportedException;
 import java.util.Objects;
 import java.util.function.Supplier;
 import java.util.logging.Logger;
+import javax.sql.DataSource;
 
 class LazyDataSource implements DataSource {
     private final Supplier<DataSource> dataSourceSupplier;
-
-    private final Object MONITOR = new Object();
     private DataSource instance = null;
 
     public LazyDataSource(Supplier<DataSource> dataSourceSupplier) {
         this.dataSourceSupplier = Objects.requireNonNull(dataSourceSupplier);
-    }
-
-    protected DataSource getDataSource() {
-        synchronized (MONITOR) {
-            if (instance == null) {
-                instance = dataSourceSupplier.get();
-            }
-            return instance;
-        }
     }
 
     @Override
@@ -63,16 +52,6 @@ class LazyDataSource implements DataSource {
     }
 
     @Override
-    public int getLoginTimeout() throws SQLException {
-        return getDataSource().getLoginTimeout();
-    }
-
-    @Override
-    public void setLoginTimeout(int i) throws SQLException {
-        getDataSource().setLoginTimeout(i);
-    }
-
-    @Override
     public Logger getParentLogger() throws SQLFeatureNotSupportedException {
         return getDataSource().getParentLogger();
     }
@@ -80,10 +59,27 @@ class LazyDataSource implements DataSource {
     @Override
     public <T> T unwrap(Class<T> aClass) throws SQLException {
         return getDataSource().unwrap(aClass);
+    }    @Override
+    public int getLoginTimeout() throws SQLException {
+        return getDataSource().getLoginTimeout();
     }
 
     @Override
     public boolean isWrapperFor(Class<?> aClass) throws SQLException {
         return getDataSource().isWrapperFor(aClass);
+    }    @Override
+    public void setLoginTimeout(int i) throws SQLException {
+        getDataSource().setLoginTimeout(i);
     }
+
+    protected synchronized DataSource getDataSource() {
+        if (instance == null) {
+            instance = dataSourceSupplier.get();
+        }
+        return instance;
+    }
+
+
+
+
 }

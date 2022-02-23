@@ -19,7 +19,6 @@ import org.eclipse.dataspaceconnector.spi.asset.DataAddressResolver;
 import org.eclipse.dataspaceconnector.spi.system.Inject;
 import org.eclipse.dataspaceconnector.spi.system.ServiceExtension;
 import org.eclipse.dataspaceconnector.spi.system.ServiceExtensionContext;
-import org.eclipse.dataspaceconnector.spi.transaction.TransactionContext;
 import org.eclipse.dataspaceconnector.spi.transaction.datasource.DataSourceRegistry;
 
 import java.util.Objects;
@@ -35,8 +34,8 @@ public class SqlAssetIndexServiceExtension implements ServiceExtension {
         String dataSourceName = context.getConfig().getString(ConfigurationKeys.DATASOURCE_NAME);
 
         DataSource dataSource = new LazyDataSource(() -> Objects.requireNonNull(
-            dataSourceRegistry.resolve(dataSourceName),
-            String.format("DataSource %s could not be resolved", dataSourceName)));
+                dataSourceRegistry.resolve(dataSourceName),
+                String.format("DataSource %s could not be resolved", dataSourceName)));
 
         SqlAssetIndex sqlAssetIndex = new SqlAssetIndex(dataSource);
 
