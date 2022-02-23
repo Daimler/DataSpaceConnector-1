@@ -1,5 +1,20 @@
+/*
+ *  Copyright (c) 2022 Daimler TSS GmbH
+ *
+ *  This program and the accompanying materials are made available under the
+ *  terms of the Apache License, Version 2.0 which is available at
+ *  https://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  SPDX-License-Identifier: Apache-2.0
+ *
+ *  Contributors:
+ *       Daimler TSS GmbH - Initial Tests
+ *
+ */
+
 package org.eclipse.dataspaceconnector.sql.asset.loader;
 
+import org.eclipse.dataspaceconnector.dataloading.AssetLoader;
 import org.eclipse.dataspaceconnector.junit.launcher.EdcExtension;
 import org.eclipse.dataspaceconnector.spi.system.ServiceExtension;
 import org.eclipse.dataspaceconnector.spi.system.ServiceExtensionContext;
@@ -38,7 +53,7 @@ class AbstractSqlAssetLoaderServiceExtensionTest {
         return contextRef.get().getService(TransactionContext.class);
     }
 
-    protected SqlAssetLoader getSqlAssetLoader() {
-        return contextRef.get().getService(SqlAssetLoader.class);
+    protected AssetLoader getAssetLoader() {
+        return contextRef.get().getService(AssetLoader.class);
     }
 }

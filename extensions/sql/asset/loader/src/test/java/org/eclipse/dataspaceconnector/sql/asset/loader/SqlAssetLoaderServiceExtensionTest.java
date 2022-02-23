@@ -1,9 +1,23 @@
+/*
+ *  Copyright (c) 2022 Daimler TSS GmbH
+ *
+ *  This program and the accompanying materials are made available under the
+ *  terms of the Apache License, Version 2.0 which is available at
+ *  https://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  SPDX-License-Identifier: Apache-2.0
+ *
+ *  Contributors:
+ *       Daimler TSS GmbH - Initial Tests
+ *
+ */
+
 package org.eclipse.dataspaceconnector.sql.asset.loader;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.eclipse.dataspaceconnector.dataloading.AssetEntry;
+import org.eclipse.dataspaceconnector.spi.types.domain.DataAddress;
+import org.eclipse.dataspaceconnector.spi.types.domain.asset.Asset;
+import org.junit.jupiter.api.*;
 
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -42,14 +56,49 @@ class SqlAssetLoaderServiceExtensionTest extends AbstractSqlAssetLoaderServiceEx
     }
 
     @Test
-    void testAcceptEntry() {
-        //getSqlAssetLoader().accept();
-// TODO: implement
+    @DisplayName("Accepts and persists AssetEntry")
+    void testAcceptEntry() throws SQLException {
+        Asset asset = Asset.Builder.newInstance()
+                .id("1")
+                .name("a1")
+                .contentType("t1")
+                .build();
+        DataAddress dataAddress = DataAddress.Builder.newInstance()
+                .type("t1")
+                .build();
+        AssetEntry assetEntry = new AssetEntry(asset, dataAddress);
+
+        getAssetLoader().accept(assetEntry);
+
+        Long assetCount = executeQuery(getDataSourceRegistry().resolve(DATASOURCE_NAME).getConnection(), (rs) -> rs.getLong(1), "SELECT count(*) FROM edc_assets WHERE asset_id=?", "1").iterator().next();
+        Long propertyCount = executeQuery(getDataSourceRegistry().resolve(DATASOURCE_NAME).getConnection(), (rs) -> rs.getLong(1), "SELECT count(*) FROM edc_asset_properties WHERE asset_id=?", "1").iterator().next();
+        Long dataAddressCount = executeQuery(getDataSourceRegistry().resolve(DATASOURCE_NAME).getConnection(), (rs) -> rs.getLong(1), "SELECT count(*) FROM edc_asset_dataaddress WHERE asset_id=?", "1").iterator().next();
+
+        Assertions.assertEquals(1, assetCount);
+        Assertions.assertEquals(3, propertyCount);
+        Assertions.assertEquals(1, dataAddressCount);
     }
 
     @Test
-    void testAcceptAssetAndDataAddress() {
-        //getSqlAssetLoader().accept();
-        // TODO: implement
+    @DisplayName("Accepts and persists Asset and DataAddress")
+    void testAcceptAssetAndDataAddress() throws SQLException {
+        Asset asset = Asset.Builder.newInstance()
+                .id("2")
+                .name("a2")
+                .contentType("t2")
+                .build();
+        DataAddress dataAddress = DataAddress.Builder.newInstance()
+                .type("t2")
+                .build();
+
+        getAssetLoader().accept(asset, dataAddress);
+
+        Long assetCount = executeQuery(getDataSourceRegistry().resolve(DATASOURCE_NAME).getConnection(), (rs) -> rs.getLong(1), "SELECT count(*) FROM edc_assets WHERE asset_id=?", "2").iterator().next();
+        Long propertyCount = executeQuery(getDataSourceRegistry().resolve(DATASOURCE_NAME).getConnection(), (rs) -> rs.getLong(1), "SELECT count(*) FROM edc_asset_properties WHERE asset_id=?", "2").iterator().next();
+        Long dataAddressCount = executeQuery(getDataSourceRegistry().resolve(DATASOURCE_NAME).getConnection(), (rs) -> rs.getLong(1), "SELECT count(*) FROM edc_asset_dataaddress WHERE asset_id=?", "2").iterator().next();
+
+        Assertions.assertEquals(1, assetCount);
+        Assertions.assertEquals(3, propertyCount);
+        Assertions.assertEquals(1, dataAddressCount);
     }
 }

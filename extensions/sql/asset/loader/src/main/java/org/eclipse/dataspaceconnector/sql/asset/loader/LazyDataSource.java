@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2021 Daimler TSS GmbH
+ *  Copyright (c) 2021-2022 Daimler TSS GmbH
  *
  *  This program and the accompanying materials are made available under the
  *  terms of the Apache License, Version 2.0 which is available at
@@ -14,6 +14,7 @@
 
 package org.eclipse.dataspaceconnector.sql.asset.loader;
 
+import javax.sql.DataSource;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -21,13 +22,16 @@ import java.sql.SQLFeatureNotSupportedException;
 import java.util.Objects;
 import java.util.function.Supplier;
 import java.util.logging.Logger;
-import javax.sql.DataSource;
 
 class LazyDataSource implements DataSource {
     private final Supplier<DataSource> dataSourceSupplier;
 
     private final Object MONITOR = new Object();
     private DataSource instance = null;
+
+    public LazyDataSource(Supplier<DataSource> dataSourceSupplier) {
+        this.dataSourceSupplier = Objects.requireNonNull(dataSourceSupplier);
+    }
 
     protected DataSource getDataSource() {
         synchronized (MONITOR) {
@@ -36,10 +40,6 @@ class LazyDataSource implements DataSource {
             }
             return instance;
         }
-    }
-
-    public LazyDataSource(Supplier<DataSource> dataSourceSupplier) {
-        this.dataSourceSupplier = Objects.requireNonNull(dataSourceSupplier);
     }
 
     @Override
@@ -63,13 +63,13 @@ class LazyDataSource implements DataSource {
     }
 
     @Override
-    public void setLoginTimeout(int i) throws SQLException {
-        getDataSource().setLoginTimeout(i);
+    public int getLoginTimeout() throws SQLException {
+        return getDataSource().getLoginTimeout();
     }
 
     @Override
-    public int getLoginTimeout() throws SQLException {
-        return getDataSource().getLoginTimeout();
+    public void setLoginTimeout(int i) throws SQLException {
+        getDataSource().setLoginTimeout(i);
     }
 
     @Override
