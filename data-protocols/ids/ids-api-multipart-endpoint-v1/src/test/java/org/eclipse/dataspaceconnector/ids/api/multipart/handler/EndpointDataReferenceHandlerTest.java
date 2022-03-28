@@ -21,6 +21,7 @@ import de.fraunhofer.iais.eis.ParticipantCertificateRevokedMessageBuilder;
 import de.fraunhofer.iais.eis.ParticipantUpdateMessageBuilder;
 import de.fraunhofer.iais.eis.RejectionMessage;
 import org.eclipse.dataspaceconnector.ids.api.multipart.message.MultipartRequest;
+import org.eclipse.dataspaceconnector.ids.api.multipart.message.ids.IdsResponseMessageFactory;
 import org.eclipse.dataspaceconnector.spi.iam.ClaimToken;
 import org.eclipse.dataspaceconnector.spi.monitor.Monitor;
 import org.eclipse.dataspaceconnector.spi.result.Result;
@@ -32,6 +33,7 @@ import org.eclipse.dataspaceconnector.spi.types.domain.edr.EndpointDataReference
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Mockito;
 
 import java.util.List;
 import java.util.Map;
@@ -52,6 +54,7 @@ class EndpointDataReferenceHandlerTest {
     private EndpointDataReferenceHandler handler;
     private EndpointDataReferenceReceiverRegistry receiverRegistry;
     private EndpointDataReferenceTransformer transformer;
+    private IdsResponseMessageFactory responseMessageFactory;
 
     @BeforeEach
     public void setUp() {
@@ -59,8 +62,9 @@ class EndpointDataReferenceHandlerTest {
         var connectorId = UUID.randomUUID().toString();
         receiverRegistry = mock(EndpointDataReferenceReceiverRegistry.class);
         transformer = mock(EndpointDataReferenceTransformer.class);
+        responseMessageFactory = mock(IdsResponseMessageFactory.class);
         var typeManager = new TypeManager();
-        handler = new EndpointDataReferenceHandler(monitor, connectorId, receiverRegistry, transformer, typeManager);
+        handler = new EndpointDataReferenceHandler(monitor, connectorId, responseMessageFactory, receiverRegistry, transformer, typeManager);
     }
 
     @Test
@@ -111,6 +115,7 @@ class EndpointDataReferenceHandlerTest {
         var request = createMultipartRequest(edr);
 
         when(transformer.transform(any())).thenReturn(Result.failure("error"));
+        when(responseMessageFactory.createInternalRecipientErrorMessage(Mockito.any())).thenReturn(mock(RejectionMessage.class));
 
         var response = handler.handleRequest(request, createClaimToken());
 
@@ -128,6 +133,7 @@ class EndpointDataReferenceHandlerTest {
         var receiver = mock(EndpointDataReferenceReceiver.class);
         when(receiver.send(edr)).thenReturn(CompletableFuture.completedFuture(Result.failure("error")));
         when(receiverRegistry.getAll()).thenReturn(List.of(receiver));
+        when(responseMessageFactory.createInternalRecipientErrorMessage(Mockito.any())).thenReturn(mock(RejectionMessage.class));
 
         var response = handler.handleRequest(request, createClaimToken());
 
@@ -145,6 +151,7 @@ class EndpointDataReferenceHandlerTest {
         var receiver = mock(EndpointDataReferenceReceiver.class);
         when(receiver.send(edr)).thenReturn(CompletableFuture.failedFuture(new RuntimeException("error")));
         when(receiverRegistry.getAll()).thenReturn(List.of(receiver));
+        when(responseMessageFactory.createInternalRecipientErrorMessage(Mockito.any())).thenReturn(mock(RejectionMessage.class));
 
         var response = handler.handleRequest(request, createClaimToken());
 

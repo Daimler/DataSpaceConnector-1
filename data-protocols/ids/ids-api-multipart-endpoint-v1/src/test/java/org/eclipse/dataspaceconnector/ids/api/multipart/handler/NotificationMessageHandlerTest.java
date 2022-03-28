@@ -23,15 +23,14 @@ import de.fraunhofer.iais.eis.ParticipantUpdateMessageBuilder;
 import de.fraunhofer.iais.eis.RejectionMessage;
 import org.eclipse.dataspaceconnector.ids.api.multipart.message.MultipartRequest;
 import org.eclipse.dataspaceconnector.ids.api.multipart.message.MultipartResponse;
+import org.eclipse.dataspaceconnector.ids.api.multipart.message.ids.IdsResponseMessageFactory;
 import org.eclipse.dataspaceconnector.spi.iam.ClaimToken;
-import org.eclipse.dataspaceconnector.spi.result.Result;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import java.util.UUID;
-
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -40,14 +39,15 @@ class NotificationMessageHandlerTest {
     private Handler subHandler;
     private NotificationMessageHandlerRegistry subHandlers;
     private NotificationMessageHandler handler;
+    private IdsResponseMessageFactory responseMessageFactory;
 
     @BeforeEach
     public void setUp() {
         subHandlers = new NotificationMessageHandlerRegistry();
         subHandler = Mockito.mock(Handler.class);
+        responseMessageFactory = Mockito.mock(IdsResponseMessageFactory.class);
         subHandlers.addHandler(ParticipantUpdateMessage.class, subHandler);
-        var connectorId = UUID.randomUUID().toString();
-        handler = new NotificationMessageHandler(connectorId, subHandlers);
+        handler = new NotificationMessageHandler(responseMessageFactory, subHandlers);
     }
 
     @Test
@@ -64,6 +64,8 @@ class NotificationMessageHandlerTest {
 
     @Test
     void delegateToSubHandler_subHandlerNotFound_shouldReturnRejectionMessage() {
+        when(responseMessageFactory.createMessageTypeNotSupportedMessage(Mockito.any())).thenReturn(mock(RejectionMessage.class));
+
         var request = createMultipartRequest(new ParticipantCertificateGrantedMessageBuilder().build());
 
         var response = handler.handleRequest(request, createClaimToken());

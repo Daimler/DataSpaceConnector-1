@@ -17,6 +17,7 @@ package org.eclipse.dataspaceconnector.ids.api.multipart.handler.description;
 import de.fraunhofer.iais.eis.Connector;
 import de.fraunhofer.iais.eis.DescriptionRequestMessage;
 import org.eclipse.dataspaceconnector.ids.api.multipart.message.MultipartResponse;
+import org.eclipse.dataspaceconnector.ids.api.multipart.message.ids.IdsResponseMessageFactory;
 import org.eclipse.dataspaceconnector.ids.spi.IdsIdParser;
 import org.eclipse.dataspaceconnector.ids.spi.IdsType;
 import org.eclipse.dataspaceconnector.ids.spi.service.ConnectorService;
@@ -38,16 +39,19 @@ public class ConnectorDescriptionRequestHandler implements DescriptionRequestHan
     private final Monitor monitor;
     private final ConnectorService connectorService;
     private final IdsTransformerRegistry transformerRegistry;
+    private final IdsResponseMessageFactory responseMessageFactory;
 
     public ConnectorDescriptionRequestHandler(
             @NotNull Monitor monitor,
             @NotNull String connectorId,
             @NotNull ConnectorService connectorService,
-            @NotNull IdsTransformerRegistry transformerRegistry) {
+            @NotNull IdsTransformerRegistry transformerRegistry,
+            @NotNull IdsResponseMessageFactory responseMessageFactory) {
         this.monitor = Objects.requireNonNull(monitor);
         this.connectorService = Objects.requireNonNull(connectorService);
         this.transformerRegistry = Objects.requireNonNull(transformerRegistry);
         this.connectorId = Objects.requireNonNull(connectorId);
+        this.responseMessageFactory = Objects.requireNonNull(responseMessageFactory);
     }
 
     @Override
@@ -58,7 +62,7 @@ public class ConnectorDescriptionRequestHandler implements DescriptionRequestHan
         Objects.requireNonNull(descriptionRequestMessage);
 
         if (!isRequestingCurrentConnectorsDescription(descriptionRequestMessage)) {
-            return createErrorMultipartResponse(connectorId, descriptionRequestMessage);
+            return createErrorMultipartResponse(responseMessageFactory, descriptionRequestMessage);
         }
 
         var descriptionResponseMessage = createDescriptionResponseMessage(connectorId, descriptionRequestMessage);
@@ -71,7 +75,7 @@ public class ConnectorDescriptionRequestHandler implements DescriptionRequestHan
                             String.join(", ", transformResult.getFailureMessages())
                     )
             );
-            return createBadParametersErrorMultipartResponse(connectorId, descriptionRequestMessage);
+            return createBadParametersErrorMultipartResponse(responseMessageFactory, descriptionRequestMessage);
         }
 
         Connector connector = transformResult.getContent();
