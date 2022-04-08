@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2020 - 2022 Microsoft Corporation
+ *  Copyright (c) 2020 - 2022 Microsoft Corporation and others
  *
  *  This program and the accompanying materials are made available under the
  *  terms of the Apache License, Version 2.0 which is available at
@@ -9,6 +9,7 @@
  *
  *  Contributors:
  *       Microsoft Corporation - initial API and implementation
+ *       Mercedes Benz Tech Innovation - Rename DataSource name setting, and default value
  *
  */
 
@@ -26,11 +27,11 @@ import org.eclipse.dataspaceconnector.sql.contractnegotiation.store.ContractNego
 import org.eclipse.dataspaceconnector.sql.contractnegotiation.store.PostgresStatements;
 import org.eclipse.dataspaceconnector.sql.contractnegotiation.store.SqlContractNegotiationStore;
 
+import static org.eclipse.dataspaceconnector.sql.contractnegotiation.ConfigurationKeys.DATASOURCE_SETTING_NAME;
+import static org.eclipse.dataspaceconnector.sql.contractnegotiation.ConfigurationKeys.DATASOURCE_SETTING_NAME_DEFAULT;
+
 @Provides({ ContractNegotiationStore.class, PolicyArchive.class })
 public class SqlContractNegotiationStoreExtension implements ServiceExtension {
-
-    private static final String DATASOURCE_NAME_SETTING = "edc.datasource.contractnegotiation.name";
-    private static final String DEFAULT_DATASOURCE_NAME = "contractnegotiation";
 
     @Inject
     private DataSourceRegistry dataSourceRegistry;
@@ -56,6 +57,6 @@ public class SqlContractNegotiationStoreExtension implements ServiceExtension {
     }
 
     private String getDataSourceName(ServiceExtensionContext context) {
-        return context.getConfig().getString(DATASOURCE_NAME_SETTING, DEFAULT_DATASOURCE_NAME);
+        return context.getConfig().getString(DATASOURCE_SETTING_NAME, DATASOURCE_SETTING_NAME_DEFAULT);
     }
 }

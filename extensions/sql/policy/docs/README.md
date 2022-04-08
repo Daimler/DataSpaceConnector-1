@@ -36,6 +36,6 @@ entity edc_policies {
 
 ## Configuration
 
-| Key                        | Description | Mandatory | 
+| Key                        | Description | Default Value | 
 |:---------------------------|:---|---|
-| edc.datasource.policy.name | Datasource used by this extension | X |
+| edc.policy.datasource.name | Datasource used by this extension | policy |

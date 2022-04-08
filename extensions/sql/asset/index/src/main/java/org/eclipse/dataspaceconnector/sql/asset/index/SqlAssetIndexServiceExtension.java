@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2022 Daimler TSS GmbH
+ *  Copyright (c) 2022 Daimler TSS GmbH and others
  *
  *  This program and the accompanying materials are made available under the
  *  terms of the Apache License, Version 2.0 which is available at
@@ -9,6 +9,7 @@
  *
  *  Contributors:
  *       Daimler TSS GmbH - Initial API and Implementation
+ *       Mercedes Benz Tech Innovation - Add default data source config value
  *
  */
 
@@ -24,6 +25,9 @@ import org.eclipse.dataspaceconnector.spi.system.ServiceExtensionContext;
 import org.eclipse.dataspaceconnector.spi.transaction.TransactionContext;
 import org.eclipse.dataspaceconnector.spi.transaction.datasource.DataSourceRegistry;
 
+import static org.eclipse.dataspaceconnector.sql.asset.index.ConfigurationKeys.DATASOURCE_SETTING_NAME;
+import static org.eclipse.dataspaceconnector.sql.asset.index.ConfigurationKeys.DATASOURCE_SETTING_NAME_DEFAULT;
+
 
 @Provides({AssetLoader.class, AssetIndex.class, DataAddressResolver.class})
 public class SqlAssetIndexServiceExtension implements ServiceExtension {
@@ -36,7 +40,7 @@ public class SqlAssetIndexServiceExtension implements ServiceExtension {
 
     @Override
     public void initialize(ServiceExtensionContext context) {
-        var dataSourceName = context.getConfig().getString(ConfigurationKeys.DATASOURCE_SETTING_NAME);
+        var dataSourceName = context.getConfig().getString(DATASOURCE_SETTING_NAME, DATASOURCE_SETTING_NAME_DEFAULT);
 
         var sqlAssetLoader = new SqlAssetIndex(dataSourceRegistry, dataSourceName, transactionContext, context.getTypeManager().getMapper(), new PostgresSqlAssetQueries());
 

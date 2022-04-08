@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2022 Daimler TSS GmbH
+ *  Copyright (c) 2022 Daimler TSS GmbH and others
  *
  *  This program and the accompanying materials are made available under the
  *  terms of the Apache License, Version 2.0 which is available at
@@ -9,6 +9,7 @@
  *
  *  Contributors:
  *       Daimler TSS GmbH - Initial API and Implementation
+ *       Mercedes Benz Tech Innovation - Rename data source config key, add default value
  *
  */
 
@@ -25,6 +26,8 @@ public interface ConfigurationKeys {
      * Name of the datasource to use for accessing assets.
      */
     @EdcSetting(required = true)
-    String DATASOURCE_SETTING_NAME = "edc.datasource.asset.name";
+    String DATASOURCE_SETTING_NAME = "edc.asset.datasource.name";
+
+    String DATASOURCE_SETTING_NAME_DEFAULT = "asset";
 
 }

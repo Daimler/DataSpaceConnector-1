@@ -26,3 +26,9 @@ implemented for CosmosDB, and create an equivalent set of clauses for SQL. Thus,
 
 That way, dialect-dependent variants can be implemented should the need arise, because the actual SQL statement is
 encoded in those clauses, offering a fluent Java API.
+
+## Configuration
+
+| Key | Description | Default Value | 
+|:---|:---|---|
+| edc.contractnegotiation.datasource.name | Datasource used by this extension | contractnegotiation |

@@ -283,6 +283,7 @@ the detailed section referring to by linking pull requests or issues.
 * Rename `ContractOfferFramework` to `ContractDefinitionService` (#264)
 * Replace usage of `TransferProcessStore` with `TransferProcessManager` (#312)
 * Change `ContractOffer` & `ContractAgreement` reference a single asset (#316)
+* Change sql based datastore configuration keys and introduce default values
 
 #### Removed
 

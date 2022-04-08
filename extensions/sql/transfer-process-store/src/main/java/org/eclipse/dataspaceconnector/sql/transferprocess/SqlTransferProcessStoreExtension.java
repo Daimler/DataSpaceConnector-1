@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2020 - 2022 Microsoft Corporation
+ *  Copyright (c) 2020 - 2022 Microsoft Corporation and others
  *
  *  This program and the accompanying materials are made available under the
  *  terms of the Apache License, Version 2.0 which is available at
@@ -9,12 +9,12 @@
  *
  *  Contributors:
  *       Microsoft Corporation - initial API and implementation
+ *       Mercedes Benz Tech Innovation - Rename DataSource name setting, and default value
  *
  */
 
 package org.eclipse.dataspaceconnector.sql.transferprocess;
 
-import org.eclipse.dataspaceconnector.spi.EdcSetting;
 import org.eclipse.dataspaceconnector.spi.system.Inject;
 import org.eclipse.dataspaceconnector.spi.system.Provides;
 import org.eclipse.dataspaceconnector.spi.system.ServiceExtension;
@@ -26,12 +26,11 @@ import org.eclipse.dataspaceconnector.sql.transferprocess.store.PostgresStatemen
 import org.eclipse.dataspaceconnector.sql.transferprocess.store.SqlTransferProcessStore;
 import org.eclipse.dataspaceconnector.sql.transferprocess.store.TransferProcessStoreStatements;
 
+import static org.eclipse.dataspaceconnector.sql.transferprocess.ConfigurationKeys.DATASOURCE_SETTING_NAME;
+import static org.eclipse.dataspaceconnector.sql.transferprocess.ConfigurationKeys.DATASOURCE_SETTING_NAME_DEFAULT;
+
 @Provides(TransferProcessStore.class)
 public class SqlTransferProcessStoreExtension implements ServiceExtension {
-
-    @EdcSetting
-    private static final String DATASOURCE_NAME_SETTING = "edc.datasource.transferprocess.name";
-    private static final String DEFAULT_DATASOURCE_NAME = "transferprocess";
 
     @Inject
     private DataSourceRegistry dataSourceRegistry;
@@ -55,6 +54,6 @@ public class SqlTransferProcessStoreExtension implements ServiceExtension {
     }
 
     private String getDataSourceName(ServiceExtensionContext context) {
-        return context.getConfig().getString(DATASOURCE_NAME_SETTING, DEFAULT_DATASOURCE_NAME);
+        return context.getConfig().getString(DATASOURCE_SETTING_NAME, DATASOURCE_SETTING_NAME_DEFAULT);
     }
 }

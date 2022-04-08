@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2022 ZF Friedrichshafen AG
+ *  Copyright (c) 2022 ZF Friedrichshafen AG and others
  *
  *  This program and the accompanying materials are made available under the
  *  terms of the Apache License, Version 2.0 which is available at
@@ -9,12 +9,12 @@
  *
  *  Contributors:
  *       ZF Friedrichshafen AG - Initial API and Implementation
+ *       Mercedes Benz Tech Innovation - Rename DataSource name setting, and default value
  *
  */
 
 package org.eclipse.dataspaceconnector.sql.policy;
 
-import org.eclipse.dataspaceconnector.spi.EdcSetting;
 import org.eclipse.dataspaceconnector.spi.policy.store.PolicyStore;
 import org.eclipse.dataspaceconnector.spi.system.Inject;
 import org.eclipse.dataspaceconnector.spi.system.Provides;
@@ -26,11 +26,11 @@ import org.eclipse.dataspaceconnector.sql.policy.store.PostgressStatements;
 import org.eclipse.dataspaceconnector.sql.policy.store.SqlPolicyStore;
 import org.eclipse.dataspaceconnector.sql.policy.store.SqlPolicyStoreStatements;
 
+import static org.eclipse.dataspaceconnector.sql.policy.ConfigurationKeys.DATASOURCE_SETTING_NAME;
+import static org.eclipse.dataspaceconnector.sql.policy.ConfigurationKeys.DATASOURCE_SETTING_NAME_DEFAULT;
+
 @Provides(PolicyStore.class)
 public class SqlPolicyStoreExtension implements ServiceExtension {
-
-    @EdcSetting(required = true)
-    private static final String DATASOURCE_SETTING_NAME = "edc.datasource.policy.name";
 
     @Inject
     private DataSourceRegistry dataSourceRegistry;
@@ -57,6 +57,6 @@ public class SqlPolicyStoreExtension implements ServiceExtension {
     }
 
     private String getDataSourceName(ServiceExtensionContext context) {
-        return context.getConfig().getString(DATASOURCE_SETTING_NAME);
+        return context.getConfig().getString(DATASOURCE_SETTING_NAME, DATASOURCE_SETTING_NAME_DEFAULT);
     }
 }

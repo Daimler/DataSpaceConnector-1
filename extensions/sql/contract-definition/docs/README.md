@@ -12,6 +12,6 @@ Please apply this [schema](schema.sql) to your SQL database.
 
 ## Configuration
 
-| Key | Description | Mandatory | 
+| Key | Description | Default Value | 
 |:---|:---|---|
-| edc.datasource.contractdefinition.name | Datasource used by this extension | X |
+| edc.contractdefinition.datasource.name | Datasource used by this extension | contractdefinition |

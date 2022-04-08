@@ -39,6 +39,6 @@ edc_asset ||--o{ edc_asset_property
 
 ## Configuration
 
-| Key | Description | Mandatory | 
+| Key | Description | Default Value | 
 |:---|:---|---|
-| edc.datasource.asset.name | Datasource used by this extension | X |
+| edc.asset.datasource.name | Datasource used by this extension | asset |
