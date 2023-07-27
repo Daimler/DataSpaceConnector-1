@@ -37,7 +37,7 @@ dependencies {
 
     testFixturesApi(libs.junit.jupiter.api)
     testImplementation(libs.opentelemetry.api)
-    testImplementation("io.opentelemetry.proto:opentelemetry-proto:0.14.0-alpha")
+    testImplementation("io.opentelemetry.proto:opentelemetry-proto:1.0.0-alpha")
     testImplementation(libs.awaitility)
     testImplementation(libs.mockserver.netty)
 
